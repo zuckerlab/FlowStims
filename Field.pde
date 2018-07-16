@@ -28,5 +28,30 @@ class FlowField {
     int row = (int) min(max((pos.y-borderw)/tileSize,0),rows-1);
     return field[column][row];
   }
+  
+  void drawField() {
+    stroke(255,255,0,128);
+    int i = 0;
+    for (i = 0; i < cols; i++)
+      line(borderw+i*tileSize,borderw,borderw+i*tileSize,borderw+myheight);
+    line(borderw+i*tileSize,borderw,borderw+i*tileSize,borderw+myheight);
+    for (i = 0; i < rows; i++)
+      line(borderw,borderw+i*tileSize,borderw+mywidth,borderw+i*tileSize);
+    line(borderw,borderw+i*tileSize,borderw+mywidth,borderw+i*tileSize);
+    float x, y, dir;
+    for (i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
+        x = borderw+j*tileSize+tileSize/2.;
+        y = borderw+i*tileSize+tileSize/2.;
+        dir = field[j][i];
+        line(x-cos(dir)*tileSize/4.,y-sin(dir)*tileSize/4.,
+            x+cos(dir)*tileSize/4.,y+sin(dir)*tileSize/4.);
+            
+              
+      }
+    }
+
+    
+  }
 
 }

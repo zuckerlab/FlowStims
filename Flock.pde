@@ -30,29 +30,30 @@ class Flock {
   float posStd;
 
 
-  Flock(FlowField fl, int sepPx, float posStd, int patt, int R, int fillcolor, float meanTheta_) {
+  Flock(FlowField fl, int sepPx, float sepweight, float posStd, int patt, 
+        int R, int fillcolor, float meantheta, float maxsp) {
     nbrArray = new int[9];
-    meanTheta = -meanTheta_;
+    meanTheta = -meantheta;
     pattern = patt;
     fillc = fillcolor;
     radius = R;
     
-    maxSpeed = radius*.75;
+    maxSpeed = maxsp;
     maxForce = .14;
     
-    sepSq = sq(1.1*sepPx);//squaring since using sqeuclidean dist below
+    float sepRadius = 1.1*sepPx;
+    sepSq = sq(sepRadius);//squaring since using sqeuclidean dist below
     sepFreq = 2;
+    sepWeight = sepweight;
     
     flow = fl;
     binSize = sepPx;
-    println("binSize",binSize);
 
     binrows = ceil(myheight/float(binSize)) + int((myheight % binSize) == 0);
     bincols = ceil(mywidth/float(binSize)) + int((mywidth % binSize) == 0);
-    println(sepPx,"binSize",binSize,binrows,bincols);
       
-    int borderx = borderw + sepPx*(mywidth/sepPx + 1);
-    int bordery = borderw + sepPx*(myheight/sepPx + 1);
+    int borderx = borderw + binSize*(mywidth/binSize + 1);
+    int bordery = borderw + binSize*(myheight/binSize + 1);
 
     myborders = new int[4];
     myborders[0] = borderw; myborders[1] = borderx;
@@ -61,9 +62,6 @@ class Flock {
     xHalfLen = xLen/2.;
     yLen = myborders[3] - myborders[2];
     yHalfLen = yLen/2.;
-
-    println("xLen",xLen,"xHalfLen",xHalfLen);
-    println("yLen",yLen,"yHalfLen",yHalfLen);
     
     binGrid = new DoublyLinkedList[binrows*bincols];
     for (int i = 0; i < binrows*bincols; i++) {
@@ -82,9 +80,8 @@ class Flock {
 
   }
 
-  void run(float sep, boolean move_, boolean noSep_) {
+  void run(boolean move_, boolean noSep_) {
 
-    sepWeight = sep;
     move = move_;
     noSep = noSep_;
     for (Boid b : boids) {         
@@ -200,15 +197,14 @@ public class Boid {
 
     updateBinNeighbors();
     
-
     if (move) {
       flock();
       update();
-  
+      theta = velocity.heading();
       borders();
   
-      int new_bin_idx = getBinIndex();
-  
+      //update bin after moving
+      int new_bin_idx = getBinIndex();  
       if (new_bin_idx != bin_idx) {
         binGrid[bin_idx].remove(node);
         binGrid[new_bin_idx].add(node);
@@ -228,7 +224,7 @@ public class Boid {
       float desired_angle;
   
       desired_angle = flow.getDirection(position);     
-      
+
       //apply dotsStd
       desired = PVector.fromAngle(desired_angle + 0);//mag == 1        
       //scale it by maxSpeed
@@ -291,7 +287,7 @@ public class Boid {
       ellipseMode(CENTER);
       ellipse(position.x,position.y,D,D);         
 
-      } else {
+    } else {
       pushMatrix();
       translate(position.x, position.y);
       rotate(theta - radians(90));
