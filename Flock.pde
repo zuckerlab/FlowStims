@@ -3,14 +3,9 @@ class Flock {
   ArrayList<Boid> boids;
   DoublyLinkedList[] binGrid;
 
-  int tileSide;
-  int binrows;
-  int bincols;
-  int binSize;
-  int pattern;
-  int fillc;
-  int radius;
-  float sepSq;
+  int binSize, binrows, bincols;
+  int pattern, radius, fillc;
+  float sepSq, sepWeight, posStd;
   int sepFreq;
   
   int[] nbrArray;//single common array to all boids!
@@ -19,16 +14,9 @@ class Flock {
   int xLen, yLen;
   int[] myborders;
   float xHalfLen, yHalfLen;
-  float meanTheta;
-  
-  float maxForce;    
-  float maxSpeed;
+  float meanTheta, maxForce, maxSpeed;
   
   boolean move, noSep;
-  float sepWeight;
-  
-  float posStd;
-
 
   Flock(FlowField fl, int sepPx, float sepweight, float posStd, int patt, 
         int R, int fillcolor, float meantheta, float maxsp) {
@@ -49,11 +37,21 @@ class Flock {
     flow = fl;
     binSize = sepPx;
 
-    binrows = ceil(myheight/float(binSize)) + int((myheight % binSize) == 0);
-    bincols = ceil(mywidth/float(binSize)) + int((mywidth % binSize) == 0);
-      
-    int borderx = borderw + binSize*(mywidth/binSize + 1);
-    int bordery = borderw + binSize*(myheight/binSize + 1);
+    binrows = myheight/binSize + 1;
+    bincols = mywidth/binSize + 1;
+    println("binrows",binrows,"bincols",bincols);
+    //eliminate flickering of patterns > 1 when two elts don't fit into the same bin
+    if (meantheta == 0 || meantheta == PI)
+      if (binrows*binSize - myheight < 2*pattern*radius) binrows++;
+
+    if (meantheta == HALF_PI || meantheta == 3*HALF_PI)
+      if (bincols*binSize - mywidth < 2*pattern*radius) bincols++;
+
+
+
+    println("binrows",binrows,"bincols",bincols);
+    int borderx = borderw + binSize*(bincols);
+    int bordery = borderw + binSize*(binrows);
 
     myborders = new int[4];
     myborders[0] = borderw; myborders[1] = borderx;
@@ -199,8 +197,7 @@ public class Boid {
     
     if (move) {
       flock();
-      update();
-      theta = velocity.heading();
+      update();     
       borders();
   
       //update bin after moving
@@ -224,7 +221,7 @@ public class Boid {
       float desired_angle;
   
       desired_angle = flow.getDirection(position);     
-
+      theta = desired_angle;
       //apply dotsStd
       desired = PVector.fromAngle(desired_angle + 0);//mag == 1        
       //scale it by maxSpeed
@@ -251,15 +248,17 @@ public class Boid {
       
     PVector steer = followField();
     acceleration.add(steer);
+    
+    //for smoother change in heading when patt > 1 -- not sure it looks better
+    //theta = PVector.add(velocity,steer).heading();
 
   }
 
   //update position
   void update() {
-    
+
     velocity.add(acceleration);
-    //velocity.normalize();
-    //velocity.mult(maxSpeed);
+    //velocity.setMag(maxSpeed);
     velocity.limit(maxSpeed);
     
     position.add(velocity);
@@ -290,7 +289,7 @@ public class Boid {
     } else {
       pushMatrix();
       translate(position.x, position.y);
-      rotate(theta - radians(90));
+      rotate(theta - HALF_PI);
 
       ellipseMode(CENTER); 
       for (int i = -(pattern-1); i < pattern; i+=2) {
