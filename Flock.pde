@@ -15,7 +15,7 @@ class Flock {
   
   int[] nbrArray;//single common array to all boids!
   
-  Field flow;
+  FlowField flow;
   int xLen, yLen;
   int[] myborders;
   float xHalfLen, yHalfLen;
@@ -26,9 +26,11 @@ class Flock {
   
   boolean move, noSep;
   float sepWeight;
+  
+  float posStd;
 
 
-  Flock(Field fl, int sepPx, int patt, int R, int fillcolor, float meanTheta_) {
+  Flock(FlowField fl, int sepPx, float posStd, int patt, int R, int fillcolor, float meanTheta_) {
     nbrArray = new int[9];
     meanTheta = -meanTheta_;
     pattern = patt;
@@ -48,9 +50,7 @@ class Flock {
     binrows = ceil(myheight/float(binSize)) + int((myheight % binSize) == 0);
     bincols = ceil(mywidth/float(binSize)) + int((mywidth % binSize) == 0);
     println(sepPx,"binSize",binSize,binrows,bincols);
-    
-    //int borderx = borderw + mywidth;
-    //int bordery = borderw + myheight;    
+      
     int borderx = borderw + sepPx*(mywidth/sepPx + 1);
     int bordery = borderw + sepPx*(myheight/sepPx + 1);
 
@@ -73,8 +73,7 @@ class Flock {
     int c = 0;
     for (int i = myborders[2]; i < bordery; i += sepPx) {
       for (int j = myborders[0]; j < borderx; j += sepPx) {
-        boids.add(new Boid(j,i,c,c % sepFreq));
-        //print(c+":<" + j + "," + i + ">");
+        boids.add(new Boid(j+posStd*sepPx*randomGaussian(),i+posStd*sepPx*randomGaussian(),c,c % sepFreq));
         c++;
 
       }
@@ -110,7 +109,7 @@ public class Boid {
   Node node;
   int bin_x, bin_y;
 
-  Boid(int x, int y, int id, int sepcount) {
+  Boid(float x, float y, int id, int sepcount) {
 
     position = new PVector(x, y);
     //make sure it is created inside the available area
@@ -228,7 +227,7 @@ public class Boid {
     if (flow != null) {
       float desired_angle;
   
-      desired_angle = flow.lookup(position);     
+      desired_angle = flow.getDirection(position);     
       
       //apply dotsStd
       desired = PVector.fromAngle(desired_angle + 0);//mag == 1        

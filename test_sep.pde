@@ -1,8 +1,8 @@
 
 Flock flock;  
-Field field;
-int tileSize = 20;
-float dir1 = 0;//-PI/2.;
+FlowField field;
+int tileSize = 60;
+float dir1 = PI/4.;
 float stdev = 0;
 int radius = 4;
 int sepNrads = 10;
@@ -12,8 +12,9 @@ int borderw = 50;
 int myheight;
 int mywidth;
 
-boolean move = true;
-boolean noSep = false;
+boolean move = false;
+boolean noSep = true;
+float posStd = 0.1;
 
 float sep;
 
@@ -27,8 +28,8 @@ void setup() {
   
   sep = 1.5;
   
-  field = new TiledField(tileSize, 0, dir1, stdev);
-  flock = new Flock(field,sepPx,1,radius,255,dir1);
+  field = new FlowField(tileSize, dir1, stdev);
+  flock = new Flock(field, sepPx, posStd, 1, radius, 255, dir1);
 
 
 } 
@@ -36,6 +37,17 @@ void setup() {
 void draw () {
   background(0);
   flock.run(sep,move,noSep);
+  
+  
+  stroke(255,255,0,128);
+  int i= 0;
+  for (i = borderw; i < borderw+mywidth; i += tileSize)
+    line(i,borderw,i,borderw+myheight);
+  line(i,borderw,i,borderw+myheight);
+  i = 0;
+  for (i = borderw; i < borderw+myheight; i += tileSize)
+    line(borderw,i,borderw+mywidth,i);
+  line(borderw,i,borderw+mywidth,i);
 
   stroke(120,0,0);
   noFill();
