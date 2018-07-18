@@ -17,7 +17,7 @@ class Flock {
   float xHalfLen, yHalfLen;
   float meanTheta, maxForce, maxSpeed;
   
-  boolean move, noSep;
+  boolean move, separate;
   PShape boid;
   boolean usePShape;
 
@@ -35,13 +35,13 @@ class Flock {
     maxSpeed = maxsp;
     maxForce = .14;
     
-    float sepRadius = 1.1*sepPx;
+    float sepRadius = 1.5*sepPx;
     sepSq = sq(sepRadius);//squaring since using sqeuclidean dist below
     sepFreq = 2;
     sepWeight = sepweight;
     
     flow = fl;
-    binSize = sepPx;
+    binSize = sepPx + 1;
 
     binrows = myheight/binSize + 1;
     bincols = mywidth/binSize + 1;
@@ -75,17 +75,15 @@ class Flock {
       for (int j = myborders[0]; j < borderx; j += sepPx) {
         boids.add(new Boid(j+posStd*sepPx*randomGaussian(),i+posStd*sepPx*randomGaussian(),c,c % sepFreq));
         c++;
-
       }
     }
-    //println();
 
   }
 
-  void run(boolean move_, boolean noSep_) {
+  void run(boolean move_, boolean sep_) {
     background(bgColor);
     move = move_;
-    noSep = noSep_;
+    separate = sep_;
     for (Boid b : boids) {         
       b.run();        
     }            
@@ -120,7 +118,7 @@ class Flock {
     for (int i = myborders[2]; i <= myborders[3]; i += binSize)
       line(myborders[0],i,myborders[1],i);
     
-    
+   //show distance to neighbors 
   }
   
 
@@ -224,6 +222,13 @@ public class Boid {
     }         
     
   }
+  
+  //void testSepDist() {
+  //  int bin_idx = getBinIndex();
+  //  updateBinNeighbors();
+  //  PVector sep = separate();
+  //}
+  
   void run() {
     
     int bin_idx = getBinIndex();
@@ -251,40 +256,38 @@ public class Boid {
 
   PVector followField() {
     //lookup vector at that position in the flow field
-    //PVector desired;
+
     if (flow != null) {
-      float desired_angle;
-  
-      desired_angle = flow.getDirection(position);     
-      theta = desired_angle;
-      //apply dotsStd
-      desired = PVector.fromAngle(desired_angle + 0);//mag == 1        
-      //scale it by maxSpeed
-      desired.mult(maxSpeed);
-      //steering force = desired - velocity
-      desired.sub(velocity);
-      desired.limit(maxForce);  
-           
+      theta = flow.getDirection(position);     
     }
+    
+    desired = PVector.fromAngle(theta);//mag == 1        
+    //scale it by maxSpeed
+    desired.mult(maxSpeed);
+    //steering force = desired - velocity
+    desired.sub(velocity);
+    desired.limit(maxForce); 
+    
     return desired;
 
   }
   
   void flock() {
     
-    sepCounter = (sepCounter + 1) % sepFreq;
-    if (!noSep && sepCounter == 0) { //separate only once every sepFreq frames   
-      if (sepWeight > 0) {
+    if (separate && sepWeight > 0) {
+      sepCounter = (sepCounter + 1) % sepFreq;
+      if (sepCounter == 0) { //separate only once every sepFreq frames   
         PVector sep = separate();
         sep.mult(sepWeight);
         acceleration.add(sep);
       }
     }
-      
+    
+    
     PVector steer = followField();
     acceleration.add(steer);
-    
-    //for smoother change in heading when patt > 1 -- not sure it looks better
+
+    //for smoother change in heading when patt > 1 -- not sure it looks better, though
     //theta = PVector.add(velocity,steer).heading();
 
   }
@@ -299,7 +302,7 @@ public class Boid {
     position.add(velocity);
     
     //reset acceleration after each cycle
-    acceleration.mult(0);
+    acceleration.set(0,0);
   }
   
   // wraparound borders
@@ -314,7 +317,7 @@ public class Boid {
   void drawBoid() {
     pushMatrix();
     translate(position.x,position.y);
-    if (pattern < 1)
+    if (pattern > 1)
       rotate(theta - HALF_PI);
     shape(boid);
     popMatrix();    
@@ -344,21 +347,11 @@ public class Boid {
         
     }
     
-    if (debug && node.id == 50) {
-      fill(255,255,0,64);
-      rectMode(CORNER);
-      noStroke();
-      rect(myborders[0]+bin_x*binSize,myborders[2]+bin_y*binSize,binSize,binSize);
-      noFill();
-      stroke(255,128);
-      D = 2*sqrt(sepSq);
-      ellipse(position.x,position.y,D,D);
-    }
-    
   }
   
   //check for nearby boids
   PVector separate() {
+    int n1 = 50; int n2 = 4300;
     
     float dx, dy, d2;
     PVector steer = new PVector(0,0);
@@ -372,11 +365,22 @@ public class Boid {
     //  print(nbr_idx,":");
     //println();
     
+    if (debug && (node.id == n1 || node.id == n2)) {
+      fill(255,255,0,64);
+      rectMode(CORNER);
+      noStroke();
+      rect(myborders[0]+bin_x*binSize,myborders[2]+bin_y*binSize,binSize,binSize);
+      noFill();
+      stroke(255,128);
+      float D = 2*sqrt(sepSq);
+      ellipse(position.x,position.y,D,D);
+    }
     
+    int nbr_count = 0;
     for (int nbr_idx : nbrArray) {
 
       if (nbr_idx == -1) continue;
-      if (debug && node.id == 50) {
+      if (debug && (node.id == n1 || node.id == n2)) {
         fill(255,0,0,64);
         int nbr_x = nbr_idx % bincols;
         int nbr_y = nbr_idx / bincols;
@@ -385,9 +389,7 @@ public class Boid {
         rect(myborders[0]+nbr_x*binSize,myborders[2]+nbr_y*binSize,binSize,binSize);
       }
       
-      //print("["+nbr_idx+"]");
-      //binGrid[nbr_idx].printout();
-      
+
       binGrid[nbr_idx].resetIterator();
       
       other = binGrid[nbr_idx].getNext();
@@ -411,10 +413,13 @@ public class Boid {
             else dy -= yLen;          
           }
 
-
           d2 = dx*dx + dy*dy;//distance squared
           
-          if (debug && node.id == 50) {
+          if (debug && (node.id == n1 || node.id == n2)) {
+            fill(255);
+            text(": " + dx + "," + dy, 10+100*nbr_count, 560 + int(node.id > 50)*20);
+            nbr_count++;
+            
             noFill();
             stroke(255,0,0,160);
             rectMode(RADIUS);
@@ -422,16 +427,21 @@ public class Boid {
           }
           
           if (d2 > 0 && d2 < sepSq) {
-
-            if (debug && node.id == 50) {
+            
+            diff.set(dx,dy);
+            diff.setMag(1./d2);
+            steer.add(diff);
+            
+            if (debug && (node.id == n1 || node.id == n2)) {
+              //fill(255);
+              //text(int(nbr_idx) + ": " + diff.x + "," + diff.y, 10+150*nbr_count, 560 + int(node.id > 50)*20);
+              //nbr_count++;
               noFill();
               stroke(255,255,0);
               ellipse(other.item.position.x,other.item.position.y,2*radius*1.5,2*radius*1.5);
             }
             
-            diff.set(dx,dy);
-            diff.setMag(1./d2);
-            steer.add(diff);
+
      
 
           }
@@ -441,11 +451,16 @@ public class Boid {
       
 
     }
+    
+    //if (debug && (node.id == n1 || node.id == n2)) {
+    //   fill(255);
+    //   text(node.id + ": " + steer.x + "," + steer.y, 10+100*nbr_count, 560 + int(node.id > 50)*20);
+    //}
 
     //as long as the vector is greater than 0 
     if (steer.magSq() > 0) {
 
-      //implement Reynolds: steering = desired - Velocity
+      //steering force = desired - velocity
       steer.normalize();
       steer.mult(maxSpeed);
       steer.sub(velocity);

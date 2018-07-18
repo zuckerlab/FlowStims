@@ -1,43 +1,43 @@
 
 Flock flock;  
 FlowField field;
-int tileSize = 100;
+int tileSize = 25;
 float dir = 3*PI/2.;
 float dirStd = 0.1;
 
-int patt = 3;
-int radius = 4;
-int sepNrads = 12;
+int patt = 1;
+int radius = 2;
+int sepNrads = 4;
 int sep_px = sepNrads*radius;
-float sepWeight = 2.5;
+float sepWeight = 2.5;//use higher val if frameRate = 30, e.g., 4.0
+float posStd = 0.1;
 
-int borderw = 60;
+int borderw = 50;
 int myheight;
 int mywidth;
 
-boolean move = false;
-boolean noSep = true;
-float posStd = 0.;
+boolean move, separate;
+
+
 boolean inter1, inter2, trial;
 int inter1Len, inter2Len, trialLen;
 
 //debug tools
 boolean showBorders, showField, showGrid;
-boolean usepshape = true;
+boolean usepshape = false;
 
 void setup() {
   frameRate(60);
-  size(800,600);
+  size(800,600,P2D);
   randomSeed(0);
   
   myheight = height - 2*borderw;
   mywidth = width - 2*borderw;
-
-  field = new FlowField(tileSize, dir, dirStd);
+  if (dirStd > 0) field = new FlowField(tileSize, dir, dirStd);
   
   int dotColor = 255;
   int bgColor = 0;
-  float mxspeed = .75*radius;
+  float mxspeed = 2;//.5*radius;
   flock = new Flock(field, sep_px, sepWeight, posStd, 
             patt, radius, dotColor, bgColor, dir, mxspeed, usepshape);
 
@@ -46,7 +46,7 @@ void setup() {
 
 void draw () {
 
-  flock.run(move,noSep);
+  flock.run(move,separate);
   
   if (showBorders) drawBorders();
   if (showField) field.drawField(); 
@@ -55,6 +55,7 @@ void draw () {
   stroke(255);
   textSize(12);
   text("Frame rate: " + int(frameRate), 10, 20);
+  
   
 }
 
@@ -68,7 +69,7 @@ void drawBorders() {
 void keyPressed() {
   switch (key) {
     case 's':
-      noSep = !noSep;
+      separate = !separate;
       break;
     case 'm':
       move = !move;
