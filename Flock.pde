@@ -5,7 +5,7 @@ class Flock {
   DoublyLinkedList[] binGrid;
 
   int binSize, binrows, bincols;
-  int pattern, radius, fillColor, bgColor;
+  int pattern, radius, boidColor, boidAlpha, bgColor;
   float sepSq, sepWeight, posStd;
   int sepFreq;
   
@@ -22,11 +22,11 @@ class Flock {
   boolean usePShape;
 
   Flock(FlowField fl, int sepPx, float sepweight, float posStd, int patt, 
-        int R, int fillcolor, int bgcolor, float meantheta, float maxsp, boolean usePShape_) {
+        int R, int boidcolor, int bgcolor, float meantheta, float maxsp, boolean usePShape_) {
     nbrArray = new int[9];
     meanTheta = -meantheta;
     pattern = patt;
-    fillColor = fillcolor;
+    boidColor = boidcolor;
     bgColor = bgcolor;
     radius = R;
     
@@ -35,13 +35,13 @@ class Flock {
     maxSpeed = maxsp;
     maxForce = .14;
     
-    float sepRadius = 1.5*sepPx;
+    float sepRadius = sepPx+1;
     sepSq = sq(sepRadius);//squaring since using sqeuclidean dist below
-    sepFreq = 2;
+    sepFreq = 5;
     sepWeight = sepweight;
     
     flow = fl;
-    binSize = sepPx + 1;
+    binSize = sepPx;
 
     binrows = myheight/binSize + 1;
     bincols = mywidth/binSize + 1;
@@ -80,8 +80,9 @@ class Flock {
 
   }
 
-  void run(boolean move_, boolean sep_) {
+  void run(boolean move_, boolean sep_, int alpha) {
     background(bgColor);
+    boidAlpha = alpha; 
     move = move_;
     separate = sep_;
     for (Boid b : boids) {         
@@ -91,7 +92,7 @@ class Flock {
   
   void createBoidShape() {
   
-    fill(fillColor);
+    fill(boidColor);
     noStroke();
     ellipseMode(CENTER);
     float D = 2*radius;
@@ -277,10 +278,10 @@ public class Boid {
     if (separate && sepWeight > 0) {
       sepCounter = (sepCounter + 1) % sepFreq;
       if (sepCounter == 0) { //separate only once every sepFreq frames   
-        PVector sep = separate();
-        sep.mult(sepWeight);
-        acceleration.add(sep);
+        sep = separate();
+        sep.mult(sepWeight);        
       }
+      acceleration.add(sep);
     }
     
     
@@ -296,7 +297,6 @@ public class Boid {
   void update() {
 
     velocity.add(acceleration);
-    //velocity.setMag(maxSpeed);
     velocity.limit(maxSpeed);
     
     position.add(velocity);
@@ -325,9 +325,9 @@ public class Boid {
 
   void render() {
     
-    fill(fillColor);
+    fill(boidColor, boidAlpha);
     noStroke();
-    float D = 2*radius;
+    int D = 2*radius;
 
     if (pattern == 1) {
       ellipseMode(CENTER);
@@ -337,10 +337,14 @@ public class Boid {
       pushMatrix();
       translate(position.x, position.y);
       rotate(theta - HALF_PI);
-
+      if (D > 2) {
       ellipseMode(CENTER); 
       for (int i = -(pattern-1); i < pattern; i+=2) {
         ellipse(i*radius,0,D,D);
+      }
+      } else {
+        rectMode(CENTER);
+        rect(0,0,pattern*D,D);
       }
     
       popMatrix();
@@ -351,7 +355,7 @@ public class Boid {
   
   //check for nearby boids
   PVector separate() {
-    int n1 = 50; int n2 = 4300;
+    int n1 = 50; int n2 = -10;
     
     float dx, dy, d2;
     PVector steer = new PVector(0,0);
@@ -375,8 +379,7 @@ public class Boid {
       float D = 2*sqrt(sepSq);
       ellipse(position.x,position.y,D,D);
     }
-    
-    int nbr_count = 0;
+
     for (int nbr_idx : nbrArray) {
 
       if (nbr_idx == -1) continue;
@@ -416,10 +419,6 @@ public class Boid {
           d2 = dx*dx + dy*dy;//distance squared
           
           if (debug && (node.id == n1 || node.id == n2)) {
-            fill(255);
-            text(": " + dx + "," + dy, 10+100*nbr_count, 560 + int(node.id > 50)*20);
-            nbr_count++;
-            
             noFill();
             stroke(255,0,0,160);
             rectMode(RADIUS);
