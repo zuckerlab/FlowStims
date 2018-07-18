@@ -8,18 +8,22 @@ float dirStd = 0.1;
 int patt = 3;
 int radius = 4;
 int sepNrads = 12;
-int sepPx = sepNrads*radius;
+int sep_px = sepNrads*radius;
 float sepWeight = 2.5;
 
-int borderw = 0;
+int borderw = 60;
 int myheight;
 int mywidth;
 
 boolean move = false;
 boolean noSep = true;
 float posStd = 0.;
+boolean inter1, inter2, trial;
+int inter1Len, inter2Len, trialLen;
 
-
+//debug tools
+boolean showBorders, showField, showGrid;
+boolean usepshape = true;
 
 void setup() {
   frameRate(60);
@@ -30,41 +34,54 @@ void setup() {
   mywidth = width - 2*borderw;
 
   field = new FlowField(tileSize, dir, dirStd);
-  flock = new Flock(field, sepPx, sepWeight, posStd, patt, radius, 255, dir, .75*radius);
+  
+  int dotColor = 255;
+  int bgColor = 0;
+  float mxspeed = .75*radius;
+  flock = new Flock(field, sep_px, sepWeight, posStd, 
+            patt, radius, dotColor, bgColor, dir, mxspeed, usepshape);
 
-
+  
 } 
 
 void draw () {
-  background(0);
-  flock.run(move,noSep);
-  //field.drawField();
 
+  flock.run(move,noSep);
+  
+  if (showBorders) drawBorders();
+  if (showField) field.drawField(); 
+  if (showGrid) flock.drawBinGrid();
+  
+  stroke(255);
+  textSize(12);
+  text("Frame rate: " + int(frameRate), 10, 20);
+  
+}
+
+void drawBorders() {
   stroke(120,0,0);
   noFill();
-  rect(borderw,borderw,mywidth,myheight);
-  
-  stroke(255,255,0,128);
-  int i= 0;
-  for (i = flock.myborders[0]; i < flock.myborders[1]; i += sepPx)
-    line(i,borderw,i,borderw+myheight);
-  line(i,borderw,i,borderw+myheight);
-  i = 0;
-  for (i = flock.myborders[2]; i < flock.myborders[3]; i += sepPx)
-    line(borderw,i,borderw+mywidth,i);
-  line(borderw,i,borderw+mywidth,i);
-  
-  //stroke(255);
-  //textSize(12);
-  //text("Frame rate: " + int(frameRate), 10, 20);
+  rect(borderw,borderw,mywidth-1,myheight-1);
   
 }
 
 void keyPressed() {
-  if (key == 's'){
-    noSep = !noSep;
-  }
-  else if (key == 'm'){
-    move = !move;
+  switch (key) {
+    case 's':
+      noSep = !noSep;
+      break;
+    case 'm':
+      move = !move;
+      break;
+    case 'b':
+      showBorders = !showBorders;
+      break;
+    case 'f':
+      showField = !showField;
+      break;
+    case 'g':
+      showGrid = !showGrid;
+    default:
+      break;
   }  
 }

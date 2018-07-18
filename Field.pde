@@ -24,28 +24,31 @@ class FlowField {
   }
   
   float getDirection(PVector pos) {
-    int column = (int) min(max((pos.x-borderw)/tileSize,0),cols-1);
-    int row = (int) min(max((pos.y-borderw)/tileSize,0),rows-1);
+    int column = (int) constrain((pos.x-borderw)/tileSize, 0, cols-1);
+    int row = (int) constrain((pos.y-borderw)/tileSize, 0, rows-1);
     return field[column][row];
   }
   
   void drawField() {
-    stroke(255,255,0,128);
-    int i = 0;
-    for (i = 0; i < cols; i++)
-      line(borderw+i*tileSize,borderw,borderw+i*tileSize,borderw+myheight);
-    line(borderw+i*tileSize,borderw,borderw+i*tileSize,borderw+myheight);
-    for (i = 0; i < rows; i++)
-      line(borderw,borderw+i*tileSize,borderw+mywidth,borderw+i*tileSize);
-    line(borderw,borderw+i*tileSize,borderw+mywidth,borderw+i*tileSize);
+    //draw grid
+    stroke(127,127,127,128);
+
+    for (int i = 0; i < cols+1; i++)
+      line(borderw+i*tileSize, borderw, borderw+i*tileSize, borderw+rows*tileSize);
+    
+    for (int i = 0; i < rows+1; i++)
+      line(borderw, borderw+i*tileSize, borderw+cols*tileSize, borderw+i*tileSize);
+    
+    
+    //draw direction "arrows"
     float x, y, dir;
-    for (i = 0; i < rows; i++) {
+    for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
-        x = borderw+j*tileSize+tileSize/2.;
-        y = borderw+i*tileSize+tileSize/2.;
+        x = borderw + j*tileSize + tileSize/2.;
+        y = borderw + i*tileSize + tileSize/2.;
         dir = field[j][i];
-        line(x-cos(dir)*tileSize/4.,y-sin(dir)*tileSize/4.,
-            x+cos(dir)*tileSize/4.,y+sin(dir)*tileSize/4.);
+        line(x - cos(dir)*tileSize/4., y - sin(dir)*tileSize/4.,
+            x + cos(dir)*tileSize/4., y + sin(dir)*tileSize/4.);
             
               
       }

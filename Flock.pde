@@ -1,10 +1,11 @@
 class Flock {
+  
   boolean debug = false;
   ArrayList<Boid> boids;
   DoublyLinkedList[] binGrid;
 
   int binSize, binrows, bincols;
-  int pattern, radius, fillc;
+  int pattern, radius, fillColor, bgColor;
   float sepSq, sepWeight, posStd;
   int sepFreq;
   
@@ -17,15 +18,20 @@ class Flock {
   float meanTheta, maxForce, maxSpeed;
   
   boolean move, noSep;
+  PShape boid;
+  boolean usePShape;
 
   Flock(FlowField fl, int sepPx, float sepweight, float posStd, int patt, 
-        int R, int fillcolor, float meantheta, float maxsp) {
+        int R, int fillcolor, int bgcolor, float meantheta, float maxsp, boolean usePShape_) {
     nbrArray = new int[9];
     meanTheta = -meantheta;
     pattern = patt;
-    fillc = fillcolor;
+    fillColor = fillcolor;
+    bgColor = bgcolor;
     radius = R;
     
+    usePShape = usePShape_;
+    if (usePShape) createBoidShape();
     maxSpeed = maxsp;
     maxForce = .14;
     
@@ -39,8 +45,8 @@ class Flock {
 
     binrows = myheight/binSize + 1;
     bincols = mywidth/binSize + 1;
-    println("binrows",binrows,"bincols",bincols);
-    //eliminate flickering of patterns > 1 when two elts don't fit into the same bin
+
+    //eliminate flickering of patterns > 1 along borders when two elts don't fit into the same bin
     if (meantheta == 0 || meantheta == PI)
       if (binrows*binSize - myheight < 2*pattern*radius) binrows++;
 
@@ -48,8 +54,6 @@ class Flock {
       if (bincols*binSize - mywidth < 2*pattern*radius) bincols++;
 
 
-
-    println("binrows",binrows,"bincols",bincols);
     int borderx = borderw + binSize*(bincols);
     int bordery = borderw + binSize*(binrows);
 
@@ -79,13 +83,44 @@ class Flock {
   }
 
   void run(boolean move_, boolean noSep_) {
-
+    background(bgColor);
     move = move_;
     noSep = noSep_;
     for (Boid b : boids) {         
       b.run();        
-    }      
-      
+    }            
+  }
+  
+  void createBoidShape() {
+  
+    fill(fillColor);
+    noStroke();
+    ellipseMode(CENTER);
+    float D = 2*radius;
+
+    if (pattern == 1) {
+      boid = createShape(ELLIPSE,0,0,D,D);      
+
+    } else {
+      boid = createShape(GROUP);
+      PShape dot;
+      for (int i = -(patt-1); i < patt; i+=2) {
+        dot = createShape(ELLIPSE, i*D/2, 0, D, D);
+        boid.addChild(dot);
+      }        
+    }
+  }
+  
+  void drawBinGrid() {
+    stroke(255,255,0,128);
+
+    for (int i = myborders[0]; i <= myborders[1]; i += binSize)
+      line(i,myborders[2],i,myborders[3]);
+
+    for (int i = myborders[2]; i <= myborders[3]; i += binSize)
+      line(myborders[0],i,myborders[1],i);
+    
+    
   }
   
 
@@ -208,8 +243,8 @@ public class Boid {
         
       } 
     }
-    
-    render();
+    if (usePShape) drawBoid();
+    else render();
     
     
   }
@@ -275,10 +310,19 @@ public class Boid {
     if (position.x > myborders[1]-factor*radius) position.x -= xLen;//= myborders[0]-factor*radius;
     if (position.y > myborders[3]-factor*radius) position.y -= yLen;//= myborders[2]-factor*radius;
   }
+  
+  void drawBoid() {
+    pushMatrix();
+    translate(position.x,position.y);
+    if (pattern < 1)
+      rotate(theta - HALF_PI);
+    shape(boid);
+    popMatrix();    
+  }
 
   void render() {
     
-    fill(fillc);
+    fill(fillColor);
     noStroke();
     float D = 2*radius;
 
