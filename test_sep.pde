@@ -15,7 +15,7 @@ int patt = 1;
 int radius = 10;
 int sepNrads = 6;
 int sep_px = sepNrads*radius;
-int tileSize = sep_px*2;
+int tileSize = sep_px;
 float sepWeight = 1.5;//use higher val if frameRate = 30, e.g., 4.0
 float posStd = 0.;
 
@@ -54,9 +54,9 @@ void setup() {
   flock = new Flock(field, sep_px, sepWeight, posStd, 
             patt, radius, dotColor, bgColor, dir, mxspeed, usepshape);
 
-  move_ = false;
+  move_ = true;
   separate_ = false;
-  follow_ = true;
+  follow_ = separate_;
 
   inter2 = true;
   frameCounter = 0;
@@ -110,17 +110,24 @@ void draw () {
 void drawBorders() {
   stroke(120,0,0);
   noFill();
-  rect(borderw,borderw,mywidth-1,myheight-1);
-  
+  rect(borderw,borderw,mywidth-1,myheight-1); 
+}
+
+void toggleWiggle() {
+  separate_ = !separate_;
+  follow_ = !follow_;
 }
 
 void keyPressed() {
   switch (key) {
+    case 'm':
+      move_ = !move_;
+      break;
     case 's':
       separate_ = !separate_;
       break;
-    case 'm':
-      move_ = !move_;
+    case 'w':
+      toggleWiggle();
       break;
     case 'f':
       follow_ = !follow_;

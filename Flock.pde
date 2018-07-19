@@ -86,9 +86,11 @@ class Flock {
 
   }
   
-  //void noWiggle() {
-  //  separate = false;
+  //void setWiggle(boolean state) {
+  //  separate = state;
+  //  follow = state;
   //}
+  //create a Freeze method to set move to false?
 
   void run(boolean move_, boolean sep_, boolean follow_, int alpha) {
     
@@ -131,8 +133,7 @@ class Flock {
 
     for (int i = myborders[2]; i <= myborders[3]; i += binSize)
       line(myborders[0],i,myborders[1],i);
-    
-   //show distance to neighbors 
+
   }
   
 
