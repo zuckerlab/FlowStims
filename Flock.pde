@@ -27,7 +27,7 @@ class Flock implements Stim {
   int fadeRate;
 
   Flock(int tilesize, float meantheta, float dirstd, int sepPx, float sepweight, float posStd, int patt, 
-        int R, int boidcolor, int bgcolor, int graycolor, float maxsp, int fadeframes, 
+        int R, int boidcolor, int bgcolor, int graycolor, float maxsp, int faderate, 
         boolean wiggle_, boolean usePShape_) {
           
     if (dirstd > 0) flow = new FlowField(tilesize, meantheta, dirstd);
@@ -44,7 +44,7 @@ class Flock implements Stim {
     if (posStd == 0) assert !wiggle;
     else setWiggle(true);//if posStd we want scrambled boids, so turn wiggle on during pre-trial
     
-    fadeRate = ceil(255./fadeframes);
+    fadeRate = faderate;
 
     usePShape = usePShape_;
     if (usePShape) createBoidShape();

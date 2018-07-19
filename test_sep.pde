@@ -54,6 +54,9 @@ void setup() {
   
   stims = new Stim[2];
   
+  int fadeframes = 3;
+  int fadeRate_ = ceil(255./fadeframes);
+  
   
   /*SETTING PARAMS SET FOR EACH STIM*/
   int dotColor1 = 255;
@@ -73,9 +76,9 @@ void setup() {
   
   ////POPULATE STIMS ARRAY  
   stims[0] = new Flock(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
-            patt, radius, dotColor1, bgColor1, gray1, maxspeed, 3, wiggle_, usepshape);
+            patt, radius, dotColor1, bgColor1, gray1, maxspeed, fadeRate_, wiggle_, usepshape);
   stims[1] = new Flock(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
-            patt, radius, dotColor2, bgColor2, gray2, maxspeed, 3, wiggle_, usepshape);
+            patt, radius, dotColor2, bgColor2, gray2, maxspeed, fadeRate_, wiggle_, usepshape);
 
   //setup trial variables for movie to begin
   preStim = true;
