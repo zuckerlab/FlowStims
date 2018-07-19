@@ -9,21 +9,21 @@ Flock flock;
 FlowField field;
 
 float dir = 3*PI/2.;
-float dirStd = 0.2;
+float dirStd = 0.;
 
 int patt = 1;
 int radius = 10;
-int sepNrads = 6;
+int sepNrads = 4;
 int sep_px = sepNrads*radius;
 int tileSize = sep_px;
 float sepWeight = 1.5;//use higher val if frameRate = 30, e.g., 4.0
 float posStd = 0.;
 
-int borderw = 50;
+int frameWidth = 50;
 int myheight;
 int mywidth;
 
-boolean move_, separate_, follow_;
+//boolean move_, separate_, follow_;
 
 int FRAME_RATE = 60;
 
@@ -39,13 +39,15 @@ int frameCounter;
 boolean showBorders, showField, showGrid;
 boolean usepshape = false;
 
+boolean wiggle_;
+
 void setup() {
   frameRate(FRAME_RATE);
-  size(800,600,P2D);
+  size(800,600);
   randomSeed(0);
   
-  myheight = height - 2*borderw;
-  mywidth = width - 2*borderw;
+  myheight = height - 2*frameWidth;
+  mywidth = width - 2*frameWidth;
   if (dirStd > 0) field = new FlowField(tileSize, dir, dirStd);
   
   int dotColor = 255;
@@ -53,10 +55,9 @@ void setup() {
   float mxspeed = 2;
   flock = new Flock(field, sep_px, sepWeight, posStd, 
             patt, radius, dotColor, bgColor, dir, mxspeed, usepshape);
-
-  move_ = true;
-  separate_ = false;
-  follow_ = separate_;
+  
+  wiggle_ = true;
+  flock.setWiggle(wiggle_);
 
   inter2 = true;
   frameCounter = 0;
@@ -91,10 +92,9 @@ void draw () {
     }  
   }
   
-  if (trial) flock.run(move_,separate_,follow_,255);
-  else flock.run(move_,separate_,follow_,0);
+  if (trial) flock.run(255);
+  else flock.run(0);
 
-  
   
   if (showBorders) drawBorders();
   if (showField && field != null) field.drawField(); 
@@ -110,27 +110,25 @@ void draw () {
 void drawBorders() {
   stroke(120,0,0);
   noFill();
-  rect(borderw,borderw,mywidth-1,myheight-1); 
+  rect(frameWidth,frameWidth,mywidth-1,myheight-1); 
 }
 
-void toggleWiggle() {
-  separate_ = !separate_;
-  follow_ = !follow_;
-}
+
 
 void keyPressed() {
   switch (key) {
     case 'm':
-      move_ = !move_;
+      flock.move = !flock.move;
       break;
     case 's':
-      separate_ = !separate_;
+      flock.separate = !flock.separate;
       break;
     case 'w':
-      toggleWiggle();
+      wiggle_ = !wiggle_;
+      flock.setWiggle(wiggle_);
       break;
     case 'f':
-      follow_ = !follow_;
+      flock.follow = !flock.follow;
       break;
     case 'b':
       showBorders = !showBorders;

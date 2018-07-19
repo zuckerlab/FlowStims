@@ -15,7 +15,7 @@ class Flock {
   
   FlowField flow;
   int xLen, yLen;
-  int[] myborders;
+  int[] myBorders;
   float xHalfLen, yHalfLen;
   float meanTheta, maxForce, maxSpeed;
   PVector v0;
@@ -35,9 +35,10 @@ class Flock {
     
     usePShape = usePShape_;
     if (usePShape) createBoidShape();
+    
+    move = true;
     maxSpeed = maxsp;
     maxForce = .04;
-    
     v0 = PVector.fromAngle(meanTheta);
     v0.mult(maxSpeed);
     
@@ -60,15 +61,15 @@ class Flock {
       if (bincols*binSize - mywidth < 2*pattern*radius) bincols++;
 
 
-    int borderx = borderw + binSize*(bincols);
-    int bordery = borderw + binSize*(binrows);
+    int borderx = frameWidth + binSize*(bincols);
+    int bordery = frameWidth + binSize*(binrows);
 
-    myborders = new int[4];
-    myborders[0] = borderw; myborders[1] = borderx;
-    myborders[2] = borderw; myborders[3] = bordery;
-    xLen = myborders[1] - myborders[0];
+    myBorders = new int[4];
+    myBorders[0] = frameWidth; myBorders[1] = borderx;
+    myBorders[2] = frameWidth; myBorders[3] = bordery;
+    xLen = myBorders[1] - myBorders[0];
     xHalfLen = xLen/2.;
-    yLen = myborders[3] - myborders[2];
+    yLen = myBorders[3] - myBorders[2];
     yHalfLen = yLen/2.;
     
     binGrid = new DoublyLinkedList[binrows*bincols];
@@ -77,8 +78,8 @@ class Flock {
     }
     boids = new ArrayList<Boid>();
     int c = 0;
-    for (int i = myborders[2]; i < bordery; i += sepPx) {
-      for (int j = myborders[0]; j < borderx; j += sepPx) {
+    for (int i = myBorders[2]; i < bordery; i += sepPx) {
+      for (int j = myBorders[0]; j < borderx; j += sepPx) {
         boids.add(new Boid(j+posStd*sepPx*randomGaussian(),i+posStd*sepPx*randomGaussian(),c,c % sepFreq));
         c++;
       }
@@ -86,19 +87,16 @@ class Flock {
 
   }
   
-  //void setWiggle(boolean state) {
-  //  separate = state;
-  //  follow = state;
-  //}
+  void setWiggle(boolean state) {
+    separate = state;
+    follow = state;
+  }
   //create a Freeze method to set move to false?
 
-  void run(boolean move_, boolean sep_, boolean follow_, int alpha) {
+  void run(int alpha) {
     
     background(bgColor);
     boidAlpha = alpha; 
-    move = move_;
-    separate = sep_;
-    follow = follow_;
     
     for (Boid b : boids) {         
       b.run();        
@@ -128,11 +126,11 @@ class Flock {
   void drawBinGrid() {
     stroke(255,255,0,128);
 
-    for (int i = myborders[0]; i <= myborders[1]; i += binSize)
-      line(i,myborders[2],i,myborders[3]);
+    for (int i = myBorders[0]; i <= myBorders[1]; i += binSize)
+      line(i,myBorders[2],i,myBorders[3]);
 
-    for (int i = myborders[2]; i <= myborders[3]; i += binSize)
-      line(myborders[0],i,myborders[1],i);
+    for (int i = myBorders[2]; i <= myBorders[3]; i += binSize)
+      line(myBorders[0],i,myBorders[1],i);
 
   }
   
@@ -156,10 +154,10 @@ public class Boid {
 
     position = new PVector(x, y);
     //make sure it is created inside the available area
-    while (x > myborders[1]-pattern*radius) x -= xLen;
-    while (x < myborders[0]-pattern*radius) x += xLen;
-    while (y > myborders[3]-pattern*radius) y -= yLen;
-    while (y < myborders[2]-pattern*radius) y += yLen;  
+    while (x > myBorders[1]-pattern*radius) x -= xLen;
+    while (x < myBorders[0]-pattern*radius) x += xLen;
+    while (y > myBorders[3]-pattern*radius) y -= yLen;
+    while (y < myBorders[2]-pattern*radius) y += yLen;  
     
     node = new Node();
     node.item = this;
@@ -182,8 +180,8 @@ public class Boid {
  
   
   int getBinIndex() {
-    bin_x = (int) (position.x-myborders[0])/binSize;
-    bin_y = (int) (position.y-myborders[2])/binSize;
+    bin_x = (int) (position.x-myBorders[0])/binSize;
+    bin_y = (int) (position.y-myBorders[2])/binSize;
     
     return bin_y*bincols + bin_x;
   }
@@ -287,21 +285,28 @@ public class Boid {
   
   void flock() {
     
-    if (separate && sepWeight > 0) {
-      sepCounter = (sepCounter + 1) % sepFreq;
-      if (sepCounter == 0) { //separate only once every sepFreq frames   
-        sep = separate();
-        sep.mult(sepWeight);        
-      }
-      acceleration.add(sep);
-    }
-    if (follow && flow != null) {
-      acceleration.add(followField());  
-    } else {
+    if (!separate && !follow) {//noWiggle
+      velocity.set(v0);
       desired.set(v0);
-      desired.sub(velocity);    
       desired.limit(maxForce); 
-      acceleration.add(desired);      
+      acceleration.add(desired); 
+    } else {
+      if (separate && sepWeight > 0) {
+        sepCounter = (sepCounter + 1) % sepFreq;
+        if (sepCounter == 0) { //separate only once every sepFreq frames   
+          sep = separate();
+          sep.mult(sepWeight);        
+        }
+        acceleration.add(sep);
+      }
+      if (follow && flow != null) {
+        acceleration.add(followField());  
+      } else { //allows boids to still separate without any flow field (mostly for debugging reasons)
+        desired.set(v0);
+        desired.sub(velocity);    
+        desired.limit(maxForce); 
+        acceleration.add(desired);      
+      }
     }
     
     //update theta for a smoother change in heading when patt > 1 -- not sure it looks better, though
@@ -324,10 +329,10 @@ public class Boid {
   // wraparound borders
   void borders() {
     int factor = pattern;
-    if (position.x < myborders[0]-factor*radius) position.x += xLen;//= myborders[1]-factor*radius;
-    if (position.y < myborders[2]-factor*radius) position.y += yLen;//= myborders[3]-factor*radius;
-    if (position.x > myborders[1]-factor*radius) position.x -= xLen;//= myborders[0]-factor*radius;
-    if (position.y > myborders[3]-factor*radius) position.y -= yLen;//= myborders[2]-factor*radius;
+    if (position.x < myBorders[0]-factor*radius) position.x += xLen;//= myBorders[1]-factor*radius;
+    if (position.y < myBorders[2]-factor*radius) position.y += yLen;//= myBorders[3]-factor*radius;
+    if (position.x > myBorders[1]-factor*radius) position.x -= xLen;//= myBorders[0]-factor*radius;
+    if (position.y > myBorders[3]-factor*radius) position.y -= yLen;//= myBorders[2]-factor*radius;
   }
   
   void drawBoid() {
@@ -389,7 +394,7 @@ public class Boid {
       fill(255,255,0,64);
       rectMode(CORNER);
       noStroke();
-      rect(myborders[0]+bin_x*binSize,myborders[2]+bin_y*binSize,binSize,binSize);
+      rect(myBorders[0]+bin_x*binSize,myBorders[2]+bin_y*binSize,binSize,binSize);
       noFill();
       stroke(255,128);
       float D = 2*sqrt(sepSq);
@@ -405,7 +410,7 @@ public class Boid {
         int nbr_y = nbr_idx / bincols;
         rectMode(CORNER);
         noStroke();
-        rect(myborders[0]+nbr_x*binSize,myborders[2]+nbr_y*binSize,binSize,binSize);
+        rect(myBorders[0]+nbr_x*binSize,myBorders[2]+nbr_y*binSize,binSize,binSize);
       }
       
 
