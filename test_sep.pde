@@ -5,6 +5,8 @@
 //if posStd set to 0, wiggle needs to be deactivate from the start (preStim)
 //if posStd > 0 and noWiggle, activate wiggle and deactivate it during trial
 
+//compute fadeRate outside stim class (applis to all stims)
+
 Stim stim;  
 Stim[] stims;
 
@@ -50,23 +52,32 @@ void setup() {
   myheight = height - 2*frameWidth;
   mywidth = width - 2*frameWidth;
   
+  stims = new Stim[2];
   
+  
+  /*SETTING PARAMS SET FOR EACH STIM*/
   int dotColor1 = 255;
   int dotColor2 = 128;
+  int gray1 = 80;
+  
   int bgColor1 = 0;
   int bgColor2 = 0;
+  int gray2 = 120;
   float maxspeed = 2;
   
   wiggle_ = false;
   if (posStd_ == 0) wiggle_ = false;
   
-  stims = new Stim[2];
+  /*SETTING PARAMS SET FOR EACH STIM*/
   
+  
+  ////POPULATE STIMS ARRAY  
   stims[0] = new Flock(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
-            patt, radius, dotColor1, bgColor1, maxspeed, 3, wiggle_, usepshape);
+            patt, radius, dotColor1, bgColor1, gray1, maxspeed, 3, wiggle_, usepshape);
   stims[1] = new Flock(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
-            patt, radius, dotColor2, bgColor2, maxspeed, 3, wiggle_, usepshape);
+            patt, radius, dotColor2, bgColor2, gray2, maxspeed, 3, wiggle_, usepshape);
 
+  //setup trial variables for movie to begin
   preStim = true;
   currentLen = preStimLen;
   frameCounter = 0;

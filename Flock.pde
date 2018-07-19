@@ -7,7 +7,7 @@ class Flock implements Stim {
   DoublyLinkedList[] binGrid;
 
   int binSize, binrows, bincols;
-  int pattern, radius, boidColor, boidAlpha, bgColor;
+  int pattern, radius, boidColor, boidAlpha, bgColor, grayColor;
   float sepSq, sepWeight, posStd;
   int sepFreq;
   
@@ -27,7 +27,7 @@ class Flock implements Stim {
   int fadeRate;
 
   Flock(int tilesize, float meantheta, float dirstd, int sepPx, float sepweight, float posStd, int patt, 
-        int R, int boidcolor, int bgcolor, float maxsp, int fadeframes, 
+        int R, int boidcolor, int bgcolor, int graycolor, float maxsp, int fadeframes, 
         boolean wiggle_, boolean usePShape_) {
           
     if (dirstd > 0) flow = new FlowField(tilesize, meantheta, dirstd);
@@ -37,6 +37,7 @@ class Flock implements Stim {
     pattern = patt;
     boidColor = boidcolor;
     bgColor = bgcolor;
+    grayColor = graycolor;
     radius = R;
     
     wiggle = wiggle_;//refers to whether we want wiggling during trials
@@ -106,11 +107,13 @@ class Flock implements Stim {
 
   void run(boolean show) {
     
-    background(bgColor);
+    
     if (show) {
       boidAlpha = min(255,boidAlpha + fadeRate);
       setWiggle(wiggle);
     } else boidAlpha = max(0,boidAlpha - fadeRate);
+    float alphafrac = boidAlpha/255.;
+    background(bgColor*alphafrac + grayColor*(1. - alphafrac));
     
     for (Boid b : boids) {         
       b.run();        
