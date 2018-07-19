@@ -1,6 +1,8 @@
 class Flock {
   
   boolean debug = false;
+  //int n1 = 50; int n2 = -10;
+  
   ArrayList<Boid> boids;
   DoublyLinkedList[] binGrid;
 
@@ -16,6 +18,7 @@ class Flock {
   int[] myborders;
   float xHalfLen, yHalfLen;
   float meanTheta, maxForce, maxSpeed;
+  PVector v0;
   
   boolean move, separate;
   PShape boid;
@@ -33,7 +36,10 @@ class Flock {
     usePShape = usePShape_;
     if (usePShape) createBoidShape();
     maxSpeed = maxsp;
-    maxForce = .14;
+    maxForce = .04;
+    
+    PVector v0 = PVector.fromAngle(meanTheta);
+    v0.mult(maxSpeed);
     
     float sepRadius = sepPx+1;
     sepSq = sq(sepRadius);//squaring since using sqeuclidean dist below
@@ -158,6 +164,7 @@ public class Boid {
     acceleration = new PVector(0, 0);
     theta = meanTheta;
     velocity = PVector.fromAngle(theta);
+    //velocity.mult(maxSpeed);
     desired = velocity.copy();
     desired.setMag(maxForce);
     sep = new PVector(0, 0);
@@ -266,7 +273,7 @@ public class Boid {
     //scale it by maxSpeed
     desired.mult(maxSpeed);
     //steering force = desired - velocity
-    desired.sub(velocity);
+    desired.sub(velocity);    
     desired.limit(maxForce); 
     
     return desired;
@@ -293,11 +300,13 @@ public class Boid {
 
   }
 
-  //update position
+  //update boid position
   void update() {
 
     velocity.add(acceleration);
     velocity.limit(maxSpeed);
+    if (node.id == 50) print(velocity.y," ");
+    //make sure projection onto meanTheta moves at maxSpeed
     
     position.add(velocity);
     
@@ -355,8 +364,7 @@ public class Boid {
   
   //check for nearby boids
   PVector separate() {
-    int n1 = 50; int n2 = -10;
-    
+
     float dx, dy, d2;
     PVector steer = new PVector(0,0);
     PVector diff = new PVector(0,0);

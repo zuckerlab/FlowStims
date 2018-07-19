@@ -3,12 +3,12 @@ Flock flock;
 FlowField field;
 int tileSize = 25;
 float dir = 3*PI/2.;
-float dirStd = 0.1;
+float dirStd = 0.;
 
-int patt = 3;
-int radius = 2;
-int sepNrads = 5;
-int sep_px = 2*sepNrads*radius;
+int patt = 1;
+int radius = 10;
+int sepNrads = 6;
+int sep_px = sepNrads*radius;
 float sepWeight = 1.5;//use higher val if frameRate = 30, e.g., 4.0
 float posStd = 0.1;
 
@@ -16,7 +16,7 @@ int borderw = 50;
 int myheight;
 int mywidth;
 
-boolean move, separate;
+boolean move_, separate_;
 
 int FRAME_RATE = 60;
 
@@ -47,8 +47,8 @@ void setup() {
   flock = new Flock(field, sep_px, sepWeight, posStd, 
             patt, radius, dotColor, bgColor, dir, mxspeed, usepshape);
 
-  move = false;
-  separate = true;
+  move_ = false;
+  separate_ = false;
 
   inter2 = true;
   frameCounter = 0;
@@ -57,7 +57,7 @@ void setup() {
 void draw () {
   
   if (inter2) {
-    flock.run(move,separate,0);
+    
     if (frameCounter ==  inter2Len) {
       println("inter2->trial");
       inter2 = false;
@@ -65,7 +65,7 @@ void draw () {
       frameCounter = 0;
     }
   } else if (inter1) {
-    flock.run(move,separate,0);
+    
     if (frameCounter ==  inter1Len) {
       println("inter1->inter2");
       inter1 = false;
@@ -74,7 +74,7 @@ void draw () {
     }       
   } else {
    assert trial == true;
-   flock.run(move,separate,255);
+   
     if (frameCounter ==  trialLen) {
       println("trial->inter1");
       trial = false;
@@ -82,11 +82,14 @@ void draw () {
       frameCounter = 0;
     }  
   }
+  
+  if (trial) flock.run(move_,separate_,255);
+  else flock.run(move_,separate_,0);
 
   
   
   if (showBorders) drawBorders();
-  if (showField) field.drawField(); 
+  if (showField && field != null) field.drawField(); 
   if (showGrid) flock.drawBinGrid();
   
   stroke(255);
@@ -106,15 +109,15 @@ void drawBorders() {
 void keyPressed() {
   switch (key) {
     case 's':
-      separate = !separate;
+      separate_ = !separate_;
       break;
     case 'm':
-      move = !move;
+      move_ = !move_;
       break;
     case 'b':
       showBorders = !showBorders;
       break;
-    case 'f':
+    case 't':
       showField = !showField;
       break;
     case 'g':
