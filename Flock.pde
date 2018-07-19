@@ -1,7 +1,7 @@
 class Flock {
   
   boolean debug = false;
-  //int n1 = 50; int n2 = -10;
+  int n1 = 50; int n2 = -10;
   
   ArrayList<Boid> boids;
   DoublyLinkedList[] binGrid;
@@ -20,7 +20,7 @@ class Flock {
   float meanTheta, maxForce, maxSpeed;
   PVector v0;
   
-  boolean move, separate;
+  boolean move, separate, follow;
   PShape boid;
   boolean usePShape;
 
@@ -38,7 +38,7 @@ class Flock {
     maxSpeed = maxsp;
     maxForce = .04;
     
-    PVector v0 = PVector.fromAngle(meanTheta);
+    v0 = PVector.fromAngle(meanTheta);
     v0.mult(maxSpeed);
     
     float sepRadius = sepPx+1;
@@ -85,12 +85,19 @@ class Flock {
     }
 
   }
+  
+  //void noWiggle() {
+  //  separate = false;
+  //}
 
-  void run(boolean move_, boolean sep_, int alpha) {
+  void run(boolean move_, boolean sep_, boolean follow_, int alpha) {
+    
     background(bgColor);
     boidAlpha = alpha; 
     move = move_;
     separate = sep_;
+    follow = follow_;
+    
     for (Boid b : boids) {         
       b.run();        
     }            
@@ -163,10 +170,11 @@ public class Boid {
     
     acceleration = new PVector(0, 0);
     theta = meanTheta;
-    velocity = PVector.fromAngle(theta);
-    //velocity.mult(maxSpeed);
-    desired = velocity.copy();
-    desired.setMag(maxForce);
+    velocity = v0.copy();
+    velocity.setMag(maxSpeed);
+    //desired = velocity.copy();
+    //desired.setMag(maxForce);
+    desired = new PVector(0,0);
     sep = new PVector(0, 0);
 
   }
@@ -263,18 +271,14 @@ public class Boid {
   }
 
   PVector followField() {
-    //lookup vector at that position in the flow field
+    //update theta: lookup direction at that position in the flow field
+    theta = flow.getDirection(position);     
 
-    if (flow != null) {
-      theta = flow.getDirection(position);     
-    }
-    
-    desired = PVector.fromAngle(theta);//mag == 1        
-    //scale it by maxSpeed
+    desired = PVector.fromAngle(theta);//unit vector
     desired.mult(maxSpeed);
     //steering force = desired - velocity
     desired.sub(velocity);    
-    desired.limit(maxForce); 
+    desired.limit(maxForce);    
     
     return desired;
 
@@ -290,12 +294,16 @@ public class Boid {
       }
       acceleration.add(sep);
     }
+    if (follow && flow != null) {
+      acceleration.add(followField());  
+    } else {
+      desired.set(v0);
+      desired.sub(velocity);    
+      desired.limit(maxForce); 
+      acceleration.add(desired);      
+    }
     
-    
-    PVector steer = followField();
-    acceleration.add(steer);
-
-    //for smoother change in heading when patt > 1 -- not sure it looks better, though
+    //update theta for a smoother change in heading when patt > 1 -- not sure it looks better, though
     //theta = PVector.add(velocity,steer).heading();
 
   }
@@ -305,9 +313,7 @@ public class Boid {
 
     velocity.add(acceleration);
     velocity.limit(maxSpeed);
-    if (node.id == 50) print(velocity.y," ");
-    //make sure projection onto meanTheta moves at maxSpeed
-    
+    //if (node.id == n1) print(velocity.y," ");
     position.add(velocity);
     
     //reset acceleration after each cycle
@@ -370,6 +376,7 @@ public class Boid {
     PVector diff = new PVector(0,0);
     //int count = 0;
     Node other;
+    
     //look at each neighboring bin, in turn
     
     //print("\n",node.id,")");
@@ -440,29 +447,15 @@ public class Boid {
             steer.add(diff);
             
             if (debug && (node.id == n1 || node.id == n2)) {
-              //fill(255);
-              //text(int(nbr_idx) + ": " + diff.x + "," + diff.y, 10+150*nbr_count, 560 + int(node.id > 50)*20);
-              //nbr_count++;
               noFill();
               stroke(255,255,0);
               ellipse(other.item.position.x,other.item.position.y,2*radius*1.5,2*radius*1.5);
             }
-            
-
-     
-
           }
         }
         other = binGrid[nbr_idx].getNext();
       }
-      
-
     }
-    
-    //if (debug && (node.id == n1 || node.id == n2)) {
-    //   fill(255);
-    //   text(node.id + ": " + steer.x + "," + steer.y, 10+100*nbr_count, 560 + int(node.id > 50)*20);
-    //}
 
     //as long as the vector is greater than 0 
     if (steer.magSq() > 0) {

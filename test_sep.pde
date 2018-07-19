@@ -1,22 +1,29 @@
+//give the option of wiggling vs. rigid
+//wiggling activates sep and a flow field during trial (params chosen based on dot radius)
+//rigid deactivates those when trial begins 
+
+//if posStd set to 0, wiggle needs to be deactivate from the start (inter2)
+//if posStd > 0 and noWiggle, activate wiggle and deactivate it during trial
 
 Flock flock;  
 FlowField field;
-int tileSize = 25;
+
 float dir = 3*PI/2.;
-float dirStd = 0.;
+float dirStd = 0.2;
 
 int patt = 1;
 int radius = 10;
 int sepNrads = 6;
 int sep_px = sepNrads*radius;
+int tileSize = sep_px*2;
 float sepWeight = 1.5;//use higher val if frameRate = 30, e.g., 4.0
-float posStd = 0.1;
+float posStd = 0.;
 
 int borderw = 50;
 int myheight;
 int mywidth;
 
-boolean move_, separate_;
+boolean move_, separate_, follow_;
 
 int FRAME_RATE = 60;
 
@@ -43,12 +50,13 @@ void setup() {
   
   int dotColor = 255;
   int bgColor = 0;
-  float mxspeed = 2;//.5*radius;
+  float mxspeed = 2;
   flock = new Flock(field, sep_px, sepWeight, posStd, 
             patt, radius, dotColor, bgColor, dir, mxspeed, usepshape);
 
   move_ = false;
   separate_ = false;
+  follow_ = true;
 
   inter2 = true;
   frameCounter = 0;
@@ -83,8 +91,8 @@ void draw () {
     }  
   }
   
-  if (trial) flock.run(move_,separate_,255);
-  else flock.run(move_,separate_,0);
+  if (trial) flock.run(move_,separate_,follow_,255);
+  else flock.run(move_,separate_,follow_,0);
 
   
   
@@ -113,6 +121,9 @@ void keyPressed() {
       break;
     case 'm':
       move_ = !move_;
+      break;
+    case 'f':
+      follow_ = !follow_;
       break;
     case 'b':
       showBorders = !showBorders;
