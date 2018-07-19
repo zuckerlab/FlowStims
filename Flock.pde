@@ -23,9 +23,11 @@ class Flock {
   boolean move, separate, follow;
   PShape boid;
   boolean usePShape;
+  
+  int fadeRate;
 
   Flock(FlowField fl, int sepPx, float sepweight, float posStd, int patt, 
-        int R, int boidcolor, int bgcolor, float meantheta, float maxsp, boolean usePShape_) {
+        int R, int boidcolor, int bgcolor, float meantheta, float maxsp, int fadeframes, boolean usePShape_) {
     nbrArray = new int[9];
     meanTheta = -meantheta;
     pattern = patt;
@@ -33,6 +35,8 @@ class Flock {
     bgColor = bgcolor;
     radius = R;
     
+    fadeRate = ceil(255./fadeframes);
+
     usePShape = usePShape_;
     if (usePShape) createBoidShape();
     
@@ -93,10 +97,11 @@ class Flock {
   }
   //create a Freeze method to set move to false?
 
-  void run(int alpha) {
+  void run(boolean show) {
     
     background(bgColor);
-    boidAlpha = alpha; 
+    if (show) boidAlpha = min(255,boidAlpha + fadeRate);
+    else boidAlpha = max(0,boidAlpha - fadeRate);
     
     for (Boid b : boids) {         
       b.run();        

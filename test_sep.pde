@@ -28,10 +28,10 @@ int mywidth;
 int FRAME_RATE = 60;
 
 boolean inter1, inter2, trial;
-float interLenSec = 0;
-int inter1Len = (int) interLenSec*FRAME_RATE;
+float interLenSec = 2;
+int inter1Len = (int) interLenSec*FRAME_RATE/2;
 int inter2Len = inter1Len;
-float trialLenSec = 200;
+float trialLenSec = 4;
 int trialLen = (int) trialLenSec*FRAME_RATE;
 int frameCounter;
 
@@ -54,7 +54,7 @@ void setup() {
   int bgColor = 0;
   float mxspeed = 2;
   flock = new Flock(field, sep_px, sepWeight, posStd, 
-            patt, radius, dotColor, bgColor, dir, mxspeed, usepshape);
+            patt, radius, dotColor, bgColor, dir, mxspeed, 3, usepshape);
   
   wiggle_ = true;
   flock.setWiggle(wiggle_);
@@ -67,7 +67,7 @@ void draw () {
   
   if (inter2) {
     
-    if (frameCounter ==  inter2Len) {
+    if (frameCounter ==  inter2Len) {//end of inter2
       println("inter2->trial");
       inter2 = false;
       trial = true;
@@ -75,13 +75,13 @@ void draw () {
     }
   } else if (inter1) {
     
-    if (frameCounter ==  inter1Len) {
+    if (frameCounter ==  inter1Len) {//end of inter1
       println("inter1->inter2");
       inter1 = false;
       inter2 = true;
       frameCounter = 0;
     }       
-  } else {
+  } else {//end of trial
    assert trial == true;
    
     if (frameCounter ==  trialLen) {
@@ -92,8 +92,8 @@ void draw () {
     }  
   }
   
-  if (trial) flock.run(255);
-  else flock.run(0);
+  if (trial) flock.run(true);
+  else flock.run(false);
 
   
   if (showBorders) drawBorders();
