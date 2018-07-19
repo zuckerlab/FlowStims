@@ -110,7 +110,7 @@ class Flock implements Stim {
     if (show) {
       boidAlpha = min(255,boidAlpha + fadeRate);
       setWiggle(wiggle);
-    } else boidAlpha = max(20,boidAlpha - fadeRate);
+    } else boidAlpha = max(0,boidAlpha - fadeRate);
     
     for (Boid b : boids) {         
       b.run();        

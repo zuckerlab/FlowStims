@@ -2,11 +2,11 @@
 //wiggling activates sep and a flow field during trial (params chosen based on dot radius)
 //rigid deactivates those when trial begins 
 
-//if posStd set to 0, wiggle needs to be deactivate from the start (inter2)
+//if posStd set to 0, wiggle needs to be deactivate from the start (preStim)
 //if posStd > 0 and noWiggle, activate wiggle and deactivate it during trial
 
-Stim flock;  
-FlowField field;
+Stim stim;  
+Stim[] stims;
 
 float dir_ = 3*PI/2.;
 float dirStd_ = 0.08;
@@ -27,11 +27,12 @@ int mywidth;
 
 int FRAME_RATE = 60;
 
-boolean inter1, inter2, trial;
-float interLenSec = 2;
-int inter1Len = (int) interLenSec*FRAME_RATE/2;
-int inter2Len = inter1Len;
-float trialLenSec = 4;
+boolean postStim, preStim, trial;
+float interLenSec = 1;
+int currentLen;
+int postStimLen = (int) interLenSec*FRAME_RATE/2;
+int preStimLen = postStimLen;
+float trialLenSec = 2;
 int trialLen = (int) trialLenSec*FRAME_RATE;
 int frameCounter, trialNo;
 
@@ -50,66 +51,73 @@ void setup() {
   mywidth = width - 2*frameWidth;
   
   
-  int dotColor = 255;
-  int bgColor = 0;
+  int dotColor1 = 255;
+  int dotColor2 = 128;
+  int bgColor1 = 0;
+  int bgColor2 = 0;
   float maxspeed = 2;
   
   wiggle_ = false;
   if (posStd_ == 0) wiggle_ = false;
   
-  flock = new Flock(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
-            patt, radius, dotColor, bgColor, maxspeed, 3, wiggle_, usepshape);
+  stims = new Stim[2];
   
-  
-  //flock.setWiggle(wiggle_);
+  stims[0] = new Flock(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
+            patt, radius, dotColor1, bgColor1, maxspeed, 3, wiggle_, usepshape);
+  stims[1] = new Flock(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
+            patt, radius, dotColor2, bgColor2, maxspeed, 3, wiggle_, usepshape);
 
-  inter2 = true;
+  preStim = true;
+  currentLen = preStimLen;
   frameCounter = 0;
   trialNo = 0;
 } 
 
 void draw () {
-  
-  if (inter2) {
-    
-    if (frameCounter ==  inter2Len) {//end of inter2
-      println("inter2->trial");
-      inter2 = false;
+  if (frameCounter == currentLen) {//if ending a period
+    frameCounter = 0;
+    if (preStim) {
+      println("preStim->trial");
+      preStim = false;
       trial = true;
-      frameCounter = 0;
-    }
-  } else if (inter1) {
-    
-    if (frameCounter ==  inter1Len) {//end of inter1
-      println("inter1->inter2");
-      inter1 = false;
-      inter2 = true;
-      frameCounter = 0;
-      
+      currentLen = trialLen;
+    } else if (postStim) {
+      println("postStim->preStim");
+      postStim = false;
+      preStim = true;
+      currentLen = preStimLen;
       trialNo++;
-    }       
-  } else {//end of trial
-   assert trial == true;
-   
-    if (frameCounter ==  trialLen) {
-      println("trial->inter1");
+    } else {
+      assert trial == true;
+      println("trial->postStim");
       trial = false;
-      inter1 = true;
-      frameCounter = 0;
-    }  
+      postStim = true;
+      currentLen = postStimLen;
+    }        
+  }
+  if (frameCounter == 0) { //if starting a period
+    if (preStim) {    
+        //load new stim
+        println("Loading",trialNo % 2);
+        stim = stims[trialNo % 2];
+    } else if (postStim) {
+      ;
+    } else {//end of trial
+      ;
+    }
   }
   
-  if (trial) flock.run(true);
-  else flock.run(false);
+  if (trial) stim.run(true);
+  else stim.run(false);
 
   
   if (showBorders) drawBorders();
-  if (showField && ((Flock) flock).flow != null) ((Flock) flock).flow.drawField(); 
-  if (showGrid) ((Flock) flock).drawBinGrid();
+  if (showField && ((Flock) stim).flow != null) ((Flock) stim).flow.drawField(); 
+  if (showGrid) ((Flock) stim).drawBinGrid();
   
-  stroke(255);
-  textSize(12);
-  text("Frame rate: " + int(frameRate), 10, 20);
+  //stroke(255);
+  //textSize(12);
+  //text("Frame rate: " + int(frameRate), 10, 20);
   
   frameCounter++;
 }
@@ -125,17 +133,17 @@ void drawBorders() {
 void keyPressed() {
   switch (key) {
     case 'm':
-      ((Flock) flock).move = !((Flock) flock).move;
+      ((Flock) stim).move = !((Flock) stim).move;
       break;
     case 's':
-      ((Flock) flock).separate = !((Flock) flock).separate;
+      ((Flock) stim).separate = !((Flock) stim).separate;
       break;
     case 'w':
       wiggle_ = !wiggle_;
-      ((Flock) flock).setWiggle(wiggle_);
+      ((Flock) stim).setWiggle(wiggle_);
       break;
     case 'f':
-      ((Flock) flock).follow = !((Flock) flock).follow;
+      ((Flock) stim).follow = !((Flock) stim).follow;
       break;
     case 'b':
       showBorders = !showBorders;
