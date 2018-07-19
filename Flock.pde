@@ -1,4 +1,4 @@
-class Flock {
+class Flock implements Stim {
   
   boolean debug = false;
   int n1 = 50; int n2 = -10;
@@ -20,20 +20,28 @@ class Flock {
   float meanTheta, maxForce, maxSpeed;
   PVector v0;
   
-  boolean move, separate, follow;
+  boolean move, separate, follow, wiggle;
   PShape boid;
   boolean usePShape;
   
   int fadeRate;
 
-  Flock(FlowField fl, int sepPx, float sepweight, float posStd, int patt, 
-        int R, int boidcolor, int bgcolor, float meantheta, float maxsp, int fadeframes, boolean usePShape_) {
+  Flock(int tilesize, float meantheta, float dirstd, int sepPx, float sepweight, float posStd, int patt, 
+        int R, int boidcolor, int bgcolor, float maxsp, int fadeframes, 
+        boolean wiggle_, boolean usePShape_) {
+          
+    if (dirstd > 0) flow = new FlowField(tilesize, meantheta, dirstd);
+          
     nbrArray = new int[9];
     meanTheta = -meantheta;
     pattern = patt;
     boidColor = boidcolor;
     bgColor = bgcolor;
     radius = R;
+    
+    wiggle = wiggle_;//refers to whether we want wiggling during trials
+    if (posStd == 0) assert !wiggle;
+    else setWiggle(true);//if posStd we want scrambled boids, so turn wiggle on during pre-trial
     
     fadeRate = ceil(255./fadeframes);
 
@@ -51,7 +59,6 @@ class Flock {
     sepFreq = 5;
     sepWeight = sepweight;
     
-    flow = fl;
     binSize = sepPx;
 
     binrows = myheight/binSize + 1;
@@ -100,8 +107,10 @@ class Flock {
   void run(boolean show) {
     
     background(bgColor);
-    if (show) boidAlpha = min(255,boidAlpha + fadeRate);
-    else boidAlpha = max(0,boidAlpha - fadeRate);
+    if (show) {
+      boidAlpha = min(255,boidAlpha + fadeRate);
+      setWiggle(wiggle);
+    } else boidAlpha = max(20,boidAlpha - fadeRate);
     
     for (Boid b : boids) {         
       b.run();        

@@ -5,19 +5,19 @@
 //if posStd set to 0, wiggle needs to be deactivate from the start (inter2)
 //if posStd > 0 and noWiggle, activate wiggle and deactivate it during trial
 
-Flock flock;  
+Stim flock;  
 FlowField field;
 
-float dir = 3*PI/2.;
-float dirStd = 0.;
+float dir_ = 3*PI/2.;
+float dirStd_ = 0.08;
 
 int patt = 1;
 int radius = 10;
 int sepNrads = 4;
 int sep_px = sepNrads*radius;
-int tileSize = sep_px;
+int tileSize_ = sep_px;
 float sepWeight = 1.5;//use higher val if frameRate = 30, e.g., 4.0
-float posStd = 0.;
+float posStd_ = 0.1;
 
 int frameWidth = 50;
 int myheight;
@@ -33,7 +33,7 @@ int inter1Len = (int) interLenSec*FRAME_RATE/2;
 int inter2Len = inter1Len;
 float trialLenSec = 4;
 int trialLen = (int) trialLenSec*FRAME_RATE;
-int frameCounter;
+int frameCounter, trialNo;
 
 //debug tools
 boolean showBorders, showField, showGrid;
@@ -48,19 +48,24 @@ void setup() {
   
   myheight = height - 2*frameWidth;
   mywidth = width - 2*frameWidth;
-  if (dirStd > 0) field = new FlowField(tileSize, dir, dirStd);
+  
   
   int dotColor = 255;
   int bgColor = 0;
-  float mxspeed = 2;
-  flock = new Flock(field, sep_px, sepWeight, posStd, 
-            patt, radius, dotColor, bgColor, dir, mxspeed, 3, usepshape);
+  float maxspeed = 2;
   
-  wiggle_ = true;
-  flock.setWiggle(wiggle_);
+  wiggle_ = false;
+  if (posStd_ == 0) wiggle_ = false;
+  
+  flock = new Flock(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
+            patt, radius, dotColor, bgColor, maxspeed, 3, wiggle_, usepshape);
+  
+  
+  //flock.setWiggle(wiggle_);
 
   inter2 = true;
   frameCounter = 0;
+  trialNo = 0;
 } 
 
 void draw () {
@@ -80,6 +85,8 @@ void draw () {
       inter1 = false;
       inter2 = true;
       frameCounter = 0;
+      
+      trialNo++;
     }       
   } else {//end of trial
    assert trial == true;
@@ -97,8 +104,8 @@ void draw () {
 
   
   if (showBorders) drawBorders();
-  if (showField && field != null) field.drawField(); 
-  if (showGrid) flock.drawBinGrid();
+  if (showField && ((Flock) flock).flow != null) ((Flock) flock).flow.drawField(); 
+  if (showGrid) ((Flock) flock).drawBinGrid();
   
   stroke(255);
   textSize(12);
@@ -118,17 +125,17 @@ void drawBorders() {
 void keyPressed() {
   switch (key) {
     case 'm':
-      flock.move = !flock.move;
+      ((Flock) flock).move = !((Flock) flock).move;
       break;
     case 's':
-      flock.separate = !flock.separate;
+      ((Flock) flock).separate = !((Flock) flock).separate;
       break;
     case 'w':
       wiggle_ = !wiggle_;
-      flock.setWiggle(wiggle_);
+      ((Flock) flock).setWiggle(wiggle_);
       break;
     case 'f':
-      flock.follow = !flock.follow;
+      ((Flock) flock).follow = !((Flock) flock).follow;
       break;
     case 'b':
       showBorders = !showBorders;
