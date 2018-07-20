@@ -35,10 +35,8 @@ class Grating implements Stim {
     int spdsign = 1;
      if (dir > 90 && dir < 270) {
        spdsign = -1;
-       if (dir < 180)
-         dir += 180;
-       else
-         dir -= 180;
+       if (dir < 180)  dir += 180;
+       else dir -= 180;
      }
     
     direction = dir;
@@ -47,8 +45,7 @@ class Grating implements Stim {
     spaceWidth = spacwid;
      if (direction == 90 || direction == 270) {
        speed = spd;
-       if (direction == 270)
-         speed = -spd;
+       if (direction == 270) speed = -spd;
        
        deltaX = barWidth;
        deltaXspac = spaceWidth;
@@ -57,6 +54,7 @@ class Grating implements Stim {
        deltaX = round(barWidth/cos(theta));
        deltaXspac = round(spaceWidth/cos(theta));
     }
+    println("speed",speed);
     
     if (phas == -1) phase = (int)random(barWidth);
     else phase = (int)phas*barWidth;

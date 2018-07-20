@@ -6,7 +6,10 @@
 //if posStd > 0 and noWiggle, activate wiggle and deactivate it during trial
 
 //make ellipsoidal distance radius for separation of 3-dots?
-//converted grats to Stim
+
+//use same seed for multiple Flock trials (reproducible option)
+
+
 Stim stim;  
 Stim[] stims;
 
@@ -24,7 +27,7 @@ int tileSize_ = sep_px;
 float sepWeight = 1.5;//use higher val if frameRate = 30, e.g., 4.0
 float posStd_ = 0.1;
 
-int frameWidth = 50;
+int frameWidth = 0;
 int myheight;
 int mywidth;
 
@@ -33,12 +36,12 @@ int mywidth;
 int FRAME_RATE = 60;
 int fadeRate;
 boolean postStim, preStim, trial;
-float interLenSec = 1;
-float trialLenSec = 3;
+float interLenSec = .5;
+float trialLenSec = 2;
 
-int postStimLen = (int) interLenSec*FRAME_RATE/2;
+int postStimLen = (int) (interLenSec*FRAME_RATE);
 int preStimLen = postStimLen;
-int trialLen = (int) trialLenSec*FRAME_RATE;
+int trialLen = (int) (trialLenSec*FRAME_RATE);
 
 int currentLen, frameCounter, trialNo;
 
@@ -51,8 +54,9 @@ boolean wiggle_;
 
 void setup() {
   frameRate(FRAME_RATE);
-  size(800,600);
+  size(800,600,P2D);
   randomSeed(0);
+  
   
   myheight = height - 2*frameWidth;
   mywidth = width - 2*frameWidth;
@@ -79,12 +83,12 @@ void setup() {
   if (posStd_ == 0) wiggle_ = false;
   
   /*SETTING PARAMS SET FOR EACH GRAT STIM*/
-  int dirdegs = (int) degrees(dir_);
+  int dirdegs = 15;//(int) degrees(dir_);
   int fg = 255;
   int bg = 0;
   int gray = 128;
-  int barwid = 50;
-  int spacwid = 60;
+  int barwid = 3;
+  int spacwid = 3;
   float phas = 0;
   
   
@@ -145,9 +149,9 @@ void draw () {
   if (showField && ((Flock) stim).flow != null) ((Flock) stim).flow.drawField(); 
   if (showGrid) ((Flock) stim).drawBinGrid();
   
-  //stroke(255);
-  //textSize(12);
-  //text("Frame rate: " + int(frameRate), 10, 20);
+  stroke(255);
+  textSize(12);
+  text("Frame rate: " + int(frameRate), 10, 20);
   
   frameCounter++;
 }
