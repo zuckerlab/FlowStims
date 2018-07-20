@@ -1,13 +1,13 @@
 class Flock implements Stim {
   
-  boolean debug = true;
+  boolean debug = false;
   int n1 = 50; int n2 = -10;
   
   ArrayList<Boid> boids;
   DoublyLinkedList[] binGrid;
 
   int binSize, binrows, bincols;
-  int pattern, radius, boidColor, boidAlpha, bgColor, grayColor;
+  int pattern, radius, D, boidColor, boidAlpha, bgColor, grayColor;
   float sepSq, sepWeight, posStd;
   int sepFreq;
   
@@ -24,11 +24,10 @@ class Flock implements Stim {
   PShape boid;
   boolean usePShape;
   
-  int fadeRate;
+
 
   Flock(int tilesize, float meantheta, float dirstd, int sepPx, float sepweight, float posStd, int patt, 
-        int R, int boidcolor, int bgcolor, int graycolor, float maxsp, int faderate, 
-        boolean wiggle_, boolean usePShape_) {
+        int R, int boidcolor, int bgcolor, int graycolor, float maxsp, boolean wiggle_, boolean usePShape_) {
           
     if (dirstd > 0) flow = new FlowField(tilesize, meantheta, dirstd);
           
@@ -39,12 +38,12 @@ class Flock implements Stim {
     bgColor = bgcolor;
     grayColor = graycolor;
     radius = R;
+    D = 2*radius;
     
     wiggle = wiggle_;//refers to whether we want wiggling during trials
     if (posStd == 0) assert !wiggle;
     else setWiggle(true);//if posStd we want scrambled boids, so turn wiggle on during pre-trial
     
-    fadeRate = faderate;
 
     usePShape = usePShape_;
     if (usePShape) createBoidShape();
@@ -140,7 +139,7 @@ class Flock implements Stim {
     }
   }
   
-  void drawBinGrid() {
+  void drawBinGrid() {//for debugging purposes
     stroke(255,255,0,128);
 
     for (int i = myBorders[0]; i <= myBorders[1]; i += binSize)
@@ -280,8 +279,8 @@ public class Boid {
         
       } 
     }
-    if (usePShape) drawBoid();
-    else render();
+    if (usePShape) drawBoidShape();
+    else drawBoid();
     
     
   }
@@ -352,7 +351,7 @@ public class Boid {
     if (position.y > myBorders[3]-factor*radius) position.y -= yLen;
   }
   
-  void drawBoid() {//when using PShape rendering
+  void drawBoidShape() {//when using PShape rendering
     pushMatrix();
     translate(position.x,position.y);
     if (pattern > 1)
@@ -361,11 +360,10 @@ public class Boid {
     popMatrix();    
   }
 
-  void render() {
+  void drawBoid() {
     
     fill(boidColor, boidAlpha);
     noStroke();
-    int D = 2*radius;
 
     if (pattern == 1) {
       ellipseMode(CENTER);

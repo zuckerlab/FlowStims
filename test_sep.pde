@@ -5,14 +5,13 @@
 //if posStd set to 0, wiggle needs to be deactivate from the start (preStim)
 //if posStd > 0 and noWiggle, activate wiggle and deactivate it during trial
 
-
-//compute fadeRate outside stim class (applis to all stims)
-
+//make ellipsoidal distance radius for separation of 3-dots?
+//converted grats to Stim
 Stim stim;  
 Stim[] stims;
 
 float dir_ = 3*PI/2.;
-float dirStd_ = 0;//0.08;
+float dirStd_ = 0.08;
 
 
 int radius = 10;
@@ -32,15 +31,17 @@ int mywidth;
 //boolean move_, separate_, follow_;
 
 int FRAME_RATE = 60;
-
+int fadeRate;
 boolean postStim, preStim, trial;
-float interLenSec = 0;
-int currentLen;
+float interLenSec = 1;
+float trialLenSec = 3;
+
 int postStimLen = (int) interLenSec*FRAME_RATE/2;
 int preStimLen = postStimLen;
-float trialLenSec = 200;
 int trialLen = (int) trialLenSec*FRAME_RATE;
-int frameCounter, trialNo;
+
+int currentLen, frameCounter, trialNo;
+
 
 //debug tools
 boolean showBorders, showField, showGrid;
@@ -59,31 +60,41 @@ void setup() {
   stims = new Stim[2];
   
   int fadeframes = 3;
-  int fadeRate_ = ceil(255./fadeframes);
+  fadeRate = ceil(255./fadeframes);
   
   
-  /*SETTING PARAMS SET FOR EACH STIM*/
+  /*SETTING PARAMS SET FOR EACH FLOW STIM*/
   if (patt > 1) radius = int(radius/sqrt(patt));
   int dotColor1 = 255;
   int dotColor2 = 128;
-  int gray1 = 80;
   
   int bgColor1 = 0;
   int bgColor2 = 0;
+  
+  int gray1 = 128;
   int gray2 = 120;
   float maxspeed = 2;
   
   wiggle_ = true;
   if (posStd_ == 0) wiggle_ = false;
   
-  /*SETTING PARAMS SET FOR EACH STIM*/
+  /*SETTING PARAMS SET FOR EACH GRAT STIM*/
+  int dirdegs = (int) degrees(dir_);
+  int fg = 255;
+  int bg = 0;
+  int gray = 128;
+  int barwid = 50;
+  int spacwid = 60;
+  float phas = 0;
   
   
   ////POPULATE STIMS ARRAY  
   stims[0] = new Flock(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
-            patt, radius, dotColor1, bgColor1, gray1, maxspeed, fadeRate_, wiggle_, usepshape);
-  stims[1] = new Flock(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
-            patt, radius, dotColor2, bgColor2, gray2, maxspeed, fadeRate_, wiggle_, usepshape);
+            patt, radius, dotColor1, bgColor1, gray1, maxspeed, wiggle_, usepshape);
+  //stims[1] = new Flock(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
+  //          patt, radius, dotColor2, bgColor2, gray2, maxspeed, wiggle_, usepshape);
+  stims[1] = new Grating(dirdegs, fg, bg, gray, barwid, spacwid, maxspeed, phas); 
+
 
   //setup trial variables for movie to begin
   preStim = true;

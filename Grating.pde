@@ -1,8 +1,7 @@
-class Grating {
+class Grating implements Stim {
   
   int phase;
-  int bg;
-  int fg;
+  int bgColor, fgColor, grayColor, stimAlpha;
   float speed;
   int direction;
   float theta;
@@ -12,32 +11,26 @@ class Grating {
   int myheight = height;
   int mywidth = width;
   
-  
   float start;
   float period;
   float deltaX;
   float deltaXspac;
   
-  int fadeMode = 1;
-  float fadeCounter = 0;
-  float fadeRate;
-  
-  float targetBg;
-  int grayBg;
+
   
   PVector p0, p1, p2, p3;
   
   float[] vals;
   
 
-  Grating(int dir, int col, int bg, int barwid, int spacwid, float spd, float phas, float fadeRt) {
+  Grating(int dir, int fg, int bg, int gray, int barwid, int spacwid, float spd, float phas) {
     
     p0 = new PVector(0,0);
     p1 = new PVector(0,0);
     p2 = new PVector(0,0);
     p3 = new PVector(0,0);
     
-    fadeRate = fadeRt;
+
     
     int spdsign = 1;
      if (dir > 90 && dir < 270) {
@@ -65,23 +58,22 @@ class Grating {
        deltaXspac = round(spaceWidth/cos(theta));
     }
     
-    if (phas == -1)
-      phase = (int)random(barWidth);
-    else
-      phase = (int)phas*barWidth;
+    if (phas == -1) phase = (int)random(barWidth);
+    else phase = (int)phas*barWidth;
     
-    fg = col;
-    targetBg = bg;
+    fgColor = fg;
+    bgColor = bg;
+    grayColor = gray;
     
     period = deltaX + deltaXspac;
     start = phase;
         
-    createArrays();
-    
+    createArrays();   
 
   }
   
   void createArrays() {
+    
     int size;
     if (direction == 90 || direction == 270) {
       p0.x = 0.; p1.x = 0.;
@@ -126,33 +118,19 @@ class Grating {
         vals[i] = x;
         i++;        
       }
-    }
-    
-
-    
+    }   
   }
   
   void drawGrating() {
 
     noStroke();
-    
-    fadeCounter = max(0,min(255,fadeCounter + fadeMode*fadeRate));
+    fill(fgColor, stimAlpha);
 
-    fill(fg,fadeCounter);
-
-    float bgCounter;
-    if (targetBg > grayBg) {
-      bgCounter = max(0,min(255,grayBg + (fadeCounter/255.)*(targetBg - grayBg)));
-    } else {
-      bgCounter = max(0,min(255,grayBg - (fadeCounter/255.)*(grayBg - targetBg)));
-    }
-    background(bgCounter);
-
-
+    float y, x, p3x;
     
     for (int i = 0; i < vals.length; i++) {
       if (direction == 90 || direction == 270) {
-        float y = vals[i];
+        y = vals[i];
         p0.y = start + y;
         p1.y = p0.y + deltaX;
         
@@ -160,32 +138,30 @@ class Grating {
         p3.y = p0.y;
 
         quad(p0.x,myheight-p0.y,p1.x,myheight-p1.y,p2.x,myheight-p2.y,p3.x,myheight-p3.y);
+        
        } else {
-        float x = vals[i];
+        x = vals[i];
         p0.x = start+x;
         p1.x = start+x+deltaX;
         
-        float p3x = p3.x + p0.x;
+        p3x = p3.x + p0.x;
 
         p2.x = p3.x + p1.x;
 
         quad(p0.x,myheight-p0.y,p1.x,myheight-p1.y,p2.x,myheight-p2.y,p3x,myheight-p3.y);
       }
     }
-
-      
-    
+  }
   
-  }  
-  void run(int fade, int bg) {
-    fadeMode = fade;
-    grayBg = bg;
+  void run(boolean show) {
+    if (show) stimAlpha = min(255,stimAlpha + fadeRate);
+    else stimAlpha = max(0,stimAlpha - fadeRate);
+    float alphafrac = stimAlpha/255.;
+    background(bgColor*alphafrac + grayColor*(1. - alphafrac));
     
     drawGrating();
     
     start = (start + speed) % period;
-    
-    
   }
-
+  
 }
