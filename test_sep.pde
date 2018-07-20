@@ -5,18 +5,22 @@
 //if posStd set to 0, wiggle needs to be deactivate from the start (preStim)
 //if posStd > 0 and noWiggle, activate wiggle and deactivate it during trial
 
+
 //compute fadeRate outside stim class (applis to all stims)
 
 Stim stim;  
 Stim[] stims;
 
 float dir_ = 3*PI/2.;
-float dirStd_ = 0.08;
+float dirStd_ = 0;//0.08;
 
-int patt = 1;
+
 int radius = 10;
 int sepNrads = 4;
 int sep_px = sepNrads*radius;
+int patt = 3;
+
+
 int tileSize_ = sep_px;
 float sepWeight = 1.5;//use higher val if frameRate = 30, e.g., 4.0
 float posStd_ = 0.1;
@@ -30,11 +34,11 @@ int mywidth;
 int FRAME_RATE = 60;
 
 boolean postStim, preStim, trial;
-float interLenSec = 1;
+float interLenSec = 0;
 int currentLen;
 int postStimLen = (int) interLenSec*FRAME_RATE/2;
 int preStimLen = postStimLen;
-float trialLenSec = 2;
+float trialLenSec = 200;
 int trialLen = (int) trialLenSec*FRAME_RATE;
 int frameCounter, trialNo;
 
@@ -59,6 +63,7 @@ void setup() {
   
   
   /*SETTING PARAMS SET FOR EACH STIM*/
+  if (patt > 1) radius = int(radius/sqrt(patt));
   int dotColor1 = 255;
   int dotColor2 = 128;
   int gray1 = 80;
@@ -68,7 +73,7 @@ void setup() {
   int gray2 = 120;
   float maxspeed = 2;
   
-  wiggle_ = false;
+  wiggle_ = true;
   if (posStd_ == 0) wiggle_ = false;
   
   /*SETTING PARAMS SET FOR EACH STIM*/
@@ -110,7 +115,7 @@ void draw () {
     }        
   }
   if (frameCounter == 0) { //if starting a period
-    if (preStim) {    
+    if (preStim || preStimLen == 0) {    
         //load new stim
         println("Loading",trialNo % 2);
         stim = stims[trialNo % 2];

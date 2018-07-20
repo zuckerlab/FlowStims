@@ -1,0 +1,191 @@
+class Grating {
+  
+  int phase;
+  int bg;
+  int fg;
+  float speed;
+  int direction;
+  float theta;
+  int barWidth;
+  int spaceWidth;
+  
+  int myheight = height;
+  int mywidth = width;
+  
+  
+  float start;
+  float period;
+  float deltaX;
+  float deltaXspac;
+  
+  int fadeMode = 1;
+  float fadeCounter = 0;
+  float fadeRate;
+  
+  float targetBg;
+  int grayBg;
+  
+  PVector p0, p1, p2, p3;
+  
+  float[] vals;
+  
+
+  Grating(int dir, int col, int bg, int barwid, int spacwid, float spd, float phas, float fadeRt) {
+    
+    p0 = new PVector(0,0);
+    p1 = new PVector(0,0);
+    p2 = new PVector(0,0);
+    p3 = new PVector(0,0);
+    
+    fadeRate = fadeRt;
+    
+    int spdsign = 1;
+     if (dir > 90 && dir < 270) {
+       spdsign = -1;
+       if (dir < 180)
+         dir += 180;
+       else
+         dir -= 180;
+     }
+    
+    direction = dir;
+    theta = radians(direction);
+    barWidth = barwid;
+    spaceWidth = spacwid;
+     if (direction == 90 || direction == 270) {
+       speed = spd;
+       if (direction == 270)
+         speed = -spd;
+       
+       deltaX = barWidth;
+       deltaXspac = spaceWidth;
+    } else {
+       speed = spdsign*spd/cos(theta);
+       deltaX = round(barWidth/cos(theta));
+       deltaXspac = round(spaceWidth/cos(theta));
+    }
+    
+    if (phas == -1)
+      phase = (int)random(barWidth);
+    else
+      phase = (int)phas*barWidth;
+    
+    fg = col;
+    targetBg = bg;
+    
+    period = deltaX + deltaXspac;
+    start = phase;
+        
+    createArrays();
+    
+
+  }
+  
+  void createArrays() {
+    int size;
+    if (direction == 90 || direction == 270) {
+      p0.x = 0.; p1.x = 0.;
+      p2.x = mywidth; p3.x = mywidth;
+      size = (int) ceil((myheight+period  + int(period))/period);
+      vals = new float[size];
+      int i = 0;
+      for (int y = -int(period); y < myheight+period; y += period){
+        vals[i] = y;
+        i++;
+      }
+         
+    } else if (direction == 0 || direction == 180) {
+      p0.y = 0.;
+      p1.y = 0.;
+      p3.x = 0;
+      p3.y = myheight/cos(theta);
+      p3.rotate(theta);
+      p2.y = p3.y;
+
+      size = (int) ceil((mywidth+period+period)/period);
+      vals = new float[size];
+      int i = 0;
+      for (int x = -int(period); x < mywidth+period; x += period){
+        vals[i] = x;
+        i++;
+      }
+    } else {
+      p0.y = 0.; p1.y = 0.;
+      p3.x = 0;
+      p3.y = myheight/cos(theta);
+      
+      p3.rotate(theta);
+      p2.y = p3.y;
+      
+      size = int((mywidth+myheight*abs(tan(theta))+period  + myheight*abs(tan(theta))+period)/period) + 1;
+      
+      vals = new float[size];
+      int i = 0;
+
+      for (int x = -int(myheight*abs(tan(theta))+period); x < mywidth+myheight*abs(tan(theta))+period; x += period){
+        vals[i] = x;
+        i++;        
+      }
+    }
+    
+
+    
+  }
+  
+  void drawGrating() {
+
+    noStroke();
+    
+    fadeCounter = max(0,min(255,fadeCounter + fadeMode*fadeRate));
+
+    fill(fg,fadeCounter);
+
+    float bgCounter;
+    if (targetBg > grayBg) {
+      bgCounter = max(0,min(255,grayBg + (fadeCounter/255.)*(targetBg - grayBg)));
+    } else {
+      bgCounter = max(0,min(255,grayBg - (fadeCounter/255.)*(grayBg - targetBg)));
+    }
+    background(bgCounter);
+
+
+    
+    for (int i = 0; i < vals.length; i++) {
+      if (direction == 90 || direction == 270) {
+        float y = vals[i];
+        p0.y = start + y;
+        p1.y = p0.y + deltaX;
+        
+        p2.y = p1.y;
+        p3.y = p0.y;
+
+        quad(p0.x,myheight-p0.y,p1.x,myheight-p1.y,p2.x,myheight-p2.y,p3.x,myheight-p3.y);
+       } else {
+        float x = vals[i];
+        p0.x = start+x;
+        p1.x = start+x+deltaX;
+        
+        float p3x = p3.x + p0.x;
+
+        p2.x = p3.x + p1.x;
+
+        quad(p0.x,myheight-p0.y,p1.x,myheight-p1.y,p2.x,myheight-p2.y,p3x,myheight-p3.y);
+      }
+    }
+
+      
+    
+  
+  }  
+  void run(int fade, int bg) {
+    fadeMode = fade;
+    grayBg = bg;
+    
+    drawGrating();
+    
+    start = (start + speed) % period;
+    
+    
+  }
+
+}

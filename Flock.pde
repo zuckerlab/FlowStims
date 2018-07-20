@@ -1,6 +1,6 @@
 class Flock implements Stim {
   
-  boolean debug = false;
+  boolean debug = true;
   int n1 = 50; int n2 = -10;
   
   ArrayList<Boid> boids;
@@ -346,13 +346,13 @@ public class Boid {
   // wraparound borders
   void borders() {
     int factor = pattern;
-    if (position.x < myBorders[0]-factor*radius) position.x += xLen;//= myBorders[1]-factor*radius;
-    if (position.y < myBorders[2]-factor*radius) position.y += yLen;//= myBorders[3]-factor*radius;
-    if (position.x > myBorders[1]-factor*radius) position.x -= xLen;//= myBorders[0]-factor*radius;
-    if (position.y > myBorders[3]-factor*radius) position.y -= yLen;//= myBorders[2]-factor*radius;
+    if (position.x < myBorders[0]-factor*radius) position.x += xLen;
+    if (position.y < myBorders[2]-factor*radius) position.y += yLen;
+    if (position.x > myBorders[1]-factor*radius) position.x -= xLen;
+    if (position.y > myBorders[3]-factor*radius) position.y -= yLen;
   }
   
-  void drawBoid() {
+  void drawBoid() {//when using PShape rendering
     pushMatrix();
     translate(position.x,position.y);
     if (pattern > 1)
@@ -397,16 +397,11 @@ public class Boid {
     float dx, dy, d2;
     PVector steer = new PVector(0,0);
     PVector diff = new PVector(0,0);
-    //int count = 0;
+
     Node other;
     
     //look at each neighboring bin, in turn
-    
-    //print("\n",node.id,")");
-    //for (int nbr_idx : nbrArray)
-    //  print(nbr_idx,":");
-    //println();
-    
+
     if (debug && (node.id == n1 || node.id == n2)) {
       fill(255,255,0,64);
       rectMode(CORNER);
@@ -421,6 +416,7 @@ public class Boid {
     for (int nbr_idx : nbrArray) {
 
       if (nbr_idx == -1) continue;
+      
       if (debug && (node.id == n1 || node.id == n2)) {
         fill(255,0,0,64);
         int nbr_x = nbr_idx % bincols;
