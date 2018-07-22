@@ -4,3 +4,10 @@ interface Stim {
   void run(boolean show);
   
 }
+
+interface StimMaker {
+  
+  Stim init(int seed);
+  void delete();
+  
+}

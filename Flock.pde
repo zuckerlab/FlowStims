@@ -1,3 +1,40 @@
+class FlockMaker implements StimMaker {
+
+  int tilesize, sepPx, patt, R, boidcolor, bgcolor, graycolor;
+  float meantheta, dirstd, sepweight, posStd, maxsp;
+  boolean wiggle_, usePShape_;
+  Flock flock;
+  
+  FlockMaker(int tilesize_, float meantheta_, float dirstd_, int sepPx_, float sepweight_, float posStd_, int patt, 
+      int R_, int boidcolor_, int bgcolor_, int graycolor_, float maxsp_, boolean wiggle__, boolean usePShape__) {
+    tilesize = tilesize_;
+    meantheta = meantheta_;
+    dirstd = dirstd_;
+    sepPx_ = sepPx;
+    sepweight = sepweight_;
+    posStd = posStd_;
+    R = R_;
+    boidcolor = boidcolor_;
+    bgcolor = bgcolor_;
+    graycolor = graycolor_;
+    maxsp = maxsp_;
+    wiggle_ = wiggle__;
+    usePShape_ = usePShape__;   
+  }
+  
+  Stim init(int seed) {
+    if (seed >= 0) randomSeed(seed);
+    flock = new Flock( tilesize,  meantheta,  dirstd,  sepPx,  sepweight,  posStd,  patt, 
+         R,  boidcolor,  bgcolor,  graycolor,  maxsp,  wiggle_,  usePShape_); 
+    return flock;
+  }
+  
+  void delete() {
+    flock = null;
+  }
+
+}
+
 class Flock implements Stim {
   
   boolean debug = false;

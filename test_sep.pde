@@ -11,7 +11,6 @@
   //new trial block --- NO! only if classes are re-initialized!
 
 
-
 Stim stim;  
 Stim[] stims;
 
