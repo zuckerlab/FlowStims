@@ -141,7 +141,6 @@ class Flock implements Stim {
 
   void run(boolean show) {
     
-    
     if (show) {
       boidAlpha = min(255,boidAlpha + fadeRate);
       setWiggle(wiggle);
