@@ -1,3 +1,37 @@
+class GratingMaker implements StimMaker {
+  
+  int dir, fg, bg, gray, barwid, spacwid;
+  float spd, phas;
+
+  Grating stim;
+  
+  GratingMaker(int dir_, int fg_, int bg_, int gray_, int barwid_, int spacwid_, float spd_, float phas_) {
+    dir = dir_;
+    fg = fg_;
+    bg = bg_;
+    gray = gray_;
+    barwid = barwid_;
+    spacwid = spacwid_;
+    spd = spd_;
+    phas = phas_;
+  }
+  
+  Stim init(int seed) {
+    if (seed >= 0) randomSeed(seed);
+    stim = new Grating( dir,  fg,  bg,  gray,  barwid,  spacwid,  spd,  phas);
+    return stim;
+  }
+  
+  void run(boolean show) {
+    stim.run(show);
+  }
+  
+  void delete() {
+    stim = null;
+  }
+
+}
+
 class Grating implements Stim {
   
   int phase;
@@ -15,9 +49,7 @@ class Grating implements Stim {
   float period;
   float deltaX;
   float deltaXspac;
-  
 
-  
   PVector p0, p1, p2, p3;
   
   float[] vals;
