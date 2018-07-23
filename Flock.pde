@@ -52,7 +52,7 @@ class Flock implements Stim {
   int xLen, yLen;
   int[] myBorders;
   float xHalfLen, yHalfLen;
-  float meanTheta, maxForce, maxSpeed;
+  float meanTheta, maxSpeed;
   PVector v0;
   
   boolean move, separate, follow;
@@ -87,11 +87,11 @@ class Flock implements Stim {
     
     move = true;
     maxSpeed = maxsp;
-    maxForce = .04;
+
     v0 = PVector.fromAngle(meanTheta);
     v0.mult(maxSpeed);
     
-    float sepRadius = sepPx+1;
+    float sepRadius = sepPx+1;//+1 takes care of fractional pixels
     sepSq = sq(sepRadius);//squaring since using sqeuclidean dist below
     sepFreq = 5;
     
@@ -154,7 +154,7 @@ class Flock implements Stim {
     if (show) {
       boidAlpha = min(255,boidAlpha + fadeRate);
       setWiggle(wiggle);
-    } else boidAlpha = max(0,boidAlpha - fadeRate);
+    } else boidAlpha = max(30,boidAlpha - fadeRate);
     float alphafrac = boidAlpha/255.;
     background(bgColor*alphafrac + grayColor*(1. - alphafrac));
     

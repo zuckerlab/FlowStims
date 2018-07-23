@@ -20,7 +20,8 @@ int origSeed;
 
 float dirStd_ = 0.09;
 
-float sepWeight = 1.5;//use higher val if frameRate = 30, e.g., 4.0
+float sepWeight = 2.;//use higher val if frameRate = 30, e.g., 4.0
+float maxForce = .04;
 float posStd_ = 0.1;
 
 int frameWidth = 0;
@@ -32,7 +33,7 @@ int mywidth;
 int FRAME_RATE;
 int fadeRate;
 boolean postStim, preStim, trial;
-float preStimLenSec = .5;
+float preStimLenSec = 1.;
 float postStimLenSec = .5;
 float trialLenSec = 2;
 
@@ -58,8 +59,9 @@ void setup() {
   postStimLen = (int) (postStimLenSec*FRAME_RATE);
   trialLen = (int) (trialLenSec*FRAME_RATE);
   
-  origSeed = 19;
+  origSeed = 1;
   randomSeed(origSeed);
+  println(random(100));
   
   final float PX_PER_DEG = 10.37;
 
@@ -125,7 +127,7 @@ void setup() {
   nStims = nDirs*stimSpeeds.size()*(nDots.size()*dotColors.size()*dotDiamsDeg.size()*dotSeps.size()
                + gratWidths.size()*gratColors.size());
   stims = new Stim[nStims];
-  println("nStims",nStims);
+
   float dir, maxspeed, diam_deg, sep;
   int dirdeg, ndots, fgcolor, bgcolor, gray, diam_px, sep_px, tilesize, barwid;
   
@@ -156,7 +158,7 @@ void setup() {
               gray = dotInterColors.get(cc);
               
               if (fixRand) seed = (int) random(1000);
-              println(dirdeg,maxspeed,ndots,diam_px,sep_px,tilesize,fgcolor,bgcolor,gray,seed);
+              //println(dirdeg,maxspeed,ndots,diam_px,sep_px,tilesize,fgcolor,bgcolor,gray,seed);
               stims[s] = new Flock(seed, tilesize, dir, dirStd_, sep_px, posStd_, ndots, diam_px, fgcolor, bgcolor, gray, maxspeed);
               s++;
 
@@ -172,7 +174,7 @@ void setup() {
             fgcolor = gratColors.get(cc);
             bgcolor = gratBgColors.get(cc);
             gray = gratInterColors.get(cc);
-            println(dirdeg,maxspeed,barwid,fgcolor,bgcolor,gray);
+            //println(dirdeg,maxspeed,barwid,fgcolor,bgcolor,gray);
             stims[s] = new Grating(dirdeg, fgcolor, bgcolor, gray, barwid, maxspeed, gratphas); 
             s++;
         }
@@ -185,7 +187,6 @@ void setup() {
 
   stimIdxs = new IntList();
   for (int i = 0; i < nStims; i++) stimIdxs.append(i);
-  println(stimIdxs);
   
   //setup trial variables for movie to begin
   preStim = true;
@@ -194,7 +195,6 @@ void setup() {
   trialIndex = 0;
   totalTrials = totalTrialBlocks*nStims;
   
-  println("currentLen",currentLen);
 
 } 
 
@@ -206,7 +206,7 @@ void draw () {
   
   if (frameCounter == 0) { //if starting a period
     if (preStim || (trial && preStimLen == 0)) {
-      println("trialIndex",trialIndex);
+      //println("trialIndex",trialIndex);
       //if (trialIndex > 0) {
       //  assert stimp != null;
       //  stimp.delete();
@@ -221,7 +221,7 @@ void draw () {
           exit();
         }
         //else, reshuffle stims for this new block
-        stimIdxs.shuffle();
+        stimIdxs.shuffle(this);
         println(stimIdxs);
       } 
       println("trial",trialIndex+1,"/",totalTrials);
@@ -261,7 +261,7 @@ void updateState() {
   
   if (preStim) {
     
-    println("preStim->trial");
+    //println("preStim->trial");
     preStim = false;
     trial = true;
     currentLen = trialLen;
@@ -271,11 +271,11 @@ void updateState() {
     postStim = false;
     trialIndex++;
     if (preStimLen == 0) {
-      println("postStim->preStim->trial");
+      //println("postStim->preStim->trial");
       trial = true;
       currentLen = trialLen;
     } else {
-      println("postStim->preStim");      
+      //println("postStim->preStim");      
       preStim = true;
       currentLen = preStimLen;
     }
@@ -286,16 +286,16 @@ void updateState() {
     if (postStimLen == 0) {
       trialIndex++;
       if (preStimLen > 0) {
-        println("trial->postStim->preStim");
+        //println("trial->postStim->preStim");
         trial = false;
         preStim = true;
         currentLen = preStimLen;
       }
       //else keep it as it is!
-      else println("trial->postStim->preStim->trial");
+      //else println("trial->postStim->preStim->trial");
       
     } else {
-      println("trial->postStim");
+      //println("trial->postStim");
       trial = false;
       postStim = true;
       currentLen = postStimLen;
@@ -314,17 +314,17 @@ void drawBorders() {
 void keyPressed() {
   switch (key) {
     case 'm':
-      ((Flock) stim).move = !((Flock) stim).move;
+      if (stim instanceof Flock) ((Flock) stim).move = !((Flock) stim).move;
       break;
     case 's':
-      ((Flock) stim).separate = !((Flock) stim).separate;
+      if (stim instanceof Flock) ((Flock) stim).separate = !((Flock) stim).separate;
       break;
     case 'w':
       wiggle = !wiggle;
-      ((Flock) stim).setWiggle(wiggle);
+      if (stim instanceof Flock) ((Flock) stim).setWiggle(wiggle);
       break;
     case 'f':
-      ((Flock) stim).follow = !((Flock) stim).follow;
+      if (stim instanceof Flock) ((Flock) stim).follow = !((Flock) stim).follow;
       break;
     case 'b':
       showBorders = !showBorders;
