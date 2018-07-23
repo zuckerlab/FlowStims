@@ -86,7 +86,6 @@ class Grating implements Stim {
        deltaX = round(barWidth/cos(theta));
        deltaXspac = round(spaceWidth/cos(theta));
     }
-    println("speed",speed);
     
     if (phas == -1) phase = (int)random(barWidth);
     else phase = (int)phas*barWidth;

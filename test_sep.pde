@@ -15,6 +15,8 @@
 Stim stim;
 StimMaker stimp;
 StimMaker[] stimParams;
+int nStims;
+IntList stimIdxs;
 
 
 float dir_ = 3*PI/2.;
@@ -24,7 +26,7 @@ float dirStd_ = 0.08;
 int radius = 10;
 int sepNrads = 4;
 int sep_px = sepNrads*radius;
-int patt = 3;
+
 
 
 int tileSize_ = sep_px;
@@ -48,8 +50,8 @@ int preStimLen = (int) (preStimLenSec*FRAME_RATE);
 int postStimLen = (int) (postStimLenSec*FRAME_RATE);
 int trialLen = (int) (trialLenSec*FRAME_RATE);
 
-int currentLen, frameCounter, trialNo, totalTrials;
-int totalTrialBlocks = 1;
+int currentLen, frameCounter, trialIndex, totalTrials;
+int totalTrialBlocks = 4;
 
 boolean makeMovie = true;
 boolean singleSeed = true;
@@ -68,16 +70,22 @@ void setup() {
   myheight = height - 2*frameWidth;
   mywidth = width - 2*frameWidth;
   
-  stimParams = new StimMaker[2];
+  stimParams = new StimMaker[3];
   
   int fadeframes = 3;
   fadeRate = ceil(255./fadeframes);
   
   
   /*SETTING PARAMS SET FOR EACH FLOW STIM*/
-  if (patt > 1) radius = int(radius/sqrt(patt));
+  int patt1 = 3;
+  int radius1 = radius;
+  if (patt1 > 1) radius1 = int(radius1/sqrt(patt1));
+  int patt2 = 1;
+  int radius2 = radius;
+  if (patt2 > 1) radius2 = int(radius2/sqrt(patt2));
+  
   int dotColor1 = 255;
-  int dotColor2 = 128;
+  int dotColor2 = 255;
   
   int bgColor1 = 0;
   int bgColor2 = 0;
@@ -90,9 +98,9 @@ void setup() {
   if (posStd_ == 0) wiggle_ = false;
   
   stimParams[0] = new FlockMaker(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
-            patt, radius, dotColor1, bgColor1, gray1, maxspeed, wiggle_, usepshape);
-  //stimParams[1] = new FlockMaker(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
-  //          patt, radius, dotColor2, bgColor2, gray2, maxspeed, wiggle_, usepshape);
+            patt1, radius1, dotColor1, bgColor1, gray1, maxspeed, wiggle_, usepshape);
+  stimParams[1] = new FlockMaker(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
+            patt2, radius2, dotColor2, bgColor2, gray2, maxspeed, wiggle_, usepshape);
   
   /*SETTING PARAMS SET FOR EACH GRAT STIM*/
   int dirdegs = 45;//(int) degrees(dir_);
@@ -105,13 +113,18 @@ void setup() {
   
   ////POPULATE STIMS ARRAY  
 
-  stimParams[1] = new GratingMaker(dirdegs, fg, bg, gray, barwid, spacwid, maxspeed, phas); 
+  stimParams[2] = new GratingMaker(dirdegs, fg, bg, gray, barwid, spacwid, maxspeed, phas); 
 
+  //store stim indices
+  nStims = stimParams.length;
+  stimIdxs = new IntList();
+  for (int i = 0; i < nStims; i++) stimIdxs.append(i);
+  println(stimIdxs);
   //setup trial variables for movie to begin
   preStim = true;
   currentLen = preStimLen;
   frameCounter = 0;
-  trialNo = 0;
+  trialIndex = 0;
   totalTrials = totalTrialBlocks*stimParams.length;
   
 
@@ -125,18 +138,28 @@ void draw () {
   
   if (frameCounter == 0) { //if starting a period
     if (preStim || (trial && preStimLen == 0)) {
-      if (stimp != null) stimp.delete();
+      println("trialIndex",trialIndex);
+      if (trialIndex > 0) {
+        assert stimp != null;
+        stimp.delete();
+      }
+      
       //check if new trial block
-      if ((trialNo % stimParams.length) == 0) {
-        if (trialNo == totalTrials) {
+      if ((trialIndex % nStims) == 0) {
+        if (trialIndex == totalTrials) {
+          //println("END");
           //end movie
+          noLoop();
           exit();
-        } 
+        }
+        //else, reshuffle stims for this new block
+        stimIdxs.shuffle();
+        println(stimIdxs);
       } 
-      println("trial",trialNo,"/",totalTrials);
+      println("trial",trialIndex+1,"/",totalTrials);
       //load new stim
-      println("Loading "+trialNo % stimParams.length + "/" + stimParams.length);
-      stimp = stimParams[trialNo % stimParams.length];
+      println("Loading "+trialIndex % nStims + "/" + nStims);
+      stimp = stimParams[stimIdxs.get(trialIndex % nStims)];
       stimp.init(0);
 
     } else if (postStim) {
@@ -170,7 +193,7 @@ void updateState() {
   
   if (preStim) {
     
-    println("preStim->trial");
+    //println("preStim->trial");
     preStim = false;
     trial = true;
     currentLen = trialLen;
@@ -178,13 +201,13 @@ void updateState() {
   } else if (postStim) {
     
     postStim = false;
-    trialNo++;
+    trialIndex++;
     if (preStimLen == 0) {
-      println("postStim->preStim->trial");
+      //println("postStim->preStim->trial");
       trial = true;
       currentLen = trialLen;
     } else {
-      println("postStim->preStim");      
+      //println("postStim->preStim");      
       preStim = true;
       currentLen = preStimLen;
     }
@@ -193,18 +216,18 @@ void updateState() {
     
     assert trial == true;      
     if (postStimLen == 0) {
-      trialNo++;
+      trialIndex++;
       if (preStimLen > 0) {
-        println("trial->postStim->preStim");
+        //println("trial->postStim->preStim");
         trial = false;
         preStim = true;
         currentLen = preStimLen;
       }
       //else keep it as it is!
-      else println("trial->postStim->preStim->trial");
+      //else println("trial->postStim->preStim->trial");
       
     } else {
-      println("trial->postStim");
+      //println("trial->postStim");
       trial = false;
       postStim = true;
       currentLen = postStimLen;

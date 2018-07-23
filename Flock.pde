@@ -175,7 +175,7 @@ class Flock implements Stim {
     } else {
       boid = createShape(GROUP);
       PShape dot;
-      for (int i = -(patt-1); i < patt; i+=2) {
+      for (int i = -(pattern-1); i < pattern; i+=2) {
         dot = createShape(ELLIPSE, i*D/2, 0, D, D);
         boid.addChild(dot);
       }        
