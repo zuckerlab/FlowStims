@@ -9,7 +9,8 @@
 
 //use same seed for multiple Flock trials (reproducible option): could be done in main, before each
   //new trial block --- NO! only if classes are re-initialized!
-
+  
+//if movie mode, instead of sending packets need to output a log with frameNo -> event
 
 
 Stim stim;  
@@ -111,6 +112,8 @@ void setup() {
   frameCounter = 0;
   trialNo = 0;
   totalTrials = totalTrialBlocks*stims.length;
+  
+
 } 
 
 void draw () {
