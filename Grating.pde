@@ -51,7 +51,7 @@ class Grating implements Stim {
   float[] vals;
   
 
-  Grating(int dir, int fg, int bg, int gray, int barwid, int spacwid, float spd, float phas) {
+  Grating(int dir, int fg, int bg, int gray, int barwid, float spd, float phas) {
     
     p0 = new PVector(0,0);
     p1 = new PVector(0,0);
@@ -70,7 +70,7 @@ class Grating implements Stim {
     direction = dir;
     theta = radians(direction);
     barWidth = barwid;
-    spaceWidth = spacwid;
+    spaceWidth = barwid;
      if (direction == 90 || direction == 270) {
        speed = spd;
        if (direction == 270) speed = -spd;

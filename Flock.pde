@@ -42,8 +42,8 @@ class Flock implements Stim {
   DoublyLinkedList[] binGrid;
 
   int binSize, binrows, bincols;
-  int pattern, radius, D, boidColor, boidAlpha, bgColor, grayColor;
-  float sepSq, sepWeight, posStd;
+  int pattern, D, boidColor, boidAlpha, bgColor, grayColor;
+  float sepSq, posStd, radius;
   int sepFreq;
   
   int[] nbrArray;//single common array to all boids!
@@ -55,34 +55,34 @@ class Flock implements Stim {
   float meanTheta, maxForce, maxSpeed;
   PVector v0;
   
-  boolean move, separate, follow, wiggle;
+  boolean move, separate, follow;
   PShape boid;
-  boolean usePShape;
   
   int mySeed;
 
 
-  Flock(int myseed, int tilesize, float meantheta, float dirstd, int sepPx, float sepweight, float posStd, int patt, 
-        int R, int boidcolor, int bgcolor, int graycolor, float maxsp, boolean wiggle_, boolean usePShape_) {
+  Flock(int myseed, int tilesize, float meantheta, float dirstd, int sepPx, float posStd, int ndots, 
+        int diam, int boidcolor, int bgcolor, int gray, float maxsp) {
           
     mySeed = myseed;
     if (dirstd > 0) flow = new FlowField(tilesize, meantheta, dirstd);
           
     nbrArray = new int[9];
     meanTheta = -meantheta;
-    pattern = patt;
+    pattern = ndots;
     boidColor = boidcolor;
     bgColor = bgcolor;
-    grayColor = graycolor;
-    radius = R;
-    D = 2*radius;
+    grayColor = gray;
+
+    D = diam;
+    if (pattern > 1) D = round(D/sqrt(pattern));
+
+    radius = D/2.;
     
-    wiggle = wiggle_;//refers to whether we want wiggling during trials
     if (posStd == 0) assert !wiggle;
     else setWiggle(true);//if posStd we want scrambled boids, so turn wiggle on during pre-trial
     
 
-    usePShape = usePShape_;
     if (usePShape) createBoidShape();
     
     move = true;
@@ -94,7 +94,6 @@ class Flock implements Stim {
     float sepRadius = sepPx+1;
     sepSq = sq(sepRadius);//squaring since using sqeuclidean dist below
     sepFreq = 5;
-    sepWeight = sepweight;
     
     binSize = sepPx;
 
@@ -103,10 +102,10 @@ class Flock implements Stim {
 
     //eliminate flickering of patterns > 1 along borders when two elts don't fit into the same bin
     if (meantheta == 0 || meantheta == PI)
-      if (binrows*binSize - myheight < 2*pattern*radius) binrows++;
+      if (binrows*binSize - myheight < pattern*D) binrows++;
 
     if (meantheta == HALF_PI || meantheta == 3*HALF_PI)
-      if (bincols*binSize - mywidth < 2*pattern*radius) bincols++;
+      if (bincols*binSize - mywidth < pattern*D) bincols++;
 
 
     int borderx = frameWidth + binSize*(bincols);
@@ -169,7 +168,6 @@ class Flock implements Stim {
     fill(boidColor);
     noStroke();
     ellipseMode(CENTER);
-    float D = 2*radius;
 
     if (pattern == 1) {
       boid = createShape(ELLIPSE,0,0,D,D);      

@@ -18,14 +18,8 @@ IntList stimIdxs;
 
 int origSeed;
 
-float dir_ = 3*PI/2.;
 float dirStd_ = 0.09;
 
-int radius = 10;
-int sepNrads = 4;
-int sep_px = sepNrads*radius;
-
-int tileSize_ = sep_px*3;
 float sepWeight = 1.5;//use higher val if frameRate = 30, e.g., 4.0
 float posStd_ = 0.1;
 
@@ -35,98 +29,164 @@ int mywidth;
 
 //boolean move_, separate_, follow_;
 
-int FRAME_RATE = 60;
+int FRAME_RATE;
 int fadeRate;
 boolean postStim, preStim, trial;
 float preStimLenSec = .5;
 float postStimLenSec = .5;
 float trialLenSec = 2;
 
-int preStimLen = (int) (preStimLenSec*FRAME_RATE);
-int postStimLen = (int) (postStimLenSec*FRAME_RATE);
-int trialLen = (int) (trialLenSec*FRAME_RATE);
+int preStimLen, postStimLen, trialLen;
 
 int currentLen, frameCounter, trialIndex, totalTrials;
 int totalTrialBlocks = 4;
 
 boolean makeMovie = true;
-boolean singleSeed = true;
 
 //debug tools
 boolean showBorders, showField, showGrid;
-boolean usepshape = false;
+boolean usePShape = false;
 
-boolean wiggle_;
+boolean wiggle = true;
 
 void setup() {
-  frameRate(FRAME_RATE);
+  
   size(800,600,P2D);
+  FRAME_RATE = 60;
+  frameRate(FRAME_RATE);
+  preStimLen = (int) (preStimLenSec*FRAME_RATE);
+  postStimLen = (int) (postStimLenSec*FRAME_RATE);
+  trialLen = (int) (trialLenSec*FRAME_RATE);
+  
   origSeed = 19;
   randomSeed(origSeed);
-
   
+  final float PX_PER_DEG = 10.37;
+
   myheight = height - 2*frameWidth;
   mywidth = width - 2*frameWidth;
-  
-  //stimParams = new StimMaker[3];
-  stims = new Stim[3];
-  
+
   int fadeframes = 3;
   fadeRate = ceil(255./fadeframes);
+
+  if (posStd_ == 0) wiggle = false;
   
+  boolean fixRand = true;
+  int seed = -1;
+  float gratphas = -1;
+  
+  //if flows arent rand, then most likely you dont want rand grating phase either
+  if (fixRand && gratphas == -1) gratphas = 0;//(catching possibly common mistake when setting params file)
+ 
   
   /*SETTING PARAMS SET FOR EACH FLOW STIM*/
-  int patt1 = 3;
-  int radius1 = radius;
-  if (patt1 > 1) radius1 = int(radius1/sqrt(patt1));
-  int patt2 = 1;
-  int radius2 = radius;
-  if (patt2 > 1) radius2 = int(radius2/sqrt(patt2));
+  int nDirs = 8;
   
-  boolean fixRand1 = true;
-  int seed1 = -1;
-  if (fixRand1) seed1 = (int) random(1000);
-  boolean fixRand2 = false;
-  int seed2 = -1;
-  if (fixRand2) seed2 = (int) random(1000);
+  
+  IntList nDots = new IntList();
+  nDots.append(1);
+  nDots.append(3);
+  
+  FloatList dotDiamsDeg = new FloatList();
+  dotDiamsDeg.append(.8);
+  
+  FloatList dotSeps = new FloatList();
+  dotSeps.append(3);
 
-  
-  int dotColor1 = 255;
-  int dotColor2 = 255;
-  
-  int bgColor1 = 0;
-  int bgColor2 = 0;
-  
-  int gray1 = 128;
-  int gray2 = 120;
-  float maxspeed = 2;
-  
-  wiggle_ = true;
-  if (posStd_ == 0) wiggle_ = false;
-  
-  stims[0] = new Flock(seed1,tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
-            patt1, radius1, dotColor1, bgColor1, gray1, maxspeed, wiggle_, usepshape);
-  stims[1] = new Flock(seed2,tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
-            patt2, radius2, dotColor2, bgColor2, gray2, maxspeed, wiggle_, usepshape);
-  
-  /*SETTING PARAMS SET FOR EACH GRAT STIM*/
-  int dirdegs = 45;//(int) degrees(dir_);
-  int fg = 255;
-  int bg = 0;
-  int gray = 128;
-  int barwid = 30;
-  int spacwid = 60;
-  float phas = -1; 
-  
-  ////POPULATE STIMS ARRAY  
 
-  stims[2] = new Grating(dirdegs, fg, bg, gray, barwid, spacwid, maxspeed, phas); 
+  IntList dotColors = new IntList();
+  dotColors.append(255);
+  dotColors.append(0);  
+  IntList dotBgColors = new IntList();
+  dotBgColors.append(0);
+  dotBgColors.append(255);  
+  IntList dotInterColors = new IntList();
+  dotInterColors.append(128);
+  dotInterColors.append(128);
+  
+  FloatList stimSpeeds = new FloatList();
+  stimSpeeds.append(2.);
+  
+  IntList gratColors = new IntList();
+  gratColors.append(255);
+  gratColors.append(68);  
+  IntList gratBgColors = new IntList();
+  gratBgColors.append(0);
+  gratBgColors.append(119); 
+  IntList gratInterColors = new IntList();
+  gratInterColors.append(128);
+  gratInterColors.append(128);
+
+  IntList gratWidths = new IntList();
+  gratWidths.append(60);
+  
+
+
+  nStims = nDirs*stimSpeeds.size()*(nDots.size()*dotColors.size()*dotDiamsDeg.size()*dotSeps.size()
+               + gratWidths.size()*gratColors.size());
+  stims = new Stim[nStims];
+  println("nStims",nStims);
+  float dir, maxspeed, diam_deg, sep;
+  int dirdeg, ndots, fgcolor, bgcolor, gray, diam_px, sep_px, tilesize, barwid;
+  
+  int s = 0;
+  for (int dr = 0; dr < nDirs; dr++) {
+    dir = dr*(TWO_PI/nDirs);
+    dirdeg = round(dr*(360./nDirs)); 
+    
+    for (int sp = 0; sp < stimSpeeds.size(); sp++) {
+      maxspeed = stimSpeeds.get(sp);
+      
+      //FLOWS
+      for (int dt = 0; dt < nDots.size(); dt++) {
+        ndots = nDots.get(dt);
+        
+        for (int sz = 0; sz < dotDiamsDeg.size(); sz++) {
+          diam_deg = dotDiamsDeg.get(sz);
+          diam_px = round(diam_deg*PX_PER_DEG);
+            
+          for (int se = 0; se < dotSeps.size(); se++) {
+            sep = dotSeps.get(se);
+            sep_px = round(sep*diam_px); //based on original diameter, i.e., before area correction
+            tilesize = sep_px*3;
+            
+            for (int cc = 0; cc < dotColors.size(); cc++) {
+              fgcolor = dotColors.get(cc);
+              bgcolor = dotBgColors.get(cc);
+              gray = dotInterColors.get(cc);
+              
+              if (fixRand) seed = (int) random(1000);
+              println(dirdeg,maxspeed,ndots,diam_px,sep_px,tilesize,fgcolor,bgcolor,gray,seed);
+              stims[s] = new Flock(seed, tilesize, dir, dirStd_, sep_px, posStd_, ndots, diam_px, fgcolor, bgcolor, gray, maxspeed);
+              s++;
+
+            }
+          }
+        }
+      }
+      //GRATS
+      for (int sz = 0; sz < gratWidths.size(); sz++) {
+        barwid = gratWidths.get(sz);
+        
+        for (int cc = 0; cc < gratColors.size(); cc++) {
+            fgcolor = gratColors.get(cc);
+            bgcolor = gratBgColors.get(cc);
+            gray = gratInterColors.get(cc);
+            println(dirdeg,maxspeed,barwid,fgcolor,bgcolor,gray);
+            stims[s] = new Grating(dirdeg, fgcolor, bgcolor, gray, barwid, maxspeed, gratphas); 
+            s++;
+        }
+      }
+    }
+  }
+
 
   //store stim indices
-  nStims = stims.length;
+
   stimIdxs = new IntList();
   for (int i = 0; i < nStims; i++) stimIdxs.append(i);
   println(stimIdxs);
+  
   //setup trial variables for movie to begin
   preStim = true;
   currentLen = preStimLen;
@@ -134,11 +194,12 @@ void setup() {
   trialIndex = 0;
   totalTrials = totalTrialBlocks*nStims;
   
-
+  println("currentLen",currentLen);
 
 } 
 
 void draw () {
+
   if (frameCounter == currentLen) {//if ending a period
        updateState();
   }
@@ -200,7 +261,7 @@ void updateState() {
   
   if (preStim) {
     
-    //println("preStim->trial");
+    println("preStim->trial");
     preStim = false;
     trial = true;
     currentLen = trialLen;
@@ -210,11 +271,11 @@ void updateState() {
     postStim = false;
     trialIndex++;
     if (preStimLen == 0) {
-      //println("postStim->preStim->trial");
+      println("postStim->preStim->trial");
       trial = true;
       currentLen = trialLen;
     } else {
-      //println("postStim->preStim");      
+      println("postStim->preStim");      
       preStim = true;
       currentLen = preStimLen;
     }
@@ -225,16 +286,16 @@ void updateState() {
     if (postStimLen == 0) {
       trialIndex++;
       if (preStimLen > 0) {
-        //println("trial->postStim->preStim");
+        println("trial->postStim->preStim");
         trial = false;
         preStim = true;
         currentLen = preStimLen;
       }
       //else keep it as it is!
-      //else println("trial->postStim->preStim->trial");
+      else println("trial->postStim->preStim->trial");
       
     } else {
-      //println("trial->postStim");
+      println("trial->postStim");
       trial = false;
       postStim = true;
       currentLen = postStimLen;
@@ -259,8 +320,8 @@ void keyPressed() {
       ((Flock) stim).separate = !((Flock) stim).separate;
       break;
     case 'w':
-      wiggle_ = !wiggle_;
-      ((Flock) stim).setWiggle(wiggle_);
+      wiggle = !wiggle;
+      ((Flock) stim).setWiggle(wiggle);
       break;
     case 'f':
       ((Flock) stim).follow = !((Flock) stim).follow;
