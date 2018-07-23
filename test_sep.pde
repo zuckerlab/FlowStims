@@ -9,18 +9,30 @@
 
 //if movie mode, instead of sending packets need to output a log with frameNo -> event
 
+
+//make Loader method for checking comment next to val
+String VERSION = "12";
+
+//default movie params
+int monitor = 1;
+int scrWidthPx = 800;
+int scrHeightPx= 600;
+boolean fastRendering = true;
+int origSeed = 1;
+//default stim params
+int nDirs = 1;
+
+
+PrintWriter out_params;
+
 Stim stim;
-//StimMaker stimp;
-//StimMaker[] stimParams;
 Stim[] stims;
 int nStims;
 IntList stimIdxs;
 
-int origSeed;
 
 float dirStd_ = 0.09;
-
-float sepWeight = 2.;//use higher val if frameRate = 30, e.g., 4.0
+float sepWeight = 2.;//use higher val if FRAME_RATE = 30
 float maxForce = .04;
 float posStd_ = 0.1;
 
@@ -28,9 +40,7 @@ int frameWidth = 0;
 int myheight;
 int mywidth;
 
-//boolean move_, separate_, follow_;
-
-int FRAME_RATE;
+int FRAME_RATE = 60;
 int fadeRate;
 boolean postStim, preStim, trial;
 float preStimLenSec = 1.;
@@ -50,18 +60,33 @@ boolean usePShape = false;
 
 boolean wiggle = true;
 
-void setup() {
+
+void settings() {
+  int d = day();  int m = month();  int y = year(); int min = minute(); int h = hour(); 
+  String today = String.valueOf(y-2000)+String.format("%02d",m)+String.format("%02d",d);
+  String now = String.format("%02d",h)+String.format("%02d",min);
+  out_params = createWriter(today+"_"+now+"_params.log"); 
+
+  String[] lines = loadStrings("params.txt");
+  loadParams(lines);
+  size(scrWidthPx,scrHeightPx,P2D);
+  if (fastRendering) {
+    fullScreen(P2D,monitor);
+  } else {
+    fullScreen(monitor);
+  }
   
-  size(800,600,P2D);
-  FRAME_RATE = 60;
   frameRate(FRAME_RATE);
+
+}
+
+void setup() {  
+
   preStimLen = (int) (preStimLenSec*FRAME_RATE);
   postStimLen = (int) (postStimLenSec*FRAME_RATE);
   trialLen = (int) (trialLenSec*FRAME_RATE);
   
-  origSeed = 1;
   randomSeed(origSeed);
-  println(random(100));
   
   final float PX_PER_DEG = 10.37;
 
@@ -81,8 +106,8 @@ void setup() {
   if (fixRand && gratphas == -1) gratphas = 0;//(catching possibly common mistake when setting params file)
  
   
-  /*SETTING PARAMS SET FOR EACH FLOW STIM*/
-  int nDirs = 8;
+  /*SETTING PARAMS SET FOR EACH STIM*/
+
   
   
   IntList nDots = new IntList();
@@ -161,7 +186,6 @@ void setup() {
               //println(dirdeg,maxspeed,ndots,diam_px,sep_px,tilesize,fgcolor,bgcolor,gray,seed);
               stims[s] = new Flock(seed, tilesize, dir, dirStd_, sep_px, posStd_, ndots, diam_px, fgcolor, bgcolor, gray, maxspeed);
               s++;
-
             }
           }
         }
@@ -184,7 +208,6 @@ void setup() {
 
 
   //store stim indices
-
   stimIdxs = new IntList();
   for (int i = 0; i < nStims; i++) stimIdxs.append(i);
   
@@ -195,7 +218,6 @@ void setup() {
   trialIndex = 0;
   totalTrials = totalTrialBlocks*nStims;
   
-
 } 
 
 void draw () {
@@ -215,7 +237,6 @@ void draw () {
       //check if new trial block
       if ((trialIndex % nStims) == 0) {
         if (trialIndex == totalTrials) {
-          //println("END");
           //end movie
           noLoop();
           exit();
@@ -259,15 +280,13 @@ void draw () {
 void updateState() {
   frameCounter = 0;
   
-  if (preStim) {
-    
+  if (preStim) {   
     //println("preStim->trial");
     preStim = false;
     trial = true;
     currentLen = trialLen;
     
-  } else if (postStim) {
-    
+  } else if (postStim) {    
     postStim = false;
     trialIndex++;
     if (preStimLen == 0) {
@@ -281,7 +300,6 @@ void updateState() {
     }
     
   } else {
-    
     assert trial == true;      
     if (postStimLen == 0) {
       trialIndex++;
@@ -292,8 +310,7 @@ void updateState() {
         currentLen = preStimLen;
       }
       //else keep it as it is!
-      //else println("trial->postStim->preStim->trial");
-      
+      //else println("trial->postStim->preStim->trial");      
     } else {
       //println("trial->postStim");
       trial = false;
@@ -309,10 +326,172 @@ void drawBorders() {
   rect(frameWidth,frameWidth,mywidth-1,myheight-1); 
 }
 
+void loadParams(String[] lines) {
+  if (lines == null || lines.length == 0) {
+    System.out.printf("Invalid params.txt file!\n");
+    out_params.close();
+    System.exit(1);
+  }
+  for (int p = 0; p < lines.length; p++) {
+    String line = lines[p];
+    if (line.length() > 0 && line.charAt(0) != '#') {
+      String[] list = split(line, ' ');
+      if (list.length < 2) continue;
+      switch(list[0]) {
+         case "FlowStims": //check version of params file          
+           if (!list[1].equals(VERSION)) {
+             System.out.printf("Incompatible version of params.txt file! Should be %s\n",VERSION);
+             out_params.close();
+             System.exit(1);            
+           }
+           out_params.print("FlowStims ");
+           out_params.println(list[1]);
+           break;
+        case "scrWidthPx": scrWidthPx = Loader.loadInt(list[1],list[0],out_params); break;
+        case "scrHeightPx": scrHeightPx = Loader.loadInt(list[1],list[0],out_params); break;
+        case "monitor": monitor = Loader.loadInt(list[1],list[0],out_params); break;
+        case "fastRendering": fastRendering = Loader.loadBool(list[1],list[0],out_params); break;
+        case "frameRate": FRAME_RATE = Loader.loadInt(list[1],list[0],out_params); break;
+        case "randSeed": origSeed = Loader.loadInt(list[1],list[0],out_params); break;
+        case "nDirs": nDirs = Loader.loadInt(list[1],list[0],out_params); break;
+                 case "nTrialBlocks":
+           nTrials = Loader.loadInt(list[1],"nTrials ",out_params);
+           break;
+                    case "scrWidthCm":
+           scrWidthCm = Loader.loadFloat(list[1],"scrWidthCm ",out_params);
+           break;
+         case "scrDistCm":
+           scrDistCm = Loader.loadFloat(list[1],"scrDistCm ",out_params);
+           break;
+         case "pxPerDeg":
+           pxPerDeg = Loader.loadFloat(list[1],"pxPerDeg ",out_params);
+           break;
+              case "maxForce":
+           maxForce = Loader.loadFloat(list[1],"maxForce ",out_params);
+           break;
+            case "gratPhase":
+           gratPhase = Loader.loadFloat(list[1],"gratPhase ",out_params);
+           break;
+          case "dotColor":
+           dotColorList = new ArrayList<Integer>();
+           nDotColors = Loader.loadMultiInt(list,"dotColor ",out_params,dotColorList);
+           dotColor = dotColorList.get(0);
+           if (nDotColors > 1)
+             multiDotColors = true;
+           break;
+         case "dotBgColor":
+           bgColorList = new ArrayList<Integer>();    
+           dotBgColor = Loader.loadDepMultiInt(list,"dotBgColor ",out_params,bgColorList,nDotColors);
+           break;
+         case "dotGrayScrLvl":
+           grayLvlList = new ArrayList<Integer>(); 
+           dotGrayScrLvl = Loader.loadDepMultiInt(list,"dotGrayScrLvl ",out_params,grayLvlList,nDotColors);
+           break;
+           //booleans: show Gratings, show Flows 
+         case "gratSF":
+           gratSFList = new ArrayList<Float>();
+           nGratSizes = Loader.loadMultiFloat(list,"gratSF ",out_params,gratSFList);
+           gratSF = gratSFList.get(0);
+           if (nGratSizes > 1)
+             multiGratSizes = true;
+           break;
+        case "gratColor":
+           gratColorList = new ArrayList<Integer>();
+           nGratColors = Loader.loadMultiInt(list,"gratColor ",out_params,gratColorList);
+           gratColor = gratColorList.get(0);
+           if (nGratColors > 1)
+             multiGratColors = true;
+           break;
+         case "gratBgColor":
+           gratBgColorList = new ArrayList<Integer>();    
+           gratBgColor = Loader.loadDepMultiInt(list,"gratBgColor ",out_params,gratBgColorList,nGratColors);
+           break;
+         case "gratGrayScrLvl":
+           gratGrayLvlList = new ArrayList<Integer>(); 
+           gratGrayScrLvl = Loader.loadDepMultiInt(list,"gratGrayScrLvl ",out_params,gratGrayLvlList,nGratColors);
+           break;
+         case "dotType":
+           dotTypeList = new ArrayList<Integer>();
+           nDotTypes = Loader.loadMultiInt(list,"dotType ",out_params,dotTypeList);
+           dotType = dotTypeList.get(0);
+           if (nDotTypes > 1)
+             multiDotTypes = true;
+           break;
+         case "dotSize":
+           dotSizeList = new ArrayList<Float>();
+           nDotSizes = Loader.loadMultiFloat(list,"dotSize ",out_params,dotSizeList);
+           dotSize = dotSizeList.get(0);
+           if (nDotSizes > 1)
+             multiDotSizes = true;
+           break;
+         case "dotSpacing":
+           baseSpacList = new ArrayList<Float>();
+           baseSpacing = Loader.loadDepMultiFloat(list,"dotSpacing ",out_params,baseSpacList,nDotSizes);
+           baseSpacing = baseSpacList.get(0);
+           break;
+         case "dotSeparation":
+           dotSeparation = Loader.loadFloat(list[1],"dotSeparation ",out_params);
+           break; 
+         case "dotSeparationTrial":
+           dotSeparationTrial = Loader.loadFloat(list[1],"dotSeparationTrial ",out_params);
+           break;  
+         case "fadeRate":
+           fadeRate = Loader.loadFloat(list[1],"fadeRate ",out_params);
+           break; 
+         case "tileSize":
+           tileSizeList = new ArrayList<Integer>();
+           tileSize = Loader.loadDepMultiInt(list,"tileSize ",out_params,tileSizeList,nDotTypes);
+           break;
+         case "tempFreq":
+           speedList = new ArrayList<Float>();
+           nSpeeds = Loader.loadMultiFloat(list,"tempFreq ",out_params,speedList);
+           tempFreq = speedList.get(0);
+           if (nSpeeds > 1)
+             multiSpeeds = true;
+           break;
+         case "posStd":
+           posStd = Loader.loadFloat(list[1],"posStd ",out_params);
+           break;
+         case "trialLength":
+           trialLength = Loader.loadInt(list[1],"trialLength ",out_params);
+           break;           
+         case "grayScrLength":
+           grayScrLength = Loader.loadInt(list[1],"grayScrLength ",out_params);
+           break;
+         case "clientStart":
+           clientStart = new Client(list[1]);
+           Loader.loadClient(clientStart,list,"clientStart ",out_params);
+           break;
+         case "clientEnd":
+           clientEnd = new Client(list[1]);
+           Loader.loadClient(clientEnd,list,"clientEnd ",out_params);
+           break;
+         case "clientTrialStart":
+           clientTrialStart = new Client(list[1]);
+           Loader.loadClient(clientTrialStart,list,"clientTrialStart ",out_params);
+           break;
+         case "clientTrialEnd":
+           clientTrialEnd = new Client(list[1]);
+           Loader.loadClient(clientTrialEnd,list,"clientTrialEnd ",out_params);
+           break;
+         case "clientTimeStamp":
+           clientTimeStamp = new Client(list[1]);
+           tStampInterval = int(FRAME_RATE * Loader.loadClientInterval(clientTimeStamp,list,"clientTimeStamp ",out_params));
+           break;
+         default:
+           break;
+      }
+    }
+  }
+}
+
 
 
 void keyPressed() {
   switch (key) {
+    case ESC:
+      noLoop();
+      exit();
     case 'm':
       if (stim instanceof Flock) ((Flock) stim).move = !((Flock) stim).move;
       break;
