@@ -7,9 +7,6 @@
 
 //make ellipsoidal distance radius for separation of 3-dots?
 
-//use same seed for multiple Flock trials (reproducible option): could be done in main, before each
-  //new trial block --- NO! only if classes are re-initialized!
-
 //if movie mode, instead of sending packets need to output a log with frameNo -> event
 
 Stim stim;
@@ -18,18 +15,16 @@ StimMaker[] stimParams;
 int nStims;
 IntList stimIdxs;
 
+int origSeed;
 
 float dir_ = 3*PI/2.;
-float dirStd_ = 0.08;
-
+float dirStd_ = 0.09;
 
 int radius = 10;
 int sepNrads = 4;
 int sep_px = sepNrads*radius;
 
-
-
-int tileSize_ = sep_px;
+int tileSize_ = sep_px*3;
 float sepWeight = 1.5;//use higher val if frameRate = 30, e.g., 4.0
 float posStd_ = 0.1;
 
@@ -65,7 +60,9 @@ boolean wiggle_;
 void setup() {
   frameRate(FRAME_RATE);
   size(800,600,P2D);
-  randomSeed(0);
+  origSeed = 19;
+  randomSeed(origSeed);
+
   
   myheight = height - 2*frameWidth;
   mywidth = width - 2*frameWidth;
@@ -84,6 +81,14 @@ void setup() {
   int radius2 = radius;
   if (patt2 > 1) radius2 = int(radius2/sqrt(patt2));
   
+  boolean fixRand1 = true;
+  int seed1 = -1;
+  if (fixRand1) seed1 = (int) random(1000);
+  boolean fixRand2 = false;
+  int seed2 = -1;
+  if (fixRand2) seed2 = (int) random(1000);
+
+  
   int dotColor1 = 255;
   int dotColor2 = 255;
   
@@ -97,9 +102,9 @@ void setup() {
   wiggle_ = true;
   if (posStd_ == 0) wiggle_ = false;
   
-  stimParams[0] = new FlockMaker(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
+  stimParams[0] = new FlockMaker(seed1,tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
             patt1, radius1, dotColor1, bgColor1, gray1, maxspeed, wiggle_, usepshape);
-  stimParams[1] = new FlockMaker(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
+  stimParams[1] = new FlockMaker(seed2,tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
             patt2, radius2, dotColor2, bgColor2, gray2, maxspeed, wiggle_, usepshape);
   
   /*SETTING PARAMS SET FOR EACH GRAT STIM*/
@@ -109,7 +114,7 @@ void setup() {
   int gray = 128;
   int barwid = 30;
   int spacwid = 60;
-  float phas = 0; 
+  float phas = -1; 
   
   ////POPULATE STIMS ARRAY  
 
@@ -160,7 +165,7 @@ void draw () {
       //load new stim
       println("Loading "+trialIndex % nStims + "/" + nStims);
       stimp = stimParams[stimIdxs.get(trialIndex % nStims)];
-      stimp.init(0);
+      stimp.init();
 
     } else if (postStim) {
       ;
@@ -178,8 +183,8 @@ void draw () {
 
   
   if (showBorders) drawBorders();
-  //if (showField && ((Flock) stim).flow != null) ((Flock) stim).flow.drawField(); 
-  //if (showGrid) ((Flock) stim).drawBinGrid();
+  if (showField && (stimp instanceof FlockMaker)) ((FlockMaker) stimp).stim.flow.drawField(); 
+  if (showGrid && (stimp instanceof FlockMaker)) ((FlockMaker) stimp).stim.drawBinGrid();
   
   //stroke(255);
   //textSize(12);

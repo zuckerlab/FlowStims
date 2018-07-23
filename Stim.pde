@@ -3,8 +3,10 @@ interface Stim {
   void run(boolean show);
 }
 
-interface StimMaker {  
-  Stim init(int seed);
-  void run(boolean show);
-  void delete();  
+interface StimMaker {
+  //final int STIM_TYPE;
+  //StimMaker(int type) {STIM_TYPE = type;}
+  abstract Stim init();
+  abstract void run(boolean show);
+  abstract void delete();  
 }

@@ -1,33 +1,25 @@
 class FlockMaker implements StimMaker {
 
-  int tilesize, sepPx, patt, R, boidcolor, bgcolor, graycolor;
+  int tilesize, sepPx, patt, R, boidcolor, bgcolor, graycolor, mySeed;
   float meantheta, dirstd, sepweight, posStd, maxsp;
   boolean wiggle_, usePShape_;
   Flock stim;
   
-  FlockMaker(int tilesize_, float meantheta_, float dirstd_, int sepPx_, float sepweight_, float posStd_, int patt_, 
+  FlockMaker(int myseed, int tilesize_, float meantheta_, float dirstd_, int sepPx_, float sepweight_, float posStd_, int patt_, 
       int R_, int boidcolor_, int bgcolor_, int graycolor_, float maxsp_, boolean wiggle__, boolean usePShape__) {
-    tilesize = tilesize_;
-    meantheta = meantheta_;
-    dirstd = dirstd_;
-    sepPx = sepPx_;
-    sepweight = sepweight_;
-    posStd = posStd_;
-    patt = patt_;
-    R = R_;
-    boidcolor = boidcolor_;
-    println("Maker: boidcolor",boidcolor);
-    bgcolor = bgcolor_;
-    graycolor = graycolor_;
-    maxsp = maxsp_;
-    wiggle_ = wiggle__;
-    usePShape_ = usePShape__;   
+    tilesize = tilesize_; meantheta = meantheta_;  dirstd = dirstd_; sepPx = sepPx_;sepweight = sepweight_;
+    posStd = posStd_; patt = patt_; R = R_; boidcolor = boidcolor_; bgcolor = bgcolor_; graycolor = graycolor_;
+    maxsp = maxsp_; wiggle_ = wiggle__; usePShape_ = usePShape__;
+    mySeed = myseed;
   }
   
-  Stim init(int seed) {
-    if (seed >= 0) randomSeed(seed);
-    stim = new Flock( tilesize,  meantheta,  dirstd,  sepPx,  sepweight,  posStd,  patt, 
-         R,  boidcolor,  bgcolor,  graycolor,  maxsp,  wiggle_,  usePShape_); 
+  Stim init() {
+    if (mySeed < 0) {
+      origSeed += 1000;
+      randomSeed(origSeed);
+    } else randomSeed(mySeed);
+    stim = new Flock(tilesize, meantheta, dirstd, sepPx, sepweight, posStd, patt, 
+         R, boidcolor, bgcolor, graycolor, maxsp, wiggle_, usePShape_); 
     return stim;
   }
   
@@ -44,7 +36,7 @@ class FlockMaker implements StimMaker {
 class Flock implements Stim {
   
   boolean debug = false;
-  int n1 = 50; int n2 = -10;
+  int n1 = 50;
   
   ArrayList<Boid> boids;
   DoublyLinkedList[] binGrid;
@@ -443,7 +435,7 @@ public class Boid {
     
     //look at each neighboring bin, in turn
 
-    if (debug && (node.id == n1 || node.id == n2)) {
+    if (debug && (node.id == n1)) {
       fill(255,255,0,64);
       rectMode(CORNER);
       noStroke();
@@ -458,7 +450,7 @@ public class Boid {
 
       if (nbr_idx == -1) continue;
       
-      if (debug && (node.id == n1 || node.id == n2)) {
+      if (debug && (node.id == n1)) {
         fill(255,0,0,64);
         int nbr_x = nbr_idx % bincols;
         int nbr_y = nbr_idx / bincols;
@@ -493,7 +485,7 @@ public class Boid {
 
           d2 = dx*dx + dy*dy;//distance squared
           
-          if (debug && (node.id == n1 || node.id == n2)) {
+          if (debug && (node.id == n1)) {
             noFill();
             stroke(255,0,0,160);
             rectMode(RADIUS);
@@ -506,7 +498,7 @@ public class Boid {
             diff.setMag(1./d2);
             steer.add(diff);
             
-            if (debug && (node.id == n1 || node.id == n2)) {
+            if (debug && (node.id == n1)) {
               noFill();
               stroke(255,255,0);
               ellipse(other.item.position.x,other.item.position.y,2*radius*1.5,2*radius*1.5);

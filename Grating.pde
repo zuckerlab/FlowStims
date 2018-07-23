@@ -1,24 +1,18 @@
 class GratingMaker implements StimMaker {
-  
+  static final int STIM_TYPE = 0;
   int dir, fg, bg, gray, barwid, spacwid;
   float spd, phas;
-
+  
   Grating stim;
   
+
   GratingMaker(int dir_, int fg_, int bg_, int gray_, int barwid_, int spacwid_, float spd_, float phas_) {
-    dir = dir_;
-    fg = fg_;
-    bg = bg_;
-    gray = gray_;
-    barwid = barwid_;
-    spacwid = spacwid_;
-    spd = spd_;
-    phas = phas_;
+    dir = dir_; fg = fg_; bg = bg_; gray = gray_; barwid = barwid_; spacwid = spacwid_;
+    spd = spd_; phas = phas_;
   }
   
-  Stim init(int seed) {
-    if (seed >= 0) randomSeed(seed);
-    stim = new Grating( dir,  fg,  bg,  gray,  barwid,  spacwid,  spd,  phas);
+  Stim init() {
+    stim = new Grating(dir, fg, bg, gray, barwid, spacwid, spd, phas);
     return stim;
   }
   
@@ -87,8 +81,9 @@ class Grating implements Stim {
        deltaXspac = round(spaceWidth/cos(theta));
     }
     
-    if (phas == -1) phase = (int)random(barWidth);
-    else phase = (int)phas*barWidth;
+    if (phas == -1) {
+      phase = (int)random(barWidth);
+    } else phase = (int)phas*barWidth;
     
     fgColor = fg;
     bgColor = bg;

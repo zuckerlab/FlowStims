@@ -19,8 +19,10 @@ class FlowField {
     for (int i = 0; i < cols; i++) {
       for (int j = 0; j < rows; j++) {
           field[i][j] = mean + stdev*randomGaussian();
+          print(field[i][j]," ");
       }
     }
+    println();
   }
   
   float getDirection(PVector pos) {
