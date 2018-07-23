@@ -1,30 +1,30 @@
-class GratingMaker implements StimMaker {
-  static final int STIM_TYPE = 0;
-  int dir, fg, bg, gray, barwid, spacwid;
-  float spd, phas;
+//class GratingMaker implements StimMaker {
+//  static final int STIM_TYPE = 0;
+//  int dir, fg, bg, gray, barwid, spacwid;
+//  float spd, phas;
   
-  Grating stim;
+//  Grating stim;
   
 
-  GratingMaker(int dir_, int fg_, int bg_, int gray_, int barwid_, int spacwid_, float spd_, float phas_) {
-    dir = dir_; fg = fg_; bg = bg_; gray = gray_; barwid = barwid_; spacwid = spacwid_;
-    spd = spd_; phas = phas_;
-  }
+//  GratingMaker(int dir_, int fg_, int bg_, int gray_, int barwid_, int spacwid_, float spd_, float phas_) {
+//    dir = dir_; fg = fg_; bg = bg_; gray = gray_; barwid = barwid_; spacwid = spacwid_;
+//    spd = spd_; phas = phas_;
+//  }
   
-  Stim init() {
-    stim = new Grating(dir, fg, bg, gray, barwid, spacwid, spd, phas);
-    return stim;
-  }
+//  Stim init() {
+//    stim = new Grating(dir, fg, bg, gray, barwid, spacwid, spd, phas);
+//    return stim;
+//  }
   
-  void run(boolean show) {
-    stim.run(show);
-  }
+//  void run(boolean show) {
+//    stim.run(show);
+//  }
   
-  void delete() {
-    stim = null;
-  }
+//  void delete() {
+//    stim = null;
+//  }
 
-}
+//}
 
 class Grating implements Stim {
   
@@ -43,6 +43,8 @@ class Grating implements Stim {
   float period;
   float deltaX;
   float deltaXspac;
+  
+  float phaseFrac;
 
   PVector p0, p1, p2, p3;
   
@@ -81,9 +83,8 @@ class Grating implements Stim {
        deltaXspac = round(spaceWidth/cos(theta));
     }
     
-    if (phas == -1) {
-      phase = (int)random(barWidth);
-    } else phase = (int)phas*barWidth;
+    phaseFrac = phas;
+    
     
     fgColor = fg;
     bgColor = bg;
@@ -94,6 +95,12 @@ class Grating implements Stim {
         
     createArrays();   
 
+  }
+  
+  void init() {
+    if (phaseFrac == -1) {
+      phase = (int)random(barWidth);
+    } else phase = (int)phaseFrac*barWidth;
   }
   
   void createArrays() {

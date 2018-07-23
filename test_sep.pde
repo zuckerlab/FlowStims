@@ -10,8 +10,9 @@
 //if movie mode, instead of sending packets need to output a log with frameNo -> event
 
 Stim stim;
-StimMaker stimp;
-StimMaker[] stimParams;
+//StimMaker stimp;
+//StimMaker[] stimParams;
+Stim[] stims;
 int nStims;
 IntList stimIdxs;
 
@@ -67,7 +68,8 @@ void setup() {
   myheight = height - 2*frameWidth;
   mywidth = width - 2*frameWidth;
   
-  stimParams = new StimMaker[3];
+  //stimParams = new StimMaker[3];
+  stims = new Stim[3];
   
   int fadeframes = 3;
   fadeRate = ceil(255./fadeframes);
@@ -102,9 +104,9 @@ void setup() {
   wiggle_ = true;
   if (posStd_ == 0) wiggle_ = false;
   
-  stimParams[0] = new FlockMaker(seed1,tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
+  stims[0] = new Flock(seed1,tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
             patt1, radius1, dotColor1, bgColor1, gray1, maxspeed, wiggle_, usepshape);
-  stimParams[1] = new FlockMaker(seed2,tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
+  stims[1] = new Flock(seed2,tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
             patt2, radius2, dotColor2, bgColor2, gray2, maxspeed, wiggle_, usepshape);
   
   /*SETTING PARAMS SET FOR EACH GRAT STIM*/
@@ -118,10 +120,10 @@ void setup() {
   
   ////POPULATE STIMS ARRAY  
 
-  stimParams[2] = new GratingMaker(dirdegs, fg, bg, gray, barwid, spacwid, maxspeed, phas); 
+  stims[2] = new Grating(dirdegs, fg, bg, gray, barwid, spacwid, maxspeed, phas); 
 
   //store stim indices
-  nStims = stimParams.length;
+  nStims = stims.length;
   stimIdxs = new IntList();
   for (int i = 0; i < nStims; i++) stimIdxs.append(i);
   println(stimIdxs);
@@ -130,7 +132,7 @@ void setup() {
   currentLen = preStimLen;
   frameCounter = 0;
   trialIndex = 0;
-  totalTrials = totalTrialBlocks*stimParams.length;
+  totalTrials = totalTrialBlocks*nStims;
   
 
 
@@ -144,10 +146,10 @@ void draw () {
   if (frameCounter == 0) { //if starting a period
     if (preStim || (trial && preStimLen == 0)) {
       println("trialIndex",trialIndex);
-      if (trialIndex > 0) {
-        assert stimp != null;
-        stimp.delete();
-      }
+      //if (trialIndex > 0) {
+      //  assert stimp != null;
+      //  stimp.delete();
+      //}
       
       //check if new trial block
       if ((trialIndex % nStims) == 0) {
@@ -164,8 +166,8 @@ void draw () {
       println("trial",trialIndex+1,"/",totalTrials);
       //load new stim
       println("Loading "+trialIndex % nStims + "/" + nStims);
-      stimp = stimParams[stimIdxs.get(trialIndex % nStims)];
-      stimp.init();
+      stim = stims[stimIdxs.get(trialIndex % nStims)];
+      stim.init();
 
     } else if (postStim) {
       ;
@@ -174,8 +176,8 @@ void draw () {
     }
   }
 
-  if (trial) stimp.run(true);
-  else stimp.run(false);
+  if (trial) stim.run(true);
+  else stim.run(false);
   
   if (makeMovie) saveFrame("movieframes/######.tga");
   
@@ -183,8 +185,8 @@ void draw () {
 
   
   if (showBorders) drawBorders();
-  if (showField && (stimp instanceof FlockMaker)) ((FlockMaker) stimp).stim.flow.drawField(); 
-  if (showGrid && (stimp instanceof FlockMaker)) ((FlockMaker) stimp).stim.drawBinGrid();
+  if (showField && (stim instanceof Flock)) ((Flock) stim).flow.drawField(); 
+  if (showGrid && (stim instanceof Flock)) ((Flock) stim).drawBinGrid();
   
   //stroke(255);
   //textSize(12);

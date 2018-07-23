@@ -1,37 +1,37 @@
-class FlockMaker implements StimMaker {
+//class FlockMaker implements StimMaker {
 
-  int tilesize, sepPx, patt, R, boidcolor, bgcolor, graycolor, mySeed;
-  float meantheta, dirstd, sepweight, posStd, maxsp;
-  boolean wiggle_, usePShape_;
-  Flock stim;
+//  int tilesize, sepPx, patt, R, boidcolor, bgcolor, graycolor, mySeed;
+//  float meantheta, dirstd, sepweight, posStd, maxsp;
+//  boolean wiggle_, usePShape_;
+//  Flock stim;
   
-  FlockMaker(int myseed, int tilesize_, float meantheta_, float dirstd_, int sepPx_, float sepweight_, float posStd_, int patt_, 
-      int R_, int boidcolor_, int bgcolor_, int graycolor_, float maxsp_, boolean wiggle__, boolean usePShape__) {
-    tilesize = tilesize_; meantheta = meantheta_;  dirstd = dirstd_; sepPx = sepPx_;sepweight = sepweight_;
-    posStd = posStd_; patt = patt_; R = R_; boidcolor = boidcolor_; bgcolor = bgcolor_; graycolor = graycolor_;
-    maxsp = maxsp_; wiggle_ = wiggle__; usePShape_ = usePShape__;
-    mySeed = myseed;
-  }
+//  FlockMaker(int myseed, int tilesize_, float meantheta_, float dirstd_, int sepPx_, float sepweight_, float posStd_, int patt_, 
+//      int R_, int boidcolor_, int bgcolor_, int graycolor_, float maxsp_, boolean wiggle__, boolean usePShape__) {
+//    tilesize = tilesize_; meantheta = meantheta_;  dirstd = dirstd_; sepPx = sepPx_;sepweight = sepweight_;
+//    posStd = posStd_; patt = patt_; R = R_; boidcolor = boidcolor_; bgcolor = bgcolor_; graycolor = graycolor_;
+//    maxsp = maxsp_; wiggle_ = wiggle__; usePShape_ = usePShape__;
+//    mySeed = myseed;
+//  }
   
-  Stim init() {
-    if (mySeed < 0) {
-      origSeed += 1000;
-      randomSeed(origSeed);
-    } else randomSeed(mySeed);
-    stim = new Flock(tilesize, meantheta, dirstd, sepPx, sepweight, posStd, patt, 
-         R, boidcolor, bgcolor, graycolor, maxsp, wiggle_, usePShape_); 
-    return stim;
-  }
+//  Stim init() {
+//    if (mySeed < 0) {
+//      origSeed += 1000;
+//      randomSeed(origSeed);
+//    } else randomSeed(mySeed);
+//    stim = new Flock(tilesize, meantheta, dirstd, sepPx, sepweight, posStd, patt, 
+//         R, boidcolor, bgcolor, graycolor, maxsp, wiggle_, usePShape_); 
+//    return stim;
+//  }
   
-  void run(boolean show) {
-    stim.run(show);
-  }
+//  void run(boolean show) {
+//    stim.run(show);
+//  }
   
-  void delete() {
-    stim = null;
-  }
+//  void delete() {
+//    stim = null;
+//  }
 
-}
+//}
 
 class Flock implements Stim {
   
@@ -59,11 +59,13 @@ class Flock implements Stim {
   PShape boid;
   boolean usePShape;
   
+  int mySeed;
 
 
-  Flock(int tilesize, float meantheta, float dirstd, int sepPx, float sepweight, float posStd, int patt, 
+  Flock(int myseed, int tilesize, float meantheta, float dirstd, int sepPx, float sepweight, float posStd, int patt, 
         int R, int boidcolor, int bgcolor, int graycolor, float maxsp, boolean wiggle_, boolean usePShape_) {
           
+    mySeed = myseed;
     if (dirstd > 0) flow = new FlowField(tilesize, meantheta, dirstd);
           
     nbrArray = new int[9];
@@ -118,15 +120,24 @@ class Flock implements Stim {
     yLen = myBorders[3] - myBorders[2];
     yHalfLen = yLen/2.;
     
+  }
+  
+  void init() {
+    if (mySeed < 0) {
+      origSeed += 1000;
+      randomSeed(origSeed);
+    } else randomSeed(mySeed);
     binGrid = new DoublyLinkedList[binrows*bincols];
     for (int i = 0; i < binrows*bincols; i++) {
         binGrid[i] = new DoublyLinkedList();
     }
     boids = new ArrayList<Boid>();
+    int borderx = frameWidth + binSize*(bincols);
+    int bordery = frameWidth + binSize*(binrows);
     int c = 0;
-    for (int i = myBorders[2]; i < bordery; i += sepPx) {
-      for (int j = myBorders[0]; j < borderx; j += sepPx) {
-        boids.add(new Boid(j+posStd*sepPx*randomGaussian(),i+posStd*sepPx*randomGaussian(),c,c % sepFreq));
+    for (int i = myBorders[2]; i < bordery; i += binSize) {
+      for (int j = myBorders[0]; j < borderx; j += binSize) {
+        boids.add(new Boid(j+posStd*binSize*randomGaussian(),i+posStd*binSize*randomGaussian(),c,c % sepFreq));
         c++;
       }
     }
