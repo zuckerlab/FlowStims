@@ -9,10 +9,10 @@
 
 //use same seed for multiple Flock trials (reproducible option): could be done in main, before each
   //new trial block --- NO! only if classes are re-initialized!
-
-
-Stim stim;  
-Stim[] stims;
+import java.text.NumberFormat;
+Stim stim;
+StimMaker stimp;
+StimMaker[] stimParams;
 
 float dir_ = 3*PI/2.;
 float dirStd_ = 0.08;
@@ -65,7 +65,7 @@ void setup() {
   myheight = height - 2*frameWidth;
   mywidth = width - 2*frameWidth;
   
-  stims = new Stim[3];
+  stimParams = new StimMaker[2];
   
   int fadeframes = 3;
   fadeRate = ceil(255./fadeframes);
@@ -86,10 +86,10 @@ void setup() {
   wiggle_ = true;
   if (posStd_ == 0) wiggle_ = false;
   
-  stims[0] = new Flock(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
+  stimParams[0] = new FlockMaker(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
             patt, radius, dotColor1, bgColor1, gray1, maxspeed, wiggle_, usepshape);
-  stims[1] = new Flock(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
-            patt, radius, dotColor2, bgColor2, gray2, maxspeed, wiggle_, usepshape);
+  //stimParams[1] = new FlockMaker(tileSize_, dir_, dirStd_, sep_px, sepWeight, posStd_, 
+  //          patt, radius, dotColor2, bgColor2, gray2, maxspeed, wiggle_, usepshape);
   
   /*SETTING PARAMS SET FOR EACH GRAT STIM*/
   int dirdegs = 45;//(int) degrees(dir_);
@@ -102,14 +102,29 @@ void setup() {
   
   ////POPULATE STIMS ARRAY  
 
-  stims[2] = new Grating(dirdegs, fg, bg, gray, barwid, spacwid, maxspeed, phas); 
+  stimParams[1] = new GratingMaker(dirdegs, fg, bg, gray, barwid, spacwid, maxspeed, phas); 
 
   //setup trial variables for movie to begin
   preStim = true;
   currentLen = preStimLen;
   frameCounter = 0;
   trialNo = 0;
-  totalTrials = totalTrialBlocks*stims.length;
+  totalTrials = totalTrialBlocks*stimParams.length;
+  
+Runtime runtime = Runtime.getRuntime();
+
+NumberFormat format = NumberFormat.getInstance();
+
+StringBuilder sb = new StringBuilder();
+long maxMemory = runtime.maxMemory();
+long allocatedMemory = runtime.totalMemory();
+long freeMemory = runtime.freeMemory();
+
+sb.append("free memory: " + format.format(freeMemory / 1024) + "<br/>");
+sb.append("allocated memory: " + format.format(allocatedMemory / 1024) + "<br/>");
+sb.append("max memory: " + format.format(maxMemory / 1024) + "<br/>");
+sb.append("total free memory: " + format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024) + "<br/>");
+println(sb);
 } 
 
 void draw () {
@@ -119,9 +134,9 @@ void draw () {
   
   if (frameCounter == 0) { //if starting a period
     if (preStim || (trial && preStimLen == 0)) {
-      
+      if (stimp != null) stimp.delete();
       //check if new trial block
-      if ((trialNo % stims.length) == 0) {
+      if ((trialNo % stimParams.length) == 0) {
         if (trialNo == totalTrials) {
           //end movie
           exit();
@@ -129,8 +144,9 @@ void draw () {
       } 
       println("trial",trialNo,"/",totalTrials);
       //load new stim
-      println("Loading "+trialNo % stims.length + "/" + stims.length);
-      stim = stims[trialNo % stims.length];
+      println("Loading "+trialNo % stimParams.length + "/" + stimParams.length);
+      stimp = stimParams[trialNo % stimParams.length];
+      stimp.init(0);
 
     } else if (postStim) {
       ;
@@ -139,8 +155,8 @@ void draw () {
     }
   }
 
-  if (trial) stim.run(true);
-  else stim.run(false);
+  if (trial) stimp.run(true);
+  else stimp.run(false);
   
   if (makeMovie) saveFrame("movieframes/######.tga");
   
@@ -148,8 +164,8 @@ void draw () {
 
   
   if (showBorders) drawBorders();
-  if (showField && ((Flock) stim).flow != null) ((Flock) stim).flow.drawField(); 
-  if (showGrid) ((Flock) stim).drawBinGrid();
+  //if (showField && ((Flock) stim).flow != null) ((Flock) stim).flow.drawField(); 
+  //if (showGrid) ((Flock) stim).drawBinGrid();
   
   //stroke(255);
   //textSize(12);

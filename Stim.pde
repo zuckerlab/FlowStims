@@ -8,6 +8,7 @@ interface Stim {
 interface StimMaker {
   
   Stim init(int seed);
+  void run(boolean show);
   void delete();
   
 }

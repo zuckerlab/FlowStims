@@ -3,7 +3,7 @@ class GratingMaker implements StimMaker {
   int dir, fg, bg, gray, barwid, spacwid;
   float spd, phas;
 
-  Grating grat;
+  Grating stim;
   
   GratingMaker(int dir_, int fg_, int bg_, int gray_, int barwid_, int spacwid_, float spd_, float phas_) {
     dir = dir_;
@@ -18,12 +18,16 @@ class GratingMaker implements StimMaker {
   
   Stim init(int seed) {
     if (seed >= 0) randomSeed(seed);
-    grat = new Grating( dir,  fg,  bg,  gray,  barwid,  spacwid,  spd,  phas)
-    return grat;
+    stim = new Grating( dir,  fg,  bg,  gray,  barwid,  spacwid,  spd,  phas);
+    return stim;
+  }
+  
+  void run(boolean show) {
+    stim.run(show);
   }
   
   void delete() {
-    grat = null;
+    stim = null;
   }
 
 }
