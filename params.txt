@@ -1,0 +1,14 @@
+scrWidthPx 800
+scrHeightPx 600
+
+trialLenSec 5#
+#preStimLenSec 2.
+
+nDots 3#
+dotColor 0
+->dotBgColor 200
+->dotInterColor 127
+#dirStd 0.1
+rigidTrans 1
+sepWeight 3.
+useGratings 0
