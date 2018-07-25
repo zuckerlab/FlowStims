@@ -5,12 +5,12 @@ class FlowField {
 
   float[][] field;//array containing directions of each tile
   int cols, rows; 
-  int tileSize; // side of each square tile of the flow field
+  int tileSize; //side of each square tile of the flow field
 
-  FlowField(int res, float mu, float std) {
+  FlowField(int tilesize, float mu, float std) {
     mean = -mu;
     stdev = std;
-    tileSize = res;
+    tileSize = tilesize;
     // get number of columns and rows
     cols = ceil(mywidth/float(tileSize));
     rows = ceil(myheight/float(tileSize));
@@ -33,7 +33,7 @@ class FlowField {
   
   void drawField() {
     //draw grid
-    stroke(127,127,127,128);
+    stroke(0,255,0,128);
 
     for (int i = 0; i < cols+1; i++)
       line(frameWidth+i*tileSize, frameWidth, frameWidth+i*tileSize, frameWidth+rows*tileSize);

@@ -44,7 +44,7 @@ class Flock implements Stim {
   int binSize, binrows, bincols;
   int pattern, D, boidColor, boidAlpha, bgColor, grayColor;
   float sepSq, posStd, radius;
-  int sepFreq;
+  int sepFreq, fadeRate;
   
   int[] nbrArray;//single common array to all boids!
   
@@ -52,32 +52,48 @@ class Flock implements Stim {
   int xLen, yLen;
   int[] myBorders;
   float xHalfLen, yHalfLen;
-  float meanTheta, maxSpeed;
+  float meanTheta, maxSpeed, maxForce, sepWeight;
   PVector v0;
   
-  boolean move, separate, follow;
+  boolean wiggle, move, separate, follow;
   PShape boid;
   
   int mySeed;
 
 
-  Flock(int myseed, int tilesize, float meantheta, float dirstd, int sepPx, float posStd, int ndots, 
-        int diam, int boidcolor, int bgcolor, int gray, float maxsp) {
+  Flock(int myseed, int tilesize, float meantheta, float dirstd, int sepPx, float posstd, int ndots, 
+        int diam, int boidcolor, int bgcolor, int gray, float maxsp,
+        boolean wiggle_, float maxforce, float sepweight, int faderate) {
           
     mySeed = myseed;
     if (dirstd > 0) flow = new FlowField(tilesize, meantheta, dirstd);
-          
+    
     nbrArray = new int[9];
     meanTheta = -meantheta;
     pattern = ndots;
+    
+    D = diam;
+    if (pattern > 1) D = round(D/sqrt(pattern));
+    radius = D/2.;
+    
     boidColor = boidcolor;
     bgColor = bgcolor;
     grayColor = gray;
+    
+    if (gray == -1) {//if grayscr set to auto
+      float spacing = float(sepPx)/diam;
+      float dotArea = width*height*PI/(spacing*spacing*4);          
+      float bgArea = width*height - dotArea;
+      float avgColor = (dotArea*boidColor+bgArea*bgColor)/( width*height );
+      grayColor = int(avgColor);
+    }
+    
 
-    D = diam;
-    if (pattern > 1) D = round(D/sqrt(pattern));
-
-    radius = D/2.;
+    wiggle = wiggle_;
+    maxForce = maxforce;
+    sepWeight = sepweight;
+    fadeRate = faderate;
+    posStd = posstd;
     
     if (posStd == 0) assert !wiggle;
     else setWiggle(true);//if posStd we want scrambled boids, so turn wiggle on during pre-trial
@@ -154,10 +170,11 @@ class Flock implements Stim {
     if (show) {
       boidAlpha = min(255,boidAlpha + fadeRate);
       setWiggle(wiggle);
-    } else boidAlpha = max(30,boidAlpha - fadeRate);
+    } else boidAlpha = max(0,boidAlpha - fadeRate);
+
     float alphafrac = boidAlpha/255.;
     background(bgColor*alphafrac + grayColor*(1. - alphafrac));
-    
+
     for (Boid b : boids) {         
       b.run();        
     }            
@@ -347,7 +364,7 @@ public class Boid {
     if (!separate && !follow) {//noWiggle
       velocity.set(v0);
       desired.set(v0);
-      desired.limit(maxForce); 
+      desired.limit(maxForce);
       acceleration.add(desired); 
     } else {
       if (separate && sepWeight > 0) {
