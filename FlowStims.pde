@@ -43,11 +43,11 @@ int mywidth;
 
 boolean postStim, preStim, trial;
 float preStimLenSec = 1.;
-float postStimLenSec = .5;
+float postStimLenSec = 1;
 float trialLenSec = 2.;
 int preStimLen, postStimLen, trialLen; //in frames
 
-int currentLen, frameCounter, trialIndex, totalTrials;
+int currentLen, periodFrameCount, trialIndex, totalTrials;
 int nTrialBlocks = 1;
 
 String[] lines;
@@ -62,14 +62,15 @@ int frameWidth = 0;
 boolean fullScr = false;
 
 void settings() {
-  println(FRAME_RATE);
+  selectInput("Please select a parameters file:", "selectParamsFile");
+  while (lines == null) delay(100);
+  
   int d = day();  int m = month();  int y = year(); int min = minute(); int h = hour(); 
   String today = String.valueOf(y-2000)+String.format("%02d",m)+String.format("%02d",d);
   String now = String.format("%02d",h)+String.format("%02d",min);
   out_params = createWriter(today+"_"+now+"_params.log");
   out_trials = createWriter(today+"_"+now+"_trials.log");
 
-  lines = loadStrings("params.txt");
   loadSettingsParams(lines);
   
   if (!fullScr) {
@@ -110,6 +111,7 @@ void setup() {
   out_params.close();
   
   nStims = stims.length;
+
   //store stim indices
   stimIdxs = new IntList();
   for (int i = 0; i < nStims; i++) stimIdxs.append(i);
@@ -117,41 +119,33 @@ void setup() {
   //setup trial variables for movie to begin
   preStim = true;
   currentLen = preStimLen;
-  frameCounter = 0;
+  periodFrameCount = 0;
   trialIndex = 0;
-  totalTrials = nTrialBlocks*nStims;
-  
-  if (clientStart != null) clientStart.send("",0);
+  totalTrials = nTrialBlocks*nStims;  
+
+  if (nStims > 0 && clientStart != null) clientStart.send("",0);
 } 
 
 void draw () {
   
-  if (frameCounter == currentLen) {//if current period ended
+  if (nStims == 0) quit();
+  
+  if (periodFrameCount == currentLen) {//if current period ended
        updateState();
   }
   
-  if (frameCounter == 0) { //if starting a period
+  if (periodFrameCount == 0) { //if starting a period
     timestamp = System.currentTimeMillis();
 
     if (preStim || (trial && preStimLen == 0)) {
       if (stim != null) stim.cleanUp();
-      //println("trialIndex",trialIndex);
-      //if (trialIndex > 0) {
-      //  assert stimp != null;
-      //  stimp.delete();
-      //}
-      
+
       //check if new trial block
       if ((trialIndex % nStims) == 0) {
         if (trialIndex == totalTrials) {
-          //close output file
-          out_trials.flush();
-          out_trials.close();          
           //Send "End" trigger
-          if (clientEnd != null) clientEnd.send("",0); //End msg is fixed
-          //end movie
-          noLoop();
-          exit();
+          if (clientEnd != null) clientEnd.send("",0); //0 = End msg is fixed
+          quit();
         }
         //else, reshuffle stims for this new block
         stimIdxs.shuffle(this);
@@ -183,8 +177,7 @@ void draw () {
   
   if (makeMovie) saveFrame("movieframes/######.tga");
   
-  frameCounter++;
-
+  periodFrameCount++;
   
   if (showBorders) drawBorders();
   if (showField && (stim instanceof Flock)) ((Flock) stim).flow.drawField(); 
@@ -198,7 +191,7 @@ void draw () {
 }
 
 void updateState() {
-  frameCounter = 0;
+  periodFrameCount = 0;
   
   if (preStim) {   
     //println("preStim->trial");
@@ -316,16 +309,35 @@ void loadSetupParams(String[] lines) {
   }
 }
 
+void quit() {
+  //close output file
+  out_trials.flush();
+  out_trials.close();
+  //end movie
+  noLoop();
+  exit();
+}
 
+void selectParamsFile(final File f) {
+  if (f == null || f.isDirectory()) {
+    println("Window was closed or user hit cancel.");
+    System.exit(0);
+  }
+  final String paramsPath = f.getPath();
+  println(paramsPath);
+  lines = loadStrings(paramsPath);
+  //if ((lines = loadStrings(paramsPath)) == null) {
+  //  println("invalid params file.\n");
+  //  selectInput("Please select parameters file:", "selectParamsFile");
+  //}
+}
 
 void keyPressed() {
-  switch (key) {
-    case ESC:
-      out_trials.flush();
-      out_trials.close();
+  if (key == ESC){
       if (clientEnd != null) clientEnd.send("",0);
-      noLoop();
-      exit();
+      quit();    
+  }
+  switch (key) {
     case 'm':
       if (stim instanceof Flock) ((Flock) stim).move = !((Flock) stim).move;
       break;

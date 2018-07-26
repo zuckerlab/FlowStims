@@ -8,6 +8,8 @@ trialLenSec 5#
 
 tempFreq 3
 
+useFlows 1
+
 nDots 3 1#
 dotColor 200
 ->dotBgColor 10
@@ -15,4 +17,6 @@ dotColor 200
 #dirStd 0.1
 #rigidTrans 1
 sepWeight 3.
+
+
 useGratings 0

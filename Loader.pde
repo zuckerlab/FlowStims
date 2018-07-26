@@ -3,14 +3,15 @@ class Loader {
   Stim[] loadStims(float pxPerDeg, String[] lines, PrintWriter out) {
 
     //default stim params
-
     int nDirs = 1;
 
     int nFadeFrames = 3;
 
     FloatList tempFreqs = new FloatList(4.);
 
-    boolean useFlows = true, useGratings = true;
+    boolean useFlows = false, useGratings = false;
+
+    //flows
     IntList nDots = new IntList(1, 3);
     IntList dotColors = new IntList(0, 255);
     IntList dotBgColors = new IntList(127, 127);
@@ -24,7 +25,7 @@ class Loader {
     float sepWeight = 2.;//use higher val if FRAME_RATE = 30
     float maxForce = .04;
     float tileSizeFactor = 2.5;
-
+    //grats
     FloatList gratWidthsDeg = new FloatList(12.5, 3.125);
     IntList gratColors = new IntList(64.);//trick: use a float in constructor to create a single-elt list!
     IntList gratBgColors = new IntList(192.);
@@ -257,7 +258,7 @@ class Loader {
     } 
     catch( Exception e ) {
       System.out.println(e);
-      System.out.printf( "Not enough values for %s provided.", pname) ;
+      System.out.printf( "Not enough values for %s.", pname) ;
       out.close();
       System.exit(1);
     }   
@@ -284,7 +285,7 @@ class Loader {
     } 
     catch( Exception e ) {
       System.out.println(e);
-      System.out.printf( "Not enough values for %s provided.", pname) ;
+      System.out.printf( "Not enough values for %s.", pname) ;
       out.close();
       System.exit(1);
     }

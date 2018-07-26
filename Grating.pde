@@ -1,31 +1,3 @@
-//class GratingMaker implements StimMaker {
-//  static final int STIM_TYPE = 0;
-//  int dir, fg, bg, gray, barwid, spacwid;
-//  float spd, phas;
-
-//  Grating stim;
-
-
-//  GratingMaker(int dir_, int fg_, int bg_, int gray_, int barwid_, int spacwid_, float spd_, float phas_) {
-//    dir = dir_; fg = fg_; bg = bg_; gray = gray_; barwid = barwid_; spacwid = spacwid_;
-//    spd = spd_; phas = phas_;
-//  }
-
-//  Stim init() {
-//    stim = new Grating(dir, fg, bg, gray, barwid, spacwid, spd, phas);
-//    return stim;
-//  }
-
-//  void run(boolean show) {
-//    stim.run(show);
-//  }
-
-//  void delete() {
-//    stim = null;
-//  }
-
-//}
-
 class Grating implements Stim {
 
   int direction, phase, fadeRate;
