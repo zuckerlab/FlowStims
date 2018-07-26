@@ -9,11 +9,8 @@ class Grating implements Stim {
   int myheight = height;
   int mywidth = width;
 
-
   PVector p0, p1, p2, p3;
-
   float[] vals;
-
 
   Grating(int dir, float tempfreq, int fg, int bg, int gray, int barwid, float widdeg, float spd, boolean randphase, int faderate) {
 

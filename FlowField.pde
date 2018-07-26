@@ -8,7 +8,7 @@ class FlowField {
   int tileSize; //side of each square tile of the flow field
 
   FlowField(int tilesize, float mu, float std) {
-    mean = -mu;
+    mean = mu;
     stdev = std;
     tileSize = tilesize;
     // get number of columns and rows

@@ -9,7 +9,6 @@
 //start from shifted 3dots when posStd > 0? (maybe check spat freq first)
  
 //use rotated (theta) ellipse equation (*pattern) for separation of n dots 
-//double check fixRand -- was working even when off?
 //test all loader params
 
 String VERSION = "2";
@@ -23,7 +22,7 @@ float scrHeightCm = 30;
 float scrDistCm = 25;
 boolean fastRendering = true;
 int FRAME_RATE = 60;
-int origSeed = -1;
+int globalSeed = -1;
 
 PrintWriter out_params, out_trials;
 
@@ -94,9 +93,9 @@ void setup() {
   trialLen = (int) (trialLenSec*FRAME_RATE);
   
   frameRate(FRAME_RATE);
-  if (origSeed < 0) origSeed = (int) random(1000);
-  println("origSeed",origSeed);
-  randomSeed(origSeed);
+  if (globalSeed < 0) globalSeed = (int) random(1000);
+  println("globalSeed",globalSeed);
+  randomSeed(globalSeed);
 
   myheight = height - 2*frameWidth;
   mywidth = width - 2*frameWidth;
@@ -128,7 +127,7 @@ void setup() {
 } 
 
 void draw () {
-  boolean debug = false;
+  boolean debug = true;
   if (nStims == 0) quit();
   
   if (periodFrameCount == currentLen) {//if current period ended
@@ -285,7 +284,7 @@ void loadSetupParams(String[] lines) {
       String[] list = split(line, ' ');
       if (list.length < 2) continue;
       switch(list[0]) {        
-        case "randomSeed": origSeed = loader.loadInt(list[1],list[0],out_params); break;
+        case "randomSeed": globalSeed = loader.loadInt(list[1],list[0],out_params); break;
         case "nTrialBlocks": nTrialBlocks = loader.loadInt(list[1],list[0],out_params); break;
         case "scrDistCm": scrDistCm = loader.loadFloat(list[1],"scrDistCm ",out_params); break;
         case "scrWidthCm": scrWidthCm = loader.loadFloat(list[1],list[0],out_params); break;

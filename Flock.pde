@@ -6,9 +6,9 @@ class Flock implements Stim {
   ArrayList<Boid> boids;
   DoublyLinkedList[] binGrid;
   int[] myBorders, nbrArray;
-  int binSize, binrows, bincols, xLen, yLen;
+  int binSize, binrows, bincols, xLen, yLen, tileSize;
   int pattern, D, boidColor, boidAlpha, bgColor, grayColor;
-  float xHalfLen, yHalfLen, baseSep, sepSq, posStd, radius, origDdeg;
+  float xHalfLen, yHalfLen, baseSep, sepSq, posStd, dirStd, radius, origDdeg;
   int sepFreq, fadeRate;
   
   FlowField flow;
@@ -24,12 +24,13 @@ class Flock implements Stim {
   int mySeed;
 
 
-  Flock(int myseed, int tilesize, float meantheta, int dirdeg, float dirstd, float basesep, int sepPx, float posstd, int ndots, 
-        int diam, float diamdeg, int boidcolor, int bgcolor, int gray, float maxsp, float tempfreq,
+  Flock(int myseed, int tilesize, float meantheta, int dirdeg, float dirstd, float basesep, int sepPx, float posstd, 
+        int ndots, int diam, float diamdeg, int boidcolor, int bgcolor, int gray, float maxsp, float tempfreq,
         boolean wiggle_, float maxforce, float sepweight, int faderate) {
           
     mySeed = myseed;
-    if (dirstd > 0) flow = new FlowField(tilesize, meantheta, dirstd);
+    tileSize = tilesize;
+    dirStd = dirstd;
     
     nbrArray = new int[9];//single array shared by all boids
     meanThetaDeg = dirdeg;
@@ -106,9 +107,10 @@ class Flock implements Stim {
   
   void init() {
     if (mySeed < 0) {
-      origSeed += 1000;
-      randomSeed(origSeed);
+      globalSeed += 1000;
+      randomSeed(globalSeed);
     } else randomSeed(mySeed);
+    if (dirStd > 0) flow = new FlowField(tileSize, meanTheta, dirStd);
     binGrid = new DoublyLinkedList[binrows*bincols];
     for (int i = 0; i < binrows*bincols; i++) {
         binGrid[i] = new DoublyLinkedList();
@@ -126,6 +128,7 @@ class Flock implements Stim {
   }
   
   void cleanUp() {
+    flow = null;
     binGrid = null;
     boids = null;
   }

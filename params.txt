@@ -7,8 +7,8 @@ fastRendering 1
 frameRate 60
 saveScrShots 0
 
-randomSeed 19
-nTrialBlocks 2
+randomSeed -1
+nTrialBlocks 3
 scrDistCm 25
 scrWidthCm 30
 scrHeightCm 40
@@ -16,24 +16,29 @@ trialLenSec 4
 preStimLenSec 1
 postStimLenSec 0
 
-nDirs 8
-pxPerDeg 10.35
+nDirs 1
+pxPerDeg 8.35
 nFadeFrames 3
-tempFreq 3.5 4
+tempFreq 2.5 4
 
 useFlows 1
 nDots 3 #
-dotColor 200
-->dotBgColor 10
-->dotInterColor 80
+dotFgLvl 200
+->dotBgLvl 10
+->dotInterLvl 80
 dotDiamDeg 2
 ->dotSep 3
 maxForce 0.04
 tileSize 3
-#dirStd 0.1
-#rigidTrans 1
+dirStd 0.1
+rigidTrans 0
 sepWeight 2.
-fixRand 1
+fixRandState 1
 
 useGratings 0
+gratWidthDeg 12.5
 randGratPhase 1
+gratFgLvl 255
+->gratBgLvl 0
+->gratInterLvl 127
+randGratPhase 0

@@ -47,9 +47,9 @@ class Loader {
           //FLOWS
           case "useFlows": useFlows = loadBool(list[1], list[0], out); break;
           case "nDots": nDots = loadMultiInt(list, list[0], out, 0); break;
-          case "dotColor": dotColors = loadMultiInt(list, list[0], out, 0); break;
-          case "->dotBgColor": dotBgColors = loadMultiInt(list, list[0], out, dotColors.size()); break;
-          case "->dotInterColor": dotInterColors = loadMultiInt(list, list[0], out, dotColors.size()); break;      
+          case "dotFgLvl": dotColors = loadMultiInt(list, list[0], out, 0); break;
+          case "->dotBgLvl": dotBgColors = loadMultiInt(list, list[0], out, dotColors.size()); break;
+          case "->dotInterLvl": dotInterColors = loadMultiInt(list, list[0], out, dotColors.size()); break;      
           case "dotDiamDeg": dotDiamsDeg = loadMultiFloat(list, list[0], out, 0); break;
           case "->dotSep": dotSeps = loadMultiFloat(list, list[0], out, dotDiamsDeg.size()); break;     
           case "maxForce": maxForce = loadFloat(list[1], list[0], out); break;
@@ -58,13 +58,13 @@ class Loader {
           case "dirStd": dirStd = loadFloat(list[1], list[0], out); break;
           case "rigidTrans": wiggle = !loadBool(list[1], list[0], out); break;
           case "tileSize": tileSizeFactor = loadFloat(list[1], list[0], out); break;
-          case "fixRandState": fixRand = !loadBool(list[1], list[0], out); break;
+          case "fixRandState": fixRand = loadBool(list[1], list[0], out); break;
           //GRATS
           case "useGratings": useGratings = loadBool(list[1], list[0], out); break;
           case "gratWidthDeg": gratWidthsDeg = loadMultiFloat(list, list[0], out, 0); break;
-          case "gratColor": gratColors = loadMultiInt(list, list[0], out, 0); break;
-          case "->gratBgColor": gratBgColors = loadMultiInt(list, list[0], out, gratColors.size()); break;
-          case "->gratInterColor": gratInterColors = loadMultiInt(list, list[0], out, gratColors.size()); break;       
+          case "gratGrayLvl": gratColors = loadMultiInt(list, list[0], out, 0); break;
+          case "->gratBgLvl": gratBgColors = loadMultiInt(list, list[0], out, gratColors.size()); break;
+          case "->gratInterLvl": gratInterColors = loadMultiInt(list, list[0], out, gratColors.size()); break;       
           case "randGratPhase": randPhase = loadBool(list[1], list[0], out); break;
           default: break;
         }
