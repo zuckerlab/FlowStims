@@ -18,7 +18,6 @@ int monitor = 1;
 int scrWidthPx = 800;
 int scrHeightPx= 600;
 float scrWidthCm = 40;
-float scrHeightCm = 30;
 float scrDistCm = 25;
 boolean fastRendering = true;
 int FRAME_RATE = 60;
@@ -104,6 +103,7 @@ void setup() {
   //convert sizes from visual degrees to pixels (using scr width)
   float scrWidthDeg = 2*atan(.5*scrWidthCm/scrDistCm)*180/PI;
   float pxPerDeg = scrWidthPx/scrWidthDeg;
+  println("pxPerDeg",pxPerDeg);
   
   stims = loader.loadStims(pxPerDeg, lines, out_params);
   //done reading params input file
@@ -127,7 +127,7 @@ void setup() {
 } 
 
 void draw () {
-  boolean debug = true;
+  boolean debug = false;
   if (nStims == 0) quit();
   
   if (periodFrameCount == currentLen) {//if current period ended
@@ -175,7 +175,7 @@ void draw () {
   if (trial) stim.run(true);
   else stim.run(false);
   
-  if (makeMovie) saveFrame("movieframes/######.tga");
+  if (makeMovie) saveFrame("movieframes/######.png");
   
   periodFrameCount++;
   
@@ -288,7 +288,6 @@ void loadSetupParams(String[] lines) {
         case "nTrialBlocks": nTrialBlocks = loader.loadInt(list[1],list[0],out_params); break;
         case "scrDistCm": scrDistCm = loader.loadFloat(list[1],"scrDistCm ",out_params); break;
         case "scrWidthCm": scrWidthCm = loader.loadFloat(list[1],list[0],out_params); break;
-        case "scrHeightCm": scrHeightCm = loader.loadFloat(list[1],list[0],out_params); break;
         case "trialLenSec": trialLenSec = loader.loadFloat(list[1],list[0],out_params); break;
         case "preStimLenSec": preStimLenSec = loader.loadFloat(list[1],list[0],out_params); break;
         case "postStimLenSec": postStimLenSec = loader.loadFloat(list[1],list[0],out_params); break;
