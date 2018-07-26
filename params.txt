@@ -2,21 +2,38 @@ FlowStims 2
 
 scrWidthPx 800
 scrHeightPx 600
+monitor 1
+fastRendering 1
+frameRate 60
+saveScrShots 0
 
-trialLenSec 5#
-#preStimLenSec 2.
+randomSeed 19
+nTrialBlocks 2
+scrDistCm 25
+scrWidthCm 30
+scrHeightCm 40
+trialLenSec 4
+preStimLenSec 1
+postStimLenSec 0
 
-tempFreq 3
+nDirs 8
+pxPerDeg 10.35
+nFadeFrames 3
+tempFreq 3.5 4
 
 useFlows 1
-
-nDots 3 1#
+nDots 3 #
 dotColor 200
 ->dotBgColor 10
 ->dotInterColor 80
+dotDiamDeg 2
+->dotSep 3
+maxForce 0.04
+tileSize 3
 #dirStd 0.1
 #rigidTrans 1
-sepWeight 3.
-
+sepWeight 2.
+fixRand 1
 
 useGratings 0
+randGratPhase 1

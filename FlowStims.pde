@@ -5,13 +5,12 @@
 //if posStd set to 0, wiggle needs to be deactivate from the start (preStim)
 //if posStd > 0 and noWiggle, activate wiggle and deactivate it during trial
 
-//send client packets
-//if movie mode, instead of sending packets need to output a log with frameNo -> event
-//log trials
+
 //start from shifted 3dots when posStd > 0? (maybe check spat freq first)
  
 //use rotated (theta) ellipse equation (*pattern) for separation of n dots 
-
+//double check fixRand -- was working even when off?
+//test all loader params
 
 String VERSION = "2";
 
@@ -24,7 +23,7 @@ float scrHeightCm = 30;
 float scrDistCm = 25;
 boolean fastRendering = true;
 int FRAME_RATE = 60;
-int origSeed = 1;
+int origSeed = -1;
 
 PrintWriter out_params, out_trials;
 
@@ -95,6 +94,8 @@ void setup() {
   trialLen = (int) (trialLenSec*FRAME_RATE);
   
   frameRate(FRAME_RATE);
+  if (origSeed < 0) origSeed = (int) random(1000);
+  println("origSeed",origSeed);
   randomSeed(origSeed);
 
   myheight = height - 2*frameWidth;
@@ -127,7 +128,7 @@ void setup() {
 } 
 
 void draw () {
-  
+  boolean debug = false;
   if (nStims == 0) quit();
   
   if (periodFrameCount == currentLen) {//if current period ended
@@ -149,25 +150,25 @@ void draw () {
         }
         //else, reshuffle stims for this new block
         stimIdxs.shuffle(this);
-        println(stimIdxs);
+        if (debug) println(stimIdxs);
       } 
-      println("trial",trialIndex+1,"/",totalTrials);
+      if (debug) println("trial",trialIndex+1,"/",totalTrials);
       //load new stim
-      println("Loading "+trialIndex % nStims + "/" + nStims);
+      if (debug) println("Loading "+trialIndex % nStims + "/" + nStims);
       stim = stims[stimIdxs.get(trialIndex % nStims)];
       stim.init();
 
     }
     if (trial) {
       String stimInfo = stim.getStimInfo();      
-      out_trials.println(String.format("%d %d %s",frameCount-1,timestamp,stimInfo));      
+      out_trials.println(String.format("%d %d %s",frameCount,timestamp,stimInfo));      
       if (clientTrialStart != null) clientTrialStart.send("",0);      
     } else if (preStim) {
       //record start of preStim interval
-      out_trials.println(String.format("%d %d PRESTIM",frameCount-1,timestamp));            
+      out_trials.println(String.format("%d %d PRESTIM",frameCount,timestamp));            
     } else if (postStim) {
       //record start of postStim interval
-      out_trials.println(String.format("%d %d POSTSTIM",frameCount-1,timestamp));
+      out_trials.println(String.format("%d %d POSTSTIM",frameCount,timestamp));
       if (clientTrialEnd != null) clientTrialEnd.send("",0);
     }
   }
@@ -187,14 +188,14 @@ void draw () {
   //textSize(16);
   //text("Frame rate: " + int(frameRate), 10, 20);
   
-  
 }
 
 void updateState() {
+  boolean debug = false;
   periodFrameCount = 0;
   
   if (preStim) {   
-    //println("preStim->trial");
+    if (debug) println("preStim->trial");
     preStim = false;
     trial = true;
     currentLen = trialLen;
@@ -203,11 +204,11 @@ void updateState() {
     postStim = false;
     trialIndex++;
     if (preStimLen == 0) {
-      //println("postStim->preStim->trial");
+      if (debug) println("postStim->preStim->trial");
       trial = true;
       currentLen = trialLen;
     } else {
-      //println("postStim->preStim");      
+      if (debug) println("postStim->preStim");      
       preStim = true;
       currentLen = preStimLen;
     }
@@ -217,15 +218,15 @@ void updateState() {
     if (postStimLen == 0) {
       trialIndex++;
       if (preStimLen > 0) {
-        //println("trial->postStim->preStim");
+        if (debug) println("trial->postStim->preStim");
         trial = false;
         preStim = true;
         currentLen = preStimLen;
       }
       //else keep it as it is!
-      //else println("trial->postStim->preStim->trial");      
+      else if (debug) println("trial->postStim->preStim->trial");      
     } else {
-      //println("trial->postStim");
+      if (debug) println("trial->postStim");
       trial = false;
       postStim = true;
       currentLen = postStimLen;
@@ -233,10 +234,13 @@ void updateState() {
   }
 }
 
-void drawBorders() {
-  stroke(120,0,0);
-  noFill();
-  rect(frameWidth,frameWidth,mywidth-1,myheight-1); 
+void selectParamsFile(final File f) {
+  if (f == null || f.isDirectory()) {
+    println("Window was closed or user hit cancel.");
+    System.exit(0);
+  }
+  final String paramsPath = f.getPath();
+  lines = loadStrings(paramsPath);
 }
 
 void loadSettingsParams(String[] lines) {
@@ -272,6 +276,7 @@ void loadSettingsParams(String[] lines) {
     }
   }
 }
+
 void loadSetupParams(String[] lines) {
   Loader loader = new Loader();
   for (int p = 0; p < lines.length; p++) {
@@ -280,7 +285,7 @@ void loadSetupParams(String[] lines) {
       String[] list = split(line, ' ');
       if (list.length < 2) continue;
       switch(list[0]) {        
-        case "randSeed": origSeed = loader.loadInt(list[1],list[0],out_params); break;
+        case "randomSeed": origSeed = loader.loadInt(list[1],list[0],out_params); break;
         case "nTrialBlocks": nTrialBlocks = loader.loadInt(list[1],list[0],out_params); break;
         case "scrDistCm": scrDistCm = loader.loadFloat(list[1],"scrDistCm ",out_params); break;
         case "scrWidthCm": scrWidthCm = loader.loadFloat(list[1],list[0],out_params); break;
@@ -318,18 +323,10 @@ void quit() {
   exit();
 }
 
-void selectParamsFile(final File f) {
-  if (f == null || f.isDirectory()) {
-    println("Window was closed or user hit cancel.");
-    System.exit(0);
-  }
-  final String paramsPath = f.getPath();
-  println(paramsPath);
-  lines = loadStrings(paramsPath);
-  //if ((lines = loadStrings(paramsPath)) == null) {
-  //  println("invalid params file.\n");
-  //  selectInput("Please select parameters file:", "selectParamsFile");
-  //}
+void drawBorders() {
+  stroke(120,0,0);
+  noFill();
+  rect(frameWidth,frameWidth,mywidth-1,myheight-1); 
 }
 
 void keyPressed() {
@@ -338,18 +335,6 @@ void keyPressed() {
       quit();    
   }
   switch (key) {
-    case 'm':
-      if (stim instanceof Flock) ((Flock) stim).move = !((Flock) stim).move;
-      break;
-    case 's':
-      if (stim instanceof Flock) ((Flock) stim).separate = !((Flock) stim).separate;
-      break;
-    case 'w':
-      if (stim instanceof Flock) ((Flock) stim).setWiggle(!(((Flock) stim).wiggle));
-      break;
-    case 'f':
-      if (stim instanceof Flock) ((Flock) stim).follow = !((Flock) stim).follow;
-      break;
     case 'b':
       showBorders = !showBorders;
       break;

@@ -352,7 +352,8 @@ class Flock implements Stim {
           acceleration.add(sep);
         }
         if (follow && flow != null) {
-          acceleration.add(followField());  
+          desired = followField();
+          acceleration.add(desired);  
         } else { //allows boids to still separate without any flow field (mostly for debugging reasons)
           desired.set(v0);
           desired.sub(velocity);    
@@ -362,7 +363,7 @@ class Flock implements Stim {
       }
       
       //update theta for a smoother change in heading when patt > 1 -- not sure it looks better, though
-      //theta = PVector.add(velocity,steer).heading();
+      if (pattern > 1) theta = PVector.add(velocity,desired).heading();
   
     }
   
@@ -417,12 +418,9 @@ class Flock implements Stim {
         } else {
           rectMode(CENTER);
           rect(0,0,pattern*D,D);
-        }
-      
-        popMatrix();
-          
-      }
-      
+        }      
+        popMatrix();          
+      }      
     }
     
     //check for nearby boids
@@ -434,8 +432,7 @@ class Flock implements Stim {
   
       Node other;
       
-      //look at each neighboring bin, in turn
-  
+      //look at each neighboring bin, in turn  
       if (debug && (node.id == n1)) {
         fill(255,255,0,64);
         rectMode(CORNER);
@@ -459,12 +456,10 @@ class Flock implements Stim {
           noStroke();
           rect(myBorders[0]+nbr_x*binSize,myBorders[2]+nbr_y*binSize,binSize,binSize);
         }
-        
-  
+          
         binGrid[nbr_idx].resetIterator();
         
-        other = binGrid[nbr_idx].getNext();
-  
+        other = binGrid[nbr_idx].getNext();  
         
         while (other != null) {
   
@@ -517,18 +512,13 @@ class Flock implements Stim {
         steer.normalize();
         steer.mult(maxSpeed);
         steer.sub(velocity);
-        steer.limit(maxForce);
-  
-      }
-      
+        steer.limit(maxForce);  
+      }      
       return steer;
     }
-  
-  
   }
   
-  
-  
+
   public class DoublyLinkedList {
       private int n;        
       private Node head;     
