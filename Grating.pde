@@ -29,21 +29,21 @@
 class Grating implements Stim {
 
   int direction, phase, fadeRate;
-  float deltaX, deltaXspac, period;
+  boolean randPhase;
+  float start, deltaX, deltaXspac, period;
   int barWidth, spaceWidth, bgColor, fgColor, grayColor, stimAlpha;
-  float theta, speed, phaseFrac;
+  float theta, speed, phaseFrac, tempFreq, widthDeg;
 
   int myheight = height;
   int mywidth = width;
 
-  float start;
 
   PVector p0, p1, p2, p3;
 
   float[] vals;
 
 
-  Grating(int dir, int fg, int bg, int gray, int barwid, float spd, float phas, int faderate) {
+  Grating(int dir, float tempfreq, int fg, int bg, int gray, int barwid, float widdeg, float spd, boolean randphase, int faderate) {
 
     p0 = new PVector(0, 0);
     p1 = new PVector(0, 0);
@@ -59,6 +59,9 @@ class Grating implements Stim {
 
     direction = dir;
     theta = radians(direction);
+    
+    tempFreq = tempfreq;
+    widthDeg = widdeg;
     barWidth = barwid;
     spaceWidth = barwid;
     if (direction == 90 || direction == 270) {
@@ -73,7 +76,7 @@ class Grating implements Stim {
       deltaXspac = round(spaceWidth/cos(theta));
     }
 
-    phaseFrac = phas;
+    randPhase = randphase;
     fadeRate = faderate;
 
     fgColor = fg;
@@ -90,9 +93,13 @@ class Grating implements Stim {
   }
 
   void init() {
-    if (phaseFrac == -1) {
-      phase = (int)random(barWidth);
-    } else phase = (int)phaseFrac*barWidth;
+    if (randPhase) {
+      phase = (int) random(barWidth+spaceWidth);
+      phaseFrac = float(phase)/(barWidth+spaceWidth);
+    } else {
+      phase = 0;
+      phaseFrac = 0;
+    }
     start = phase;
     createArrays();
   }
@@ -147,6 +154,10 @@ class Grating implements Stim {
       }
     }
   }
+  
+  void cleanUp() {
+    vals = null;
+  }
 
   void drawGrating() {
 
@@ -189,5 +200,12 @@ class Grating implements Stim {
     drawGrating();
 
     start = (start + speed) % period;
+  }
+  
+  String getStimInfo() {
+    String stiminfo = String.format(
+        "GRAT dir=%d tfreq=%.1f width=%f fgLvl=%d bgLvl=%d interLvl=%d phase=%.2f",
+        direction, tempFreq, widthDeg, bgColor, fgColor, grayColor, phaseFrac);
+   return stiminfo;
   }
 }

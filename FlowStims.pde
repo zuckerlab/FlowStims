@@ -7,10 +7,12 @@
 
 //send client packets
 //if movie mode, instead of sending packets need to output a log with frameNo -> event
+//log trials
+//start from shifted 3dots when posStd > 0? (maybe check spat freq first)
  
 //use rotated (theta) ellipse equation (*pattern) for separation of n dots 
-//shift 3dots?
-//make Loader method for checking comment next to val
+
+
 String VERSION = "2";
 
 //default movie params
@@ -33,6 +35,7 @@ IntList stimIdxs;
 
 Client clientStart, clientEnd, clientTrialStart, clientTrialEnd, clientTimeStamp;
 int tStampInterval;
+long timestamp;
 
 int myheight;
 int mywidth;
@@ -102,6 +105,9 @@ void setup() {
   float pxPerDeg = scrWidthPx/scrWidthDeg;
   
   stims = loader.loadStims(pxPerDeg, lines, out_params);
+  //done reading params input file
+  out_params.flush();
+  out_params.close();
   
   nStims = stims.length;
   //store stim indices
@@ -115,16 +121,20 @@ void setup() {
   trialIndex = 0;
   totalTrials = nTrialBlocks*nStims;
   
+  if (clientStart != null) clientStart.send("",0);
 } 
 
 void draw () {
-
-  if (frameCounter == currentLen) {//if ending a period
+  
+  if (frameCounter == currentLen) {//if current period ended
        updateState();
   }
   
   if (frameCounter == 0) { //if starting a period
+    timestamp = System.currentTimeMillis();
+
     if (preStim || (trial && preStimLen == 0)) {
+      if (stim != null) stim.cleanUp();
       //println("trialIndex",trialIndex);
       //if (trialIndex > 0) {
       //  assert stimp != null;
@@ -134,6 +144,11 @@ void draw () {
       //check if new trial block
       if ((trialIndex % nStims) == 0) {
         if (trialIndex == totalTrials) {
+          //close output file
+          out_trials.flush();
+          out_trials.close();          
+          //Send "End" trigger
+          if (clientEnd != null) clientEnd.send("",0); //End msg is fixed
           //end movie
           noLoop();
           exit();
@@ -148,10 +163,18 @@ void draw () {
       stim = stims[stimIdxs.get(trialIndex % nStims)];
       stim.init();
 
+    }
+    if (trial) {
+      String stimInfo = stim.getStimInfo();      
+      out_trials.println(String.format("%d %d %s",frameCount-1,timestamp,stimInfo));      
+      if (clientTrialStart != null) clientTrialStart.send("",0);      
+    } else if (preStim) {
+      //record start of preStim interval
+      out_trials.println(String.format("%d %d PRESTIM",frameCount-1,timestamp));            
     } else if (postStim) {
-      ;
-    } else {//end of trial
-      ;
+      //record start of postStim interval
+      out_trials.println(String.format("%d %d POSTSTIM",frameCount-1,timestamp));
+      if (clientTrialEnd != null) clientTrialEnd.send("",0);
     }
   }
 
@@ -298,6 +321,9 @@ void loadSetupParams(String[] lines) {
 void keyPressed() {
   switch (key) {
     case ESC:
+      out_trials.flush();
+      out_trials.close();
+      if (clientEnd != null) clientEnd.send("",0);
       noLoop();
       exit();
     case 'm':

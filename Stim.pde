@@ -1,7 +1,9 @@
 //https://stackoverflow.com/questions/1320745/abstract-class-in-java
 interface Stim {
   void init();
+  void cleanUp();
   void run(boolean show);
+  String getStimInfo();
 }
 
 //interface StimMaker {

@@ -19,7 +19,7 @@ class Loader {
     FloatList dotSeps = new FloatList(4.);
     float dirStd = 0.08;
     float posStd = 0.1;  
-    boolean wiggle = false;
+    boolean wiggle = true;
     boolean fixRand = false;
     float sepWeight = 2.;//use higher val if FRAME_RATE = 30
     float maxForce = .04;
@@ -29,7 +29,7 @@ class Loader {
     IntList gratColors = new IntList(64.);//trick: use a float in constructor to create a single-elt list!
     IntList gratBgColors = new IntList(192.);
     IntList gratInterColors = new IntList(127.);
-    float gratPhase = 0;
+    boolean randPhase = false;
 
 
     for (int p = 0; p < lines.length; p++) {
@@ -109,8 +109,8 @@ class Loader {
         case "->gratInterColor": 
           gratInterColors = loadMultiInt(list, list[0], out, gratColors.size()); 
           break;       
-        case "gratPhase": 
-          gratPhase = loadFloat(list[1], list[0], out); 
+        case "randGratPhase": 
+          randPhase = loadBool(list[1], list[0], out); 
           break;
         default: 
           break;
@@ -126,7 +126,7 @@ class Loader {
 
     int seed = -1;
     //if flows aren't rand, then most likely you dont want rand grating phase either
-    if (fixRand && gratPhase == -1) gratPhase = 0;//(catching possibly common mistake when setting params file)
+    if (fixRand && randPhase == true) randPhase = false;//(catching possibly common mistake when setting params file)
 
     int nStims = nDirs*tempFreqs.size()*(int(useFlows)*(nDots.size()*dotColors.size()*dotDiamsDeg.size()*dotSeps.size())
       + int(useGratings)*(gratWidthsDeg.size()*gratColors.size()));
@@ -167,8 +167,8 @@ class Loader {
                   gray = dotInterColors.get(cc);
 
                   if (fixRand) seed = (int) random(1000);
-                  stims[s] = new Flock(seed, tilesize, dir, dirStd, sep_px, posStd, ndots, diam_px, fgcolor, 
-                    bgcolor, gray, speed, wiggle, maxForce, sepWeight, fadeRate);
+                  stims[s] = new Flock(seed, tilesize, dir, dirdeg, dirStd, sep, sep_px, posStd, ndots, diam_px, diam_deg,
+                        fgcolor, bgcolor, gray, speed, tempfreq, wiggle, maxForce, sepWeight, fadeRate);
                   s++;
                 }
               }
@@ -188,7 +188,7 @@ class Loader {
               bgcolor = gratBgColors.get(cc);
               gray = gratInterColors.get(cc);
 
-              stims[s] = new Grating(dirdeg, fgcolor, bgcolor, gray, width_px, speed, gratPhase, fadeRate); 
+              stims[s] = new Grating(dirdeg, tempfreq, fgcolor, bgcolor, gray, width_px, width_deg, speed, randPhase, fadeRate); 
               s++;
             }
           }
@@ -247,7 +247,7 @@ class Loader {
 
     int i = 2;
     while (i < list.length && list[i].charAt(0) != '#') {
-      myvar = readNumber(list[1], pname);
+      myvar = readNumber(list[i], pname);
       varlist.append(int(myvar));
       out.print(" "+myvar);
       i++;
@@ -274,7 +274,7 @@ class Loader {
 
     int i = 2;
     while (i < list.length && list[i].charAt(0) != '#') {
-      myvar = readNumber(list[1], pname);
+      myvar = readNumber(list[i], pname);
       varlist.append(float(myvar));
       out.print(" "+myvar);
       i++;
