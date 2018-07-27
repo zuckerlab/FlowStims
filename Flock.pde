@@ -1,6 +1,6 @@
 class Flock implements Stim {
   
-  boolean debug = true;
+  boolean debug = false;
   int hidden = 0;
   int n1 = 45;
   
@@ -11,8 +11,7 @@ class Flock implements Stim {
   int pattern, D, boidColor, boidAlpha, bgColor, grayColor;
   float xHalfLen, yHalfLen, baseSep, posStd, dirStd, radius, origDdeg;
   int sepFreq, fadeRate;
-  //float sepSq, sepSq_;
-  float a, b, sepFrstTerm = 1, sepScndTerm = 0, sepThrdTerm = 1;
+  float sepRadius, sepFrstTerm, sepScndTerm, sepThrdTerm;
   FlowField flow;
 
   
@@ -52,7 +51,7 @@ class Flock implements Stim {
       float spacing = float(sepPx)/diam;
       float dotArea = width*height*PI/(spacing*spacing*4);
       float bgArea = width*height - dotArea;
-      if (debug) println("pct dotArea",dotArea/bgArea);
+      //println("pct dotArea",dotArea/bgArea);
       float avgColor = (dotArea*boidColor+bgArea*bgColor)/( width*height );
       grayColor = int(avgColor);
     }   
@@ -76,23 +75,22 @@ class Flock implements Stim {
     v0 = PVector.fromAngle(meanTheta);
     v0.mult(maxSpeed);
     
-    float sepRadius = sepPx+1;//+1 takes care of fractional pixels
-    //sepSq = sq(sepRadius);//squaring since using sqeuclidean dist below
-    //sepSq_ = sq(sepRadius+radius*(pattern-1));
-    a = sq(sepRadius);
-    b = sq(sepRadius+radius*(pattern-1));
-
+    sepRadius = sepPx+1;//the +1 takes care of fractional pixels
+    //coeffs for ellipse equation (separation perimeter)
+    float a = sq(sepRadius);
     if (pattern > 1) {
+      float b = sq(sepRadius+radius*(pattern-1));
       float sintheta = sin(meanTheta);
       float costheta = cos(meanTheta);
       sepFrstTerm = sq(costheta)/a + sq(sintheta)/b;
       sepScndTerm = 2*costheta*sintheta*(1./a - 1./b);
       sepThrdTerm = sq(sintheta)/a + sq(costheta)/b;
+    } else {
+      sepFrstTerm = 1/a;
+      sepScndTerm = 0;
+      sepThrdTerm = sepFrstTerm;
     }
-    
-    //sepDenX = sq(sepRadius+radius*(pattern-1));//denominator
-    
-    
+
     sepFreq = 5;
     if (debug) sepFreq = 1;
     binSize = sepPx;
@@ -458,15 +456,15 @@ class Flock implements Stim {
         rectMode(CORNER);
         noStroke();
         rect(myBorders[0]+bin_x*binSize,myBorders[2]+bin_y*binSize,binSize,binSize);
+
+        pushMatrix();
         noFill();
         stroke(255,128);
-
-        float lD = 2*sqrt(a);
-        if (meanThetaDeg == 0 || meanThetaDeg == 180)  
-           ellipse(position.x,position.y,lD,lD+radius*(pattern-1));
-        else if (meanThetaDeg == 90 || meanThetaDeg == 270)
-          ellipse(position.x,position.y,lD+radius*(pattern-1),lD);
-        else ellipse(position.x,position.y,lD,lD);
+        translate(position.x,position.y);
+        rotate(meanTheta);
+        ellipseMode(RADIUS);
+        ellipse(0,0,sepRadius,sepRadius+radius*(pattern-1));
+        popMatrix();
       }
   
       for (int nbr_idx : nbrArray) {
@@ -504,11 +502,6 @@ class Flock implements Stim {
               else dy -= yLen;          
             }
 
-            //if (meanThetaDeg == 0 || meanThetaDeg == 180) 
-            //  d2 = dx*dx/sepSq + dy*dy/sepSq2;//distance squared
-            //else if (meanThetaDeg == 90 || meanThetaDeg == 270)
-            //  d2 = dx*dx/sepSq2 + dy*dy/sepSq;//distance squared
-            //else d2 = dx*dx/sepSq + dy*dy/sepSq;//distance squared
             d2 = sepFrstTerm*dx*dx + sepScndTerm*dx*dy + sepThrdTerm*dy*dy;
             
             if (debug && (node.id == n1)) {
@@ -529,6 +522,7 @@ class Flock implements Stim {
                 //mark close neighbors with a yellow circle
                 noFill();
                 stroke(255,255,0);
+                ellipseMode(CENTER);
                 ellipse(other.item.position.x,other.item.position.y,D*1.5,D*1.5);
               }
             }
