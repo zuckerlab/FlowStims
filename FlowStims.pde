@@ -281,7 +281,7 @@ void loadSetupParams(String[] lines) {
       switch(list[0]) {        
         case "randomSeed": globalSeed = loader.loadInt(list[1],list[0],out_params); break;
         case "nTrialBlocks": nTrialBlocks = loader.loadInt(list[1],list[0],out_params); break;
-        case "scrDistCm": scrDistCm = loader.loadFloat(list[1],"scrDistCm ",out_params); break;
+        case "scrDistCm": scrDistCm = loader.loadFloat(list[1],list[0],out_params); break;
         case "scrWidthCm": scrWidthCm = loader.loadFloat(list[1],list[0],out_params); break;
         case "trialLenSec": trialLenSec = loader.loadFloat(list[1],list[0],out_params); break;
         case "preStimLenSec": preStimLenSec = loader.loadFloat(list[1],list[0],out_params); break;

@@ -25,9 +25,9 @@ saveScrShots 0 #Save a screenshot of every frame for creating a movie
 *randomSeed 11 #Pseudo rand. num. gen. initial state
 
 ###ALL STIMULI###
-trialLenSec 1.5. #Trial length (stimulus presentation), in seconds.
+trialLenSec 1.5 #Trial length (stimulus presentation), in seconds.
 preStimLenSec 1. #Pre-stimulus interval (for best results should be at least 1 sec)
-postStimLenSec .5 #Post-stimulus interval. Note: Total time spent per trial is given by preStimLenSec + trialLenSec +  postStimLenSec. 
+postStimLenSec .5 #Post-stimulus interval. Note: Total time spent per trial is given by preStimLenSec + trialLenSec +  postStimLenSec
 
 nTrialBlocks 3 #Number of blocks of trials (i.e., repetitions of each combination of parameters)
 
@@ -50,7 +50,7 @@ rigidTrans 0 #Set to 1 for a rigid translation of the flow elements, instead of 
 sepWeight 1.75 #Ratio between repulsion force between elts and the flow field force -- should be at least 1.5 for best results, and might need some adjustment for different dot sizes
 
 *maxForce 0.04
-*tileSize 3 #Tile size of the underlying vector field, in multiples of 
+*tileSize 2 #Tile size of the underlying vector field, in multiples of 
 *dirStd 0.09 #Std. dev. of the direction distribution of the underlying flow field
 *posStd 0.1 #Std. dev. of initial position of dots on screen, as a fraction of dotSpacing
 

@@ -24,7 +24,7 @@ class Loader {
     boolean fixRand = false;
     float sepWeight = 2.;//use higher val if FRAME_RATE = 30
     float maxForce = .04;
-    float tileSizeFactor = 2.5;
+    float tileSizeFactor = 2;
     //grats
     FloatList gratWidthsDeg = new FloatList(12.5, 3.125);
     IntList gratColors = new IntList(64.);//trick: use a float in constructor to create a single-elt list!
