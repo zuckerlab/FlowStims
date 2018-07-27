@@ -1,7 +1,8 @@
 class Flock implements Stim {
   
   boolean debug = true;
-  int n1 = 50;
+  int hidden = 0;
+  int n1 = 45;
   
   ArrayList<Boid> boids;
   DoublyLinkedList[] binGrid;
@@ -27,7 +28,7 @@ class Flock implements Stim {
   Flock(int myseed, int tilesize, float meantheta, int dirdeg, float dirstd, float basesep, int sepPx, float posstd, 
         int ndots, int diam, float diamdeg, int boidcolor, int bgcolor, int gray, float maxsp, float tempfreq,
         boolean wiggle_, float maxforce, float sepweight, int faderate) {
-          
+    if (debug == true) hidden = 30;
     mySeed = myseed;
     tileSize = tilesize;
     dirStd = dirstd;
@@ -48,12 +49,12 @@ class Flock implements Stim {
     
     if (gray == -1) {//if grayscr set to auto
       float spacing = float(sepPx)/diam;
-      float dotArea = width*height*PI/(spacing*spacing*4);          
+      float dotArea = width*height*PI/(spacing*spacing*4);
       float bgArea = width*height - dotArea;
+      if (debug) println("pct dotArea",dotArea/bgArea);
       float avgColor = (dotArea*boidColor+bgArea*bgColor)/( width*height );
       grayColor = int(avgColor);
-    }
-    
+    }   
 
     wiggle = wiggle_;
     maxForce = maxforce;
@@ -144,7 +145,7 @@ class Flock implements Stim {
     if (show) {
       boidAlpha = min(255,boidAlpha + fadeRate);
       setWiggle(wiggle);
-    } else boidAlpha = max(0,boidAlpha - fadeRate);
+    } else boidAlpha = max(hidden,boidAlpha - fadeRate);
 
     float alphafrac = boidAlpha/255.;
     background(bgColor*alphafrac + grayColor*(1. - alphafrac));
@@ -443,8 +444,12 @@ class Flock implements Stim {
         rect(myBorders[0]+bin_x*binSize,myBorders[2]+bin_y*binSize,binSize,binSize);
         noFill();
         stroke(255,128);
-        float D = 2*sqrt(sepSq);
-        ellipse(position.x,position.y,D,D);
+        float lD = 2*sqrt(sepSq);
+        if (meanThetaDeg == 0 || meanThetaDeg == 180)  
+           ellipse(position.x,position.y,lD,lD+D*.5*(pattern-1));
+        else if (meanThetaDeg == 90 || meanThetaDeg == 270)
+          ellipse(position.x,position.y,lD+D*.5*(pattern-1),lD);
+        else ellipse(position.x,position.y,lD,lD);
       }
   
       for (int nbr_idx : nbrArray) {
@@ -481,26 +486,32 @@ class Flock implements Stim {
               if (dy < 0) dy += yLen;
               else dy -= yLen;          
             }
-  
-            d2 = dx*dx + dy*dy;//distance squared
+            float sepSqrt = sqrt(sepSq);
+            if (meanThetaDeg == 0 || meanThetaDeg == 180) 
+              d2 = dx*dx/sepSq + dy*dy/sq(sepSqrt+D*.5*(pattern-1));//distance squared
+            else if (meanThetaDeg == 90 || meanThetaDeg == 270)
+              d2 = dx*dx/sq(sepSqrt+D*.5*(pattern-1)) + dy*dy/sepSq;//distance squared
+            else d2 = dx*dx/sepSq + dy*dy/sepSq;//distance squared
             
             if (debug && (node.id == n1)) {
+              //mark all neighbors with a red square
               noFill();
               stroke(255,0,0,160);
               rectMode(RADIUS);
               rect(other.item.position.x,other.item.position.y,radius,radius);
             }
             
-            if (d2 > 0 && d2 < sepSq) {
+            if (d2 > 0 && d2 < 1) {
               
               diff.set(dx,dy);
               diff.setMag(1./d2);
               steer.add(diff);
               
               if (debug && (node.id == n1)) {
+                //mark close neighbors with a yellow circle
                 noFill();
                 stroke(255,255,0);
-                ellipse(other.item.position.x,other.item.position.y,2*radius*1.5,2*radius*1.5);
+                ellipse(other.item.position.x,other.item.position.y,D*1.5,D*1.5);
               }
             }
           }

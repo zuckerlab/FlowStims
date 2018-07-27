@@ -93,7 +93,6 @@ void setup() {
   
   frameRate(FRAME_RATE);
   if (globalSeed < 0) globalSeed = (int) random(1000);
-  println("globalSeed",globalSeed);
   randomSeed(globalSeed);
 
   myheight = height - 2*frameWidth;
@@ -103,7 +102,6 @@ void setup() {
   //convert sizes from visual degrees to pixels (using scr width)
   float scrWidthDeg = 2*atan(.5*scrWidthCm/scrDistCm)*180/PI;
   float pxPerDeg = scrWidthPx/scrWidthDeg;
-  println("pxPerDeg",pxPerDeg);
   
   stims = loader.loadStims(pxPerDeg, lines, out_params);
   //done reading params input file
