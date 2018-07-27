@@ -1,44 +1,99 @@
-FlowStims 2
+FlowStims 2 #version information
 
-scrWidthPx 800
-scrHeightPx 600
-monitor 1
-fastRendering 1
-frameRate 60
-saveScrShots 0
+# Use this file to set the parameters for the flow movies
 
-randomSeed -1
-nTrialBlocks 3
-scrDistCm 25
-scrWidthCm 30
-scrHeightCm 40
-trialLenSec 4
-preStimLenSec 1
-postStimLenSec 0
+# INSTRUCTIONS:
+# Any text after a '#' is ignored (comments)
 
-nDirs 1
-pxPerDeg 8.35
-nFadeFrames 3
-tempFreq 2.5 4
+# The format for entering values is: "parameter"<space>"value"
+# For entering multiple values: "parameter"<space>"value1"<space>"value2" etc.
 
-useFlows 1
-nDots 3 #
-dotFgLvl 200
-->dotBgLvl 10
-->dotInterLvl 80
-dotDiamDeg 2
-->dotSep 3
-maxForce 0.04
-tileSize 3
-dirStd 0.1
-rigidTrans 0
-sepWeight 2.
+# An arrow "->" before a parameter name means it is dependent on the preceding param without an arrow (the "parent" parameter). The number of values entered for it must equal that of its parent.
+
+# Specific parameter instructions are given as comments below. 
+
+
+###SETUP###
+scrWidthPx 800 #screen resolution - width, in pixels
+scrHeightPx 600 #screen resolution - height, in pixels
+scrWidthCm 40.0 #Physical width of screen (cm)
+scrDistCm 25.0 #Distance from screen (cm)
+monitor 1 #Selects the screen to display to program on (default is 1)
+fastRendering 1 #Disable this (set to 0) for improved graphics (can be slow in some machines)
+*frameRate 60 #Number of frames displayed every second (default is 60)
+saveScrShots 0 #Save a screenshot of every frame for creating a movie
+*randomSeed 11 #Pseudo rand. num. gen. initial state
+
+###ALL STIMULI###
+trialLenSec 1.5. #Trial length (stimulus presentation), in seconds.
+preStimLenSec 1. #Pre-stimulus interval (for best results should be at least 1 sec)
+postStimLenSec .5 #Post-stimulus interval. Note: Total time spent per trial is given by preStimLenSec + trialLenSec +  postStimLenSec. 
+
+nTrialBlocks 3 #Number of blocks of trials (i.e., repetitions of each combination of parameters)
+
+nDirs 8 #Number of principal directions (evenly divided around 360 degrees)
+tempFreq 2.5 4 #Temporal frequency (cycles/s), can choose multiple
+*nFadeFrames 3 #Sets number of frames used for fade-in/out transitions (use 0 for no fade)
+
+###FLOW STIMULI###
+useFlows 1 #Whether to display flows
+nDots 1 3 #Number of dots used in the flow elements, can choose multiple
+
+dotFgLvl 200 #Grayscale level of foreground (dots) [0-255], multiple
+->dotBgLvl 10 #Grayscale level of background
+->dotInterLvl -1 #Grayscale level of interstimulus screen (use -1 for avg screen luminance of the stimulus)
+
+dotDiamDeg 2.1 #Diameter of single dots (degs), multiple -- determines diams for other nDots (preserving const. area)
+->dotSpacing 3.0 #avg spacing between flow element centers (in multiples of dotDiamDeg), must set a val for each dotDiamDeg used above
+
+rigidTrans 0 #Set to 1 for a rigid translation of the flow elements, instead of "wiggly" motion
+sepWeight 1.75 #Ratio between repulsion force between elts and the flow field force -- should be at least 1.5 for best results, and might need some adjustment for different dot sizes
+
+*maxForce 0.04
+*tileSize 3 #Tile size of the underlying vector field, in multiples of 
+*dirStd 0.09 #Std. dev. of the direction distribution of the underlying flow field
+*posStd 0.1 #Std. dev. of initial position of dots on screen, as a fraction of dotSpacing
+
 fixRandState 1
 
-useGratings 0
-gratWidthDeg 12.5
-randGratPhase 1
-gratFgLvl 255
-->gratBgLvl 0
-->gratInterLvl 127
-randGratPhase 0
+###GRATINGS STIMULI###
+useGratings 0 #Whether to display square-wave gratings
+gratWidthDeg 12.5 #Width of grating bars, in degrees of visual angle, i.e. 1/(2*spat.freq.)
+randGratPhase 0 #Set to 1 to enable random initial phase in each trial
+gratFgLvl 255 #Grayscale level of one half of the bars ("foreground") [0-255], can choose multiple
+->gratBgLvl 0 #Grayscale level of the other half of the bars ("background")
+->gratInterLvl 127 #Grayscale level of interstimulus screen (use -1 for avg screen luminance of the stimulus)
+
+###NETWORK COMMUNICATION###
+# Use this to configure which UDP packets are to be sent by the program (disabled if saveScrShots is on).
+# Format:
+#EVENT: <description of event that triggers the sending of the packet>
+#Format: <param> <host> <port> <msgType> <addNewLine> <encoding>
+
+# The arguments: host, port, msgType, etc. must be configured by the user (do not change the param name!).
+# Description of the arguments (do not change their order! -- the last two are optional):
+  # host: host address that will receive the packets (UDP datagrams)
+  # port: port that will be listening for the packets
+  # msgType: 1=send as string, 2=send as integer
+  # addNewline: 0 or 1 -- whether to add a '\n' char at end of msg. Default is no (0)
+  # encoding: only applicable if sending a string. Default: UTF-8 (single byte chars)
+
+
+#EVENT: beginning of presentation (sent only once, at the very beginning of the movie)
+#clientStart host port msgType msg [addNewLine encoding]
+clientStart localhost 9090 1 1
+
+#EVENT: end of presentation (including early exit with <ESC> key)
+#clientEnd host port msgType msg [addNewLine encoding]
+clientEnd localhost 9090 1 0
+
+#EVENT: start of each trial 
+#clientTrialStart host port msgType msg [addNewLine encoding]
+clientTrialStart localhost 9090 1 1
+
+#EVENT: end of each trial
+#clientTrialEnd host port msgType msg [addNewLine encoding]
+
+#EVENT: send a timestamp every X seconds (where X is set by intervalTimeStamp)
+#msgType: should be 3 (send time as int) or 4 (send time as str)
+#clientTimeStamp host port msgType interval [addNewLine encoding]

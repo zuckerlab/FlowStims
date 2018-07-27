@@ -51,7 +51,7 @@ class Loader {
           case "->dotBgLvl": dotBgColors = loadMultiInt(list, list[0], out, dotColors.size()); break;
           case "->dotInterLvl": dotInterColors = loadMultiInt(list, list[0], out, dotColors.size()); break;      
           case "dotDiamDeg": dotDiamsDeg = loadMultiFloat(list, list[0], out, 0); break;
-          case "->dotSep": dotSeps = loadMultiFloat(list, list[0], out, dotDiamsDeg.size()); break;     
+          case "->dotSpacing": dotSeps = loadMultiFloat(list, list[0], out, dotDiamsDeg.size()); break;     
           case "maxForce": maxForce = loadFloat(list[1], list[0], out); break;
           case "sepWeight": sepWeight = loadFloat(list[1], list[0], out); break;
           case "posStd": posStd = loadFloat(list[1], list[0], out); break;

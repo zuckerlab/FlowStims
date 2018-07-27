@@ -6,9 +6,6 @@
 //if posStd > 0 and noWiggle, activate wiggle and deactivate it during trial
 
 
-//start from shifted 3dots when posStd > 0? (maybe check spat freq first)
- 
-//use rotated (theta) ellipse equation (*pattern) for separation of n dots 
 //test all loader params
 
 String VERSION = "2";
@@ -289,21 +286,31 @@ void loadSetupParams(String[] lines) {
         case "trialLenSec": trialLenSec = loader.loadFloat(list[1],list[0],out_params); break;
         case "preStimLenSec": preStimLenSec = loader.loadFloat(list[1],list[0],out_params); break;
         case "postStimLenSec": postStimLenSec = loader.loadFloat(list[1],list[0],out_params); break;
-         case "clientStart":
-           clientStart = new Client(list[1]);
-           loader.loadClient(clientStart,list,list[0],out_params); break;
-         case "clientEnd":
-           clientEnd = new Client(list[1]);
-           loader.loadClient(clientEnd,list,list[0],out_params); break;
-         case "clientTrialStart":
-           clientTrialStart = new Client(list[1]);
-           loader.loadClient(clientTrialStart,list,list[0],out_params); break;
-         case "clientTrialEnd":
-           clientTrialEnd = new Client(list[1]);
-           loader.loadClient(clientTrialEnd,list,list[0],out_params); break;
-         case "clientTimeStamp":
-           clientTimeStamp = new Client(list[1]);
-           tStampInterval = int(FRAME_RATE * loader.loadClientInterval(clientTimeStamp,list,list[0],out_params)); break;
+        case "clientStart":
+          if (!makeMovie) {
+            clientStart = new Client(list[1]);
+            loader.loadClient(clientStart,list,list[0],out_params);
+          } break;
+        case "clientEnd":
+          if (!makeMovie) {
+            clientEnd = new Client(list[1]);
+            loader.loadClient(clientEnd,list,list[0],out_params);
+          } break;
+        case "clientTrialStart":
+          if (!makeMovie) {
+            clientTrialStart = new Client(list[1]);
+            loader.loadClient(clientTrialStart,list,list[0],out_params);
+          } break;
+        case "clientTrialEnd":
+          if (!makeMovie) {
+            clientTrialEnd = new Client(list[1]);
+            loader.loadClient(clientTrialEnd,list,list[0],out_params);
+          } break;
+        case "clientTimeStamp":
+          if (!makeMovie) {
+            clientTimeStamp = new Client(list[1]);
+            tStampInterval = int(FRAME_RATE * loader.loadClientInterval(clientTimeStamp,list,list[0],out_params));
+          } break;       
          default: break;
       }
     }
