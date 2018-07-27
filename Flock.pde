@@ -9,9 +9,10 @@ class Flock implements Stim {
   int[] myBorders, nbrArray;
   int binSize, binrows, bincols, xLen, yLen, tileSize;
   int pattern, D, boidColor, boidAlpha, bgColor, grayColor;
-  float xHalfLen, yHalfLen, baseSep, sepSq, posStd, dirStd, radius, origDdeg;
+  float xHalfLen, yHalfLen, baseSep, posStd, dirStd, radius, origDdeg;
   int sepFreq, fadeRate;
-  
+  //float sepSq, sepSq_;
+  float a, b, sepFrstTerm = 1, sepScndTerm = 0, sepThrdTerm = 1;
   FlowField flow;
 
   
@@ -76,7 +77,22 @@ class Flock implements Stim {
     v0.mult(maxSpeed);
     
     float sepRadius = sepPx+1;//+1 takes care of fractional pixels
-    sepSq = sq(sepRadius);//squaring since using sqeuclidean dist below
+    //sepSq = sq(sepRadius);//squaring since using sqeuclidean dist below
+    //sepSq_ = sq(sepRadius+radius*(pattern-1));
+    a = sq(sepRadius);
+    b = sq(sepRadius+radius*(pattern-1));
+
+    if (pattern > 1) {
+      float sintheta = sin(meanTheta);
+      float costheta = cos(meanTheta);
+      sepFrstTerm = sq(costheta)/a + sq(sintheta)/b;
+      sepScndTerm = 2*costheta*sintheta*(1./a - 1./b);
+      sepThrdTerm = sq(sintheta)/a + sq(costheta)/b;
+    }
+    
+    //sepDenX = sq(sepRadius+radius*(pattern-1));//denominator
+    
+    
     sepFreq = 5;
     if (debug) sepFreq = 1;
     binSize = sepPx;
@@ -444,11 +460,12 @@ class Flock implements Stim {
         rect(myBorders[0]+bin_x*binSize,myBorders[2]+bin_y*binSize,binSize,binSize);
         noFill();
         stroke(255,128);
-        float lD = 2*sqrt(sepSq);
+
+        float lD = 2*sqrt(a);
         if (meanThetaDeg == 0 || meanThetaDeg == 180)  
-           ellipse(position.x,position.y,lD,lD+D*.5*(pattern-1));
+           ellipse(position.x,position.y,lD,lD+radius*(pattern-1));
         else if (meanThetaDeg == 90 || meanThetaDeg == 270)
-          ellipse(position.x,position.y,lD+D*.5*(pattern-1),lD);
+          ellipse(position.x,position.y,lD+radius*(pattern-1),lD);
         else ellipse(position.x,position.y,lD,lD);
       }
   
@@ -486,12 +503,13 @@ class Flock implements Stim {
               if (dy < 0) dy += yLen;
               else dy -= yLen;          
             }
-            float sepSqrt = sqrt(sepSq);
-            if (meanThetaDeg == 0 || meanThetaDeg == 180) 
-              d2 = dx*dx/sepSq + dy*dy/sq(sepSqrt+D*.5*(pattern-1));//distance squared
-            else if (meanThetaDeg == 90 || meanThetaDeg == 270)
-              d2 = dx*dx/sq(sepSqrt+D*.5*(pattern-1)) + dy*dy/sepSq;//distance squared
-            else d2 = dx*dx/sepSq + dy*dy/sepSq;//distance squared
+
+            //if (meanThetaDeg == 0 || meanThetaDeg == 180) 
+            //  d2 = dx*dx/sepSq + dy*dy/sepSq2;//distance squared
+            //else if (meanThetaDeg == 90 || meanThetaDeg == 270)
+            //  d2 = dx*dx/sepSq2 + dy*dy/sepSq;//distance squared
+            //else d2 = dx*dx/sepSq + dy*dy/sepSq;//distance squared
+            d2 = sepFrstTerm*dx*dx + sepScndTerm*dx*dy + sepThrdTerm*dy*dy;
             
             if (debug && (node.id == n1)) {
               //mark all neighbors with a red square
