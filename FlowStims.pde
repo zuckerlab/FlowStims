@@ -128,10 +128,12 @@ void setup() {
 
 void draw () {
   boolean debug = false;
+  boolean endOfTrial = false;
   if (nStims == 0) quit();
   
   if (periodFrameCount == currentLen) {//if current period ended
-       updateState();
+       endOfTrial = updateState();
+       if (endOfTrial && clientTrialEnd != null) clientTrialEnd.send("",0);
   }
   
   if (periodFrameCount == 0) { //if starting a period
@@ -169,7 +171,6 @@ void draw () {
     } else if (postStim) {
       //record start of postStim interval
       out_trials.println(String.format("%d %d POSTSTIM",frameCount,timestamp));
-      if (clientTrialEnd != null) clientTrialEnd.send("",0);
     }
   }
 
@@ -190,9 +191,10 @@ void draw () {
   
 }
 
-void updateState() {
-  boolean debug = false;
+boolean updateState() {
+  boolean debug = true;
   periodFrameCount = 0;
+  boolean trialEnded = false;
   
   if (preStim) {   
     if (debug) println("preStim->trial");
@@ -214,7 +216,8 @@ void updateState() {
     }
     
   } else {
-    assert trial == true;      
+    //assert trial == true;
+    trialEnded = true;
     if (postStimLen == 0) {
       trialIndex++;
       if (preStimLen > 0) {
@@ -232,7 +235,9 @@ void updateState() {
       currentLen = postStimLen;
     }
   }
+  return trialEnded;
 }
+
 
 void selectParamsFile(final File f) {
   if (f == null || f.isDirectory()) {
