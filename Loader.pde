@@ -24,7 +24,8 @@ class Loader {
     boolean fixRand = false;
     float sepWeight = 2.;//use higher val if FRAME_RATE = 30
     float maxForce = .04;
-    float tileSizeFactor = 2;
+    float tileSizeFactor = 2.;
+    float patternRatio = 0.;
     //grats
     FloatList gratWidthsDeg = new FloatList(12.5, 3.125);
     IntList gratColors = new IntList(64.);//trick: use a float in constructor to create a single-elt list!
@@ -47,6 +48,7 @@ class Loader {
           //FLOWS
           case "useFlows": useFlows = loadBool(list[1], list[0], out); break;
           case "nDots": nDots = loadMultiInt(list, list[0], out, 0); break;
+          case "patternRatio": patternRatio = loadFloat(list[1], list[0], out); break;
           case "dotFgLvl": dotColors = loadMultiInt(list, list[0], out, 0); break;
           case "->dotBgLvl": dotBgColors = loadMultiInt(list, list[0], out, dotColors.size()); break;
           case "->dotInterLvl": dotInterColors = loadMultiInt(list, list[0], out, dotColors.size()); break;      
@@ -84,7 +86,7 @@ class Loader {
 
     Stim[] stims = new Stim[nStims];
 
-    float dir, speed, diam_deg, sep, width_deg, tempfreq;
+    float dir, speed, diam_deg, sep, width_deg, tempfreq, pattratio;
     int dirdeg, ndots, fgcolor, bgcolor, gray, diam_px, sep_px, tilesize, width_px;
 
     int s = 0;
@@ -100,6 +102,9 @@ class Loader {
 
           for (int dt = 0; dt < nDots.size(); dt++) {
             ndots = nDots.get(dt);
+            if (ndots > 1) {
+              if (patternRatio <= 0) pattratio = 1./sqrt(ndots);
+              else pattratio = patternRatio;
 
             for (int sz = 0; sz < dotDiamsDeg.size(); sz++) {
               diam_deg = dotDiamsDeg.get(sz);

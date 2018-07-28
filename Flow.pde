@@ -27,7 +27,7 @@ class Flow implements Stim {
 
   Flow(int myseed, int tilesize, float meantheta, int dirdeg, float dirstd, float basesep, int sepPx, float posstd, 
         int ndots, int diam, float diamdeg, int boidcolor, int bgcolor, int gray, float maxsp, float tempfreq,
-        boolean wiggle_, float maxforce, float sepweight, int faderate) {
+        boolean wiggle_, float maxforce, float sepweight, int faderate, float patternRatio) {
     if (debug == true) hidden = 30;
     mySeed = myseed;
     tileSize = tilesize;
@@ -40,7 +40,7 @@ class Flow implements Stim {
     
     origDdeg = diamdeg;
     D = diam;
-    if (pattern > 1) D = round(D/sqrt(pattern));
+    if (pattern > 1) D = round(D*patternRatio);//round(D/sqrt(pattern));
     radius = D/2.;
     
     boidColor = boidcolor;
