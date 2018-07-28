@@ -27,7 +27,8 @@ Stim[] stims;
 int nStims;
 IntList stimIdxs;
 
-Client clientStart, clientEnd, clientTrialStart, clientTrialEnd, clientTimeStamp;
+ArrayList<Client> clientStartList, clientEndList;
+Client clientTrialStart, clientTrialEnd, clientTimeStamp;
 int tStampInterval;
 long timestamp;
 
@@ -118,7 +119,10 @@ void setup() {
   trialIndex = 0;
   totalTrials = nTrialBlocks*nStims;  
 
-  if (nStims > 0 && clientStart != null) clientStart.send("",0);
+  if (nStims > 0) {
+    for (int cl = 0; cl < clientStarts.size(); cl++)
+      clientStartList.get(cl).send("",0);
+  }
 } 
 
 void draw () {
@@ -286,10 +290,19 @@ void loadSetupParams(String[] lines) {
         case "trialLenSec": trialLenSec = loader.loadFloat(list[1],list[0],out_params); break;
         case "preStimLenSec": preStimLenSec = loader.loadFloat(list[1],list[0],out_params); break;
         case "postStimLenSec": postStimLenSec = loader.loadFloat(list[1],list[0],out_params); break;
+        case "multiClientStart": 
+          multiClientStart = loader.loadBool(list[1],list[0],out_params);
+          if (multiClientStart) clientStarts = new ArrayList<Client>(); 
+          break;
         case "clientStart":
           if (!makeMovie) {
-            clientStart = new Client(list[1]);
-            loader.loadClient(clientStart,list,list[0],out_params);
+            if (multiClientStart) {
+              clientStarts.add(new Client(list[1]));
+              loader.loadClient(clientStarts.get(clientStarts.size()-1),list,list[0],out_params);
+            } else {
+              clientStart = new Client(list[1]);
+              loader.loadClient(clientStart,list,list[0],out_params);
+            }
           } break;
         case "clientEnd":
           if (!makeMovie) {
