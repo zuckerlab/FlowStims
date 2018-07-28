@@ -341,8 +341,9 @@ void drawBorders() {
 
 void keyPressed() {
   if (key == ESC){
-      if (clientEnd != null) clientEnd.send("",0);
-      quit();    
+    for (int cl = 0; cl < clientEndList.size(); cl++)
+      clientEndList.get(cl).send("",0);
+    quit();    
   }
   switch (key) {
     case 'b':

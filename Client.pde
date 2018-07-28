@@ -2,18 +2,17 @@ import java.net.* ;
 import java.nio.* ;
 
 class Client {
-    DatagramSocket socket;
-    InetAddress host;
-    int port;
-    DatagramPacket packet;
-    byte[] data;
-    int sendType = 1;
-    String msg;
-    String encoding = "UTF-8";
-    boolean appendNewLineChar = false;   
-    int intMsg;
-    String strMsg;
-    boolean fixedMsg = false;
+    private DatagramSocket socket;
+    private InetAddress host;
+    private int port;
+    private DatagramPacket packet;
+    private byte[] data;
+    private int sendType = 1;
+    private String encoding = "UTF-8";
+    private boolean appendNewLineChar = false;   
+    private int intMsg;
+    private String strMsg;
+    private boolean fixedMsg = false;
  
     Client(String hostname) { 
    
