@@ -53,6 +53,7 @@ class Client {
     
     /*send a string or int msg (the other arg is ignored)*/
     void send(String str_, int int_) {
+      println("sending to",host,"port",port);
       switch (sendType) {
         case 1:
           if (fixedMsg) send1(strMsg);

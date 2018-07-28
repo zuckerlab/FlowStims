@@ -33,42 +33,48 @@ nTrialBlocks 3 #Number of blocks of trials (i.e., repetitions of each combinatio
 
 nDirs 8 #Number of principal directions (evenly divided around 360 degrees)
 tempFreq 2.5 4 #Temporal frequency (cycles/s), can choose multiple
-*nFadeFrames 3 #Sets number of frames used for fade-in/out transitions (use 0 for no fade)
+nFadeFrames 10 #Sets number of frames used for fade-in/out transitions (use 0 for no fade)
+
+useMask 0
+maskDiamDeg 30
+maskHorzPos .75
+->maskVertPos .5
 
 ###FLOW STIMULI###
 useFlows 1 #Whether to display flows
 nDots 1 3 #Number of dots used in the flow elements, can choose multiple
 
-dotFgLvl 200 #Grayscale level of foreground (dots) [0-255], multiple
-->dotBgLvl 10 #Grayscale level of background
-->dotInterLvl -1 #Grayscale level of interstimulus screen (use -1 for avg screen luminance of the stimulus)
+dotFgVal 200 #Grayscale value for foreground (dots) [0-255], multiple
+->dotBgVal 127 #Grayscale value for background
+->dotInterVal 80 #Grayscale value of interstimulus screen (use -1 for avg screen luminance of the stimulus)
 
-dotDiamDeg 2.1 #Diameter of single dots (degs), multiple -- determines diams for other nDots (preserving const. area)
+dotDiamDeg .5 #Diameter of single dots (degs), multiple -- determines diams for other nDots (preserving const. area)
 ->dotSpacing 3.0 #avg spacing between flow element centers (in multiples of dotDiamDeg), must set a val for each dotDiamDeg used above
 
 rigidTrans 0 #Set to 1 for a rigid translation of the flow elements, instead of "wiggly" motion
-sepWeight 1.75 #Ratio between repulsion force between elts and the flow field force -- should be at least 1.5 for best results, and might need some adjustment for different dot sizes
+sepWeight 1.5 #Ratio between repulsion force between elts and the flow field force -- should be at least 1.5 for best results, and might need some adjustment for different dot sizes
 
 *maxForce 0.04
-*tileSize 2 #Tile size of the underlying vector field, in multiples of 
+*tileSize 2.5 #Tile size of the underlying vector field, in multiples of 
 *dirStd 0.09 #Std. dev. of the direction distribution of the underlying flow field
 *posStd 0.1 #Std. dev. of initial position of dots on screen, as a fraction of dotSpacing
 
 fixRandState 1
 
 ###GRATINGS STIMULI###
-useGratings 0 #Whether to display square-wave gratings
-gratWidthDeg 12.5 #Width of grating bars, in degrees of visual angle, i.e. 1/(2*spat.freq.)
+useGratings 1 #Whether to display square-wave gratings
+gratWidthDeg .5 #Width of grating bars, in degrees of visual angle, i.e. 1/(2*spat.freq.)
 randGratPhase 0 #Set to 1 to enable random initial phase in each trial
-gratFgLvl 255 #Grayscale level of one half of the bars ("foreground") [0-255], can choose multiple
-->gratBgLvl 0 #Grayscale level of the other half of the bars ("background")
-->gratInterLvl 127 #Grayscale level of interstimulus screen (use -1 for avg screen luminance of the stimulus)
+gratFgVal 192 #Grayscale value of one half of the bars ("foreground") [0-255], can choose multiple
+->gratBgVal 64 #Grayscale value of the other half of the bars ("background")
+->gratInterVal 127 #Grayscale value of interstimulus screen (use -1 for avg screen luminance of the stimulus)
 
 ###NETWORK COMMUNICATION###
-# Use this to configure which UDP packets are to be sent by the program (disabled if saveScrShots is on).
+# Use this to configure which UDP packets are to be sent by the program whenever one of the events below is triggered (packet sending disabled if saveScrShots is on).
+
 # Format:
 #EVENT: <description of event that triggers the sending of the packet>
-#Format: <param> <host> <port> <msgType> <addNewLine> <encoding>
+#<param> <host> <port> <msgType> <addNewLine> <encoding>
 
 # The arguments: host, port, msgType, etc. must be configured by the user (do not change the param name!).
 # Description of the arguments (do not change their order! -- the last two are optional):
@@ -78,13 +84,14 @@ gratFgLvl 255 #Grayscale level of one half of the bars ("foreground") [0-255], c
   # addNewline: 0 or 1 -- whether to add a '\n' char at end of msg. Default is no (0)
   # encoding: only applicable if sending a string. Default: UTF-8 (single byte chars)
 
+# For multiple hosts per event, repeat this in multiple lines changing the arguments host, port, etc. for each one. Note: only clientStart and clientEnd allow multiple hosts.
 
 #EVENT: beginning of presentation (sent only once, at the very beginning of the movie)
 #clientStart host port msgType msg [addNewLine encoding]
 clientStart localhost 9090 1 1
 
 #EVENT: end of presentation (including early exit with <ESC> key)
-#clientEnd host port msgType msg [addNewLine encoding]
+#clientEnd host port msgType msg [addNewLine encoding] (for multiple hosts, repeat this in multiple lines changing host, port, etc. for each one)
 clientEnd localhost 9090 1 0
 
 #EVENT: start of each trial 
@@ -93,7 +100,3 @@ clientTrialStart localhost 9090 1 1
 
 #EVENT: end of each trial
 #clientTrialEnd host port msgType msg [addNewLine encoding]
-
-#EVENT: send a timestamp every X seconds (where X is set by intervalTimeStamp)
-#msgType: should be 3 (send time as int) or 4 (send time as str)
-#clientTimeStamp host port msgType interval [addNewLine encoding]

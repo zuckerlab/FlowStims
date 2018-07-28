@@ -28,8 +28,8 @@ int nStims;
 IntList stimIdxs;
 
 ArrayList<Client> clientStartList, clientEndList;
-Client clientTrialStart, clientTrialEnd, clientTimeStamp;
-int tStampInterval;
+Client clientTrialStart, clientTrialEnd;//, clientTimeStamp;
+//int tStampInterval;
 long timestamp;
 
 int myheight;
@@ -120,6 +120,7 @@ void setup() {
   totalTrials = nTrialBlocks*nStims;  
 
   if (nStims > 0) {
+    println("START");
     for (int cl = 0; cl < clientStartList.size(); cl++)
       clientStartList.get(cl).send("",0);
   }
@@ -313,11 +314,11 @@ void loadSetupParams(String[] lines) {
             clientTrialEnd = new Client(list[1]);
             loader.loadClient(clientTrialEnd,list,list[0],out_params);
           } break;
-        case "clientTimeStamp":
-          if (!makeMovie) {
-            clientTimeStamp = new Client(list[1]);
-            tStampInterval = int(FRAME_RATE * loader.loadClientInterval(clientTimeStamp,list,list[0],out_params));
-          } break;       
+        //case "clientTimeStamp":
+        //  if (!makeMovie) {
+        //    clientTimeStamp = new Client(list[1]);
+        //    tStampInterval = int(FRAME_RATE * loader.loadClientInterval(clientTimeStamp,list,list[0],out_params));
+        //  } break;       
          default: break;
       }
     }
@@ -341,6 +342,7 @@ void drawBorders() {
 
 void keyPressed() {
   if (key == ESC){
+    println("END");
     for (int cl = 0; cl < clientEndList.size(); cl++)
       clientEndList.get(cl).send("",0);
     quit();    
