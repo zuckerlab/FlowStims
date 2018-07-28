@@ -118,7 +118,7 @@ class Loader {
                   gray = dotInterColors.get(cc);
 
                   if (fixRand) seed = (int) random(1000);
-                  stims[s] = new Flock(seed, tilesize, dir, dirdeg, dirStd, sep, sep_px, posStd, ndots, diam_px, diam_deg,
+                  stims[s] = new Flow(seed, tilesize, dir, dirdeg, dirStd, sep, sep_px, posStd, ndots, diam_px, diam_deg,
                         fgcolor, bgcolor, gray, speed, tempfreq, wiggle, maxForce, sepWeight, fadeRate);
                   s++;
                 }

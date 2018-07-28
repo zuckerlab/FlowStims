@@ -175,8 +175,8 @@ void draw () {
   periodFrameCount++;
   
   if (showBorders) drawBorders();
-  if (showField && (stim instanceof Flock)) ((Flock) stim).flow.drawField(); 
-  if (showGrid && (stim instanceof Flock)) ((Flock) stim).drawBinGrid();
+  if (showField && (stim instanceof Flow)) ((Flow) stim).flow.drawField(); 
+  if (showGrid && (stim instanceof Flow)) ((Flow) stim).drawBinGrid();
   
   //stroke(0);
   //textSize(16);

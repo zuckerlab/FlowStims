@@ -1,4 +1,4 @@
-class Flock implements Stim {
+class Flow implements Stim {
   
   boolean debug = false;
   int hidden = 0;
@@ -25,7 +25,7 @@ class Flock implements Stim {
   int mySeed;
 
 
-  Flock(int myseed, int tilesize, float meantheta, int dirdeg, float dirstd, float basesep, int sepPx, float posstd, 
+  Flow(int myseed, int tilesize, float meantheta, int dirdeg, float dirstd, float basesep, int sepPx, float posstd, 
         int ndots, int diam, float diamdeg, int boidcolor, int bgcolor, int gray, float maxsp, float tempfreq,
         boolean wiggle_, float maxforce, float sepweight, int faderate) {
     if (debug == true) hidden = 30;
