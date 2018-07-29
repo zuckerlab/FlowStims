@@ -58,8 +58,8 @@ sepWeight 1.5 #Ratio between repulsion force between elts and the flow field for
 *tileSize 2.5 #Tile size of the underlying vector field, in multiples of 
 *dirStd 0.09 #Std. dev. of the direction distribution of the underlying flow field
 *posStd 0.1 #Std. dev. of initial position of dots on screen, as a fraction of dotSpacing
-
-fixRandState 1
+*equalArea 0 #Whether to adjust the diameter of patterns with nDots > 1 so as to preserve the same total area as that of single dots -- default: yes (1)
+fixRandState 1 #Set to 1 to make identical all trials of the same flow variation (fixes the initial dot positions and flow field)
 
 ###GRATINGS STIMULI###
 useGratings 1 #Whether to display square-wave gratings
