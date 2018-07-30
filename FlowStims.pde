@@ -10,7 +10,7 @@
 
 String VERSION = "2";
 
-boolean saveTrialScrShots = true;
+boolean saveTrialScrShots = false;
 
 //default movie params
 int monitor = 1;

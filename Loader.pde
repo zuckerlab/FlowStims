@@ -1,7 +1,6 @@
 class Loader {
 
   Stim[] loadStims(float pxPerDeg, String[] lines, PrintWriter out) {
-
     //default stim params
     int nDirs = 1;
 
@@ -113,6 +112,9 @@ class Loader {
               sep_px = round(sep*diam_px); //based on original diameter, i.e., before area correction
               tilesize = round(sep_px*tileSizeFactor);
               
+              //compute corrected diam if equalArea is ON 
+              if (ndots > 1 && equalArea) diam_px = round(diam_px/sqrt(ndots));
+
               //convert temp freqs to actual speeds (px/frame)
               if (dotSpFqs == null) period_px = sep_px;
               else {
@@ -128,7 +130,7 @@ class Loader {
 
                 if (fixRand) seed = (int) random(1000);
                 stims[s] = new Flow(seed, tilesize, dir, dirdeg, dirStd, sep, sep_px, posStd, ndots, diam_px, diam_deg,
-                      fgcolor, bgcolor, gray, speed, tempfreq, wiggle, maxForce, sepWeight, fadeRate, equalArea);
+                      fgcolor, bgcolor, gray, speed, tempfreq, wiggle, maxForce, sepWeight, fadeRate);
                 s++;
               }
               

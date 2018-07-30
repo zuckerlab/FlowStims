@@ -28,7 +28,7 @@ class Flow implements Stim {
 
   Flow(int myseed, int tilesize, float meantheta, int dirdeg, float dirstd, float basesep, int sepPx, float posstd, 
         int ndots, int diam, float diamdeg, int boidcolor, int bgcolor, int gray, float maxsp, float tempfreq,
-        boolean wiggle_, float maxforce, float sepweight, int faderate, boolean equalArea) {
+        boolean wiggle_, float maxforce, float sepweight, int faderate) {
 
     mySeed = myseed;
     tileSize = tilesize;
@@ -41,7 +41,6 @@ class Flow implements Stim {
     
     origDdeg = diamdeg;
     D = diam;
-    if (pattern > 1 && equalArea) D = round(D/sqrt(pattern));
     radius = D/2.;
     
     boidColor = boidcolor;
@@ -449,11 +448,11 @@ class Flow implements Stim {
         translate(position.x, position.y);
         rotate(theta - HALF_PI);
         if (D > 2) {
-        ellipseMode(CENTER); 
-        for (int i = -(pattern-1); i < pattern; i+=2) {
-          ellipse(i*radius,0,D,D);
-        }
-        } else {
+          ellipseMode(CENTER); 
+          for (int i = -(pattern-1); i < pattern; i+=2) {
+            ellipse(i*radius,0,D,D);
+          }
+        } else {//if radius <= 1, draw a single rectangle instead of multiple dots
           rectMode(CENTER);
           rect(0,0,pattern*D,D);
         }      
