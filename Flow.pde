@@ -201,7 +201,10 @@ class Flow implements Stim {
 
     for (int i = myBorders[2]; i <= myBorders[3]; i += binSize)
       line(myBorders[0],i,myBorders[1],i);
-
+  }
+  
+  void drawField() {
+    if (flow != null) flow.drawField();      
   }
   
   String getStimInfo() {
@@ -418,10 +421,6 @@ class Flow implements Stim {
         rotate(theta - HALF_PI);
       shape(boid);
       popMatrix();    
-    }
-    
-    void drawField() {
-      if (flow != null) flow.drawField();      
     }
   
     void drawBoid() {

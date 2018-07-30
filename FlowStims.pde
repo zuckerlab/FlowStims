@@ -181,7 +181,7 @@ void draw () {
   periodFrameCount++;
   
   if (showBorders) drawBorders();
-  if (showField && (stim instanceof Flow)) ((Flow) stim).flow.drawField(); 
+  if (showField && (stim instanceof Flow)) ((Flow) stim).drawField(); 
   if (showGrid && (stim instanceof Flow)) ((Flow) stim).drawBinGrid();
   
   //stroke(0);
