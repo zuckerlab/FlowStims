@@ -120,7 +120,6 @@ void setup() {
   totalTrials = nTrialBlocks*nStims;  
 
   if (nStims > 0) {
-    println("START");
     for (int cl = 0; cl < clientStartList.size(); cl++)
       clientStartList.get(cl).send("",0);
   }
@@ -192,7 +191,7 @@ void draw () {
 }
 
 boolean updateState() {
-  boolean debug = true;
+  boolean debug = false;
   periodFrameCount = 0;
   boolean trialEnded = false;
   
@@ -347,7 +346,6 @@ void drawBorders() {
 
 void keyPressed() {
   if (key == ESC){
-    println("END");
     for (int cl = 0; cl < clientEndList.size(); cl++)
       clientEndList.get(cl).send("",0);
     quit();    

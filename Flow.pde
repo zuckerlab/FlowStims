@@ -1,7 +1,7 @@
 class Flow implements Stim {
   
   boolean debug = false;
-  int hidden = 30;
+  int hidden = 0;
   int n1 = 45;
   
   ArrayList<Boid> boids;
@@ -211,7 +211,7 @@ class Flow implements Stim {
     return stiminfo;
   }
   
-  public class Boid {
+  class Boid {
   
     PVector position;
     PVector velocity;
@@ -388,9 +388,6 @@ class Flow implements Stim {
         //update theta for a smoother change in heading when patt > 1
         if (pattern > 1) theta = PVector.add(velocity,desired).heading();
       }
-      
-
-  
     }
   
     //update boid position
@@ -421,6 +418,10 @@ class Flow implements Stim {
         rotate(theta - HALF_PI);
       shape(boid);
       popMatrix();    
+    }
+    
+    void drawField() {
+      if (flow != null) flow.drawField();      
     }
   
     void drawBoid() {
@@ -612,10 +613,10 @@ class Flow implements Stim {
   }
 
   class DoublyLinkedList {
-      private int n;        
-      private Node head;     
-      private Node last;  
-      private Node curr;
+      int n;        
+      Node head;     
+      Node last;  
+      Node curr;
   
       public DoublyLinkedList() {
         //circular DL list
@@ -626,10 +627,7 @@ class Flow implements Stim {
         last = head;
   
       }
-  
-      public boolean isEmpty()    { return n == 0; }
-      public int size()           { return n;      }
-  
+
       // add the item to the list
       public void add(Node x) {
           x.next = head;
