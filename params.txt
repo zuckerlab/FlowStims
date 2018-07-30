@@ -19,9 +19,11 @@ scrHeightPx 600 #screen resolution - height, in pixels
 scrWidthCm 40.0 #Physical width of screen (cm)
 scrDistCm 25.0 #Distance from screen (cm)
 monitor 1 #Selects the screen to display to program on (default is 1)
+*fullScreen 1 #If set to 0, disables fullscreen mode (for running it in a smaller window)
 fastRendering 1 #Disable this (set to 0) for improved graphics (can be slow in some machines)
 *frameRate 60 #Number of frames displayed every second (default is 60)
-saveScrShots 0 #Save a screenshot of every frame for creating a movie
+saveMovieFrames 0 #Save a screenshot of every frame for creating a movie
+*saveTrialScrShots 0 #Save a single screenshot at the end of each trial
 *randomSeed 11 #Pseudo rand. num. gen. initial state
 
 ###ALL STIMULI###
@@ -32,13 +34,9 @@ postStimLenSec .5 #Post-stimulus interval. Note: Total time spent per trial is g
 nTrialBlocks 3 #Number of blocks of trials (i.e., repetitions of each combination of parameters)
 
 nDirs 8 #Number of principal directions (evenly divided around 360 degrees)
-tempFreq 2.5 4 #Temporal frequency (cycles/s), can choose multiple
-nFadeFrames 10 #Sets number of frames used for fade-in/out transitions (use 0 for no fade)
+tempFreq 3.5 #Temporal frequency (cycles/s), can choose multiple
+nFadeFrames 3 #Sets number of frames used for fade-in/out transitions (use 0 for no fade)
 
-useMask 0
-maskDiamDeg 30
-maskHorzPos .75
-->maskVertPos .5
 
 ###FLOW STIMULI###
 useFlows 1 #Whether to display flows
@@ -52,7 +50,6 @@ dotDiamDeg .5 #Diameter of single dots (degs), multiple -- determines diams for 
 ->dotSpacing 3.0 #avg spacing between flow element centers (in multiples of dotDiamDeg), must set a val for each dotDiamDeg used above
 *->dotSpatFreq #Optional: spat. freq. for each dot size -- if provided, will be used to compute accurate temp. freq.
 
-
 rigidTrans 0 #Set to 1 for a rigid translation of the flow elements, i.e., no "jitter" -- no motion components other than main direction of motion (constant parallel flow field and no separation force during trial)
 sepWeight 1.5 #Ratio between repulsion force between elts and the flow field force -- should be at least around 1.5 for best results, and might need some adjustment for different dot sizes
 
@@ -61,7 +58,7 @@ sepWeight 1.5 #Ratio between repulsion force between elts and the flow field for
 *dirStd 0.09 #Std. dev. of the direction distribution of the underlying flow field
 *posStd 0.1 #Std. dev. of initial position of dots on screen, as a fraction of dotSpacing
 *equalArea 1 #Whether to adjust the diameter of patterns with nDots > 1 so as to preserve the same total area as that of single dots -- default: yes (1)
-fixRandState 1 #Set to 1 to make identical all trials of the same flow variation (fixes the initial dot positions and flow field)
+*fixRandState 0 #Set to 1 to make identical all trials of the same flow variation (fixes the initial dot positions and flow field)
 
 ###GRATINGS STIMULI###
 useGratings 1 #Whether to display square-wave gratings

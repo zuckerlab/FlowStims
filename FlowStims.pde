@@ -1,16 +1,4 @@
-//give the option of wiggling vs. rigid
-//wiggling activates sep and a flow field during trial (params chosen based on dot radius)
-//rigid deactivates those when trial begins 
-
-//if posStd set to 0, wiggle needs to be deactivate from the start (preStim)
-//if posStd > 0 and noWiggle, activate wiggle and deactivate it during trial
-
-
-//test all loader params
-
-String VERSION = "2";
-
-boolean saveTrialScrShots = false;
+String VERSION = "2.0";
 
 //default movie params
 int monitor = 1;
@@ -50,12 +38,12 @@ int nTrialBlocks = 1;
 String[] lines;
 
 boolean makeMovie = false;
+boolean saveTrialScrShots = false;
 
 //debugging tools
 boolean showBorders, showField, showGrid;
 boolean usePShape = false;
 int frameWidth = 0;
-
 boolean fullScr = false;
 
 void settings() {
@@ -281,9 +269,11 @@ void loadSettingsParams(String[] lines) {
         case "scrWidthPx": scrWidthPx = loader.loadInt(list[1],list[0],out_params); break;
         case "scrHeightPx": scrHeightPx = loader.loadInt(list[1],list[0],out_params); break;
         case "monitor": monitor = loader.loadInt(list[1],list[0],out_params); break;
+        case "fullScreen": fullScr = loader.loadBool(list[1],list[0],out_params); break;
         case "fastRendering": fastRendering = loader.loadBool(list[1],list[0],out_params); break;
         case "frameRate": FRAME_RATE = loader.loadInt(list[1],list[0],out_params); break;
-        case "saveScrShots": makeMovie = loader.loadBool(list[1],list[0],out_params); break;
+        case "saveMovieFrames": makeMovie = loader.loadBool(list[1],list[0],out_params); break;
+        case "saveTrialScrShots": saveTrialScrShots = loader.loadBool(list[1],list[0],out_params); break;
         default: break;
       }
     }
