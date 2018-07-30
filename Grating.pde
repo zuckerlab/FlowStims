@@ -11,6 +11,8 @@ class Grating implements Stim {
 
   PVector p0, p1, p2, p3;
   float[] vals;
+  
+  int nInfo = -1;
 
   Grating(int dir, float tempfreq, int fg, int bg, int gray, int barwid, float widdeg, float spd, boolean randphase, int faderate) {
 
@@ -125,6 +127,7 @@ class Grating implements Stim {
   }
   
   void cleanUp() {
+    stimAlpha = 0;
     vals = null;
   }
 
@@ -173,8 +176,13 @@ class Grating implements Stim {
   
   String getStimInfo() {
     String stiminfo = String.format(
-        "GRAT dir=%d tfreq=%.1f width=%f fgLvl=%d bgLvl=%d interLvl=%d phase=%.2f",
+        "GRAT dir=%d tfreq=%.1f width=%.2f fgLvl=%d bgLvl=%d interLvl=%d phase=%.2f",
         direction, tempFreq, widthDeg, bgColor, fgColor, grayColor, phaseFrac);
    return stiminfo;
+  }
+  
+  String getSimpleStimInfo() {
+    nInfo++;
+    return String.format("grats_%d_w%.2f_%d",direction, widthDeg, nInfo);
   }
 }

@@ -3,4 +3,5 @@ interface Stim {
   void cleanUp();
   void run(boolean show);
   String getStimInfo();
+  String getSimpleStimInfo();
 }

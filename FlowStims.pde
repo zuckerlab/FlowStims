@@ -10,6 +10,8 @@
 
 String VERSION = "2";
 
+boolean saveTrialScrShots = false;
+
 //default movie params
 int monitor = 1;
 int scrWidthPx = 800;
@@ -132,7 +134,10 @@ void draw () {
   
   if (periodFrameCount == currentLen) {//if current period ended
        endOfTrial = updateState();
-       if (endOfTrial && clientTrialEnd != null) clientTrialEnd.send("",0);
+       if (endOfTrial) {
+         if (clientTrialEnd != null) clientTrialEnd.send("",0);
+         if (saveTrialScrShots); saveFrame("trialScrShots/"+stim.getSimpleStimInfo()+".tga");  
+       }
   }
   
   if (periodFrameCount == 0) { //if starting a period
@@ -140,6 +145,7 @@ void draw () {
 
     if (preStim || (trial && preStimLen == 0)) {
       if (stim != null) stim.cleanUp();
+
 
       //check if new trial block
       if ((trialIndex % nStims) == 0) {
@@ -155,7 +161,7 @@ void draw () {
       } 
       if (debug) println("trial",trialIndex+1,"/",totalTrials);
       //load new stim
-      if (debug) println("Loading "+trialIndex % nStims + "/" + nStims);
+      if (debug) println("Loading "+((trialIndex % nStims)+1) + "/" + nStims);
       stim = stims[stimIdxs.get(trialIndex % nStims)];
       stim.init();
 

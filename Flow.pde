@@ -23,6 +23,7 @@ class Flow implements Stim {
   PShape boid;
   
   int mySeed;
+  int nInfo = -1;
 
 
   Flow(int myseed, int tilesize, float meantheta, int dirdeg, float dirstd, float basesep, int sepPx, float posstd, 
@@ -126,6 +127,7 @@ class Flow implements Stim {
   }
   
   void init() {
+    
     if (mySeed < 0) {
       globalSeed += 1000;
       randomSeed(globalSeed);
@@ -148,6 +150,7 @@ class Flow implements Stim {
   }
   
   void cleanUp() {
+    boidAlpha = 0;
     flow = null;
     binGrid = null;
     boids = null;
@@ -212,6 +215,11 @@ class Flow implements Stim {
         "FLOW nDots=%d dir=%d tfreq=%.1f diam=%.2f spac=%.1f dotLvl=%d bgLvl=%d interLvl=%d rigid=%d posStd=%.2f",
         pattern, meanThetaDeg, tempFreq, origDdeg, baseSep, boidColor, bgColor, grayColor, int(!wiggle), posStd);
     return stiminfo;
+  }
+  
+  String getSimpleStimInfo() {
+    nInfo++;
+    return String.format("%ddots_%d_D%.2f_sp%.1f_%d",pattern, meanThetaDeg, origDdeg, baseSep, nInfo);
   }
   
   class Boid {

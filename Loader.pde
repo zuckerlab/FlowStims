@@ -49,9 +49,9 @@ class Loader {
           case "useFlows": useFlows = loadBool(list[1], list[0], out); break;
           case "nDots": nDots = loadMultiInt(list, list[0], out, 0); break;
           case "equalArea": equalArea = loadBool(list[1], list[0], out); break;
-          case "dotFgLvl": dotColors = loadMultiInt(list, list[0], out, 0); break;
-          case "->dotBgLvl": dotBgColors = loadMultiInt(list, list[0], out, dotColors.size()); break;
-          case "->dotInterLvl": dotInterColors = loadMultiInt(list, list[0], out, dotColors.size()); break;      
+          case "dotFgVal": dotColors = loadMultiInt(list, list[0], out, 0); break;
+          case "->dotBgVal": dotBgColors = loadMultiInt(list, list[0], out, dotColors.size()); break;
+          case "->dotInterVal": dotInterColors = loadMultiInt(list, list[0], out, dotColors.size()); break;      
           case "dotDiamDeg": dotDiamsDeg = loadMultiFloat(list, list[0], out, 0); break;
           case "->dotSpacing": dotSeps = loadMultiFloat(list, list[0], out, dotDiamsDeg.size()); break;     
           case "maxForce": maxForce = loadFloat(list[1], list[0], out); break;
@@ -64,9 +64,9 @@ class Loader {
           //GRATS
           case "useGratings": useGratings = loadBool(list[1], list[0], out); break;
           case "gratWidthDeg": gratWidthsDeg = loadMultiFloat(list, list[0], out, 0); break;
-          case "gratGrayLvl": gratColors = loadMultiInt(list, list[0], out, 0); break;
-          case "->gratBgLvl": gratBgColors = loadMultiInt(list, list[0], out, gratColors.size()); break;
-          case "->gratInterLvl": gratInterColors = loadMultiInt(list, list[0], out, gratColors.size()); break;       
+          case "gratGrayVal": gratColors = loadMultiInt(list, list[0], out, 0); break;
+          case "->gratBgVal": gratBgColors = loadMultiInt(list, list[0], out, gratColors.size()); break;
+          case "->gratInterVal": gratInterColors = loadMultiInt(list, list[0], out, gratColors.size()); break;       
           case "randGratPhase": randPhase = loadBool(list[1], list[0], out); break;
           default: break;
         }
