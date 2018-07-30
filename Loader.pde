@@ -65,7 +65,7 @@ class Loader {
           //GRATS
           case "useGratings": useGratings = loadBool(list[1], list[0], out); break;
           case "gratWidthDeg": gratWidthsDeg = loadMultiFloat(list, list[0], out, 0); break;
-          case "gratGrayVal": gratColors = loadMultiInt(list, list[0], out, 0); break;
+          case "gratFgVal": gratColors = loadMultiInt(list, list[0], out, 0); break;
           case "->gratBgVal": gratBgColors = loadMultiInt(list, list[0], out, gratColors.size()); break;
           case "->gratInterVal": gratInterColors = loadMultiInt(list, list[0], out, gratColors.size()); break;       
           case "randGratPhase": randPhase = loadBool(list[1], list[0], out); break;
