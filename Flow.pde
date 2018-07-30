@@ -1,7 +1,7 @@
 class Flow implements Stim {
   
   boolean debug = false;
-  int hidden = 0;
+  int hidden = 30;
   int n1 = 45;
   
   ArrayList<Boid> boids;
@@ -63,7 +63,7 @@ class Flow implements Stim {
     posStd = posstd;
     
     if (posStd == 0) assert !wiggle;
-    else setWiggle(true);//if posStd we want scrambled boids, so turn wiggle on during pre-trial
+    else setWiggle(true);//if posStd > 0 we want scrambled boids, so turn wiggle on during pre-trial
     
 
     if (usePShape) createBoidShape();
@@ -308,12 +308,6 @@ class Flow implements Stim {
       
     }
     
-    //void testSepDist() {
-    //  int bin_idx = getBinIndex();
-    //  updateBinNeighbors();
-    //  PVector sep = separate();
-    //}
-    
     void run() {
       
       int bin_idx = getBinIndex();
@@ -359,7 +353,8 @@ class Flow implements Stim {
         velocity.set(v0);
         desired.set(v0);
         desired.limit(maxForce);
-        acceleration.add(desired); 
+        acceleration.add(desired);
+        theta = meanTheta;
       } else {
         if (separate && sepWeight > 0) {
           sepCounter = (sepCounter + 1) % sepFreq;
@@ -378,10 +373,12 @@ class Flow implements Stim {
           desired.limit(maxForce); 
           acceleration.add(desired);      
         }
+        
+        //update theta for a smoother change in heading when patt > 1
+        if (pattern > 1) theta = PVector.add(velocity,desired).heading();
       }
       
-      //update theta for a smoother change in heading when patt > 1 -- not sure it looks better, though
-      if (pattern > 1) theta = PVector.add(velocity,desired).heading();
+
   
     }
   
