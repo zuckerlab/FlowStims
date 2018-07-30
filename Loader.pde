@@ -18,6 +18,7 @@ class Loader {
     IntList dotInterColors = dotBgColors;//new IntList(-1,-1);          
     FloatList dotDiamsDeg = new FloatList(1.5);
     FloatList dotSeps = new FloatList(4.);
+    FloatList dotSpFqs = null;
     float dirStd = 0.08;
     float posStd = 0.1;  
     boolean wiggle = true;
@@ -54,6 +55,7 @@ class Loader {
           case "->dotInterVal": dotInterColors = loadMultiInt(list, list[0], out, dotColors.size()); break;      
           case "dotDiamDeg": dotDiamsDeg = loadMultiFloat(list, list[0], out, 0); break;
           case "->dotSpacing": dotSeps = loadMultiFloat(list, list[0], out, dotDiamsDeg.size()); break;     
+          case "->dotSpatFreq": dotSpFqs = loadMultiFloat(list, list[0], out, dotDiamsDeg.size()); break;
           case "maxForce": maxForce = loadFloat(list[1], list[0], out); break;
           case "sepWeight": sepWeight = loadFloat(list[1], list[0], out); break;
           case "posStd": posStd = loadFloat(list[1], list[0], out); break;
@@ -81,13 +83,13 @@ class Loader {
     //if flows aren't rand, then most likely you dont want rand grating phase either
     if (fixRand && randPhase == true) randPhase = false;//(catching possibly common mistake when setting params file)
 
-    int nStims = nDirs*tempFreqs.size()*(int(useFlows)*(nDots.size()*dotColors.size()*dotDiamsDeg.size()*dotSeps.size())
+    int nStims = nDirs*tempFreqs.size()*(int(useFlows)*(nDots.size()*dotColors.size()*dotDiamsDeg.size())
       + int(useGratings)*(gratWidthsDeg.size()*gratColors.size()));
 
     Stim[] stims = new Stim[nStims];
 
-    float dir, speed, diam_deg, sep, width_deg, tempfreq;
-    int dirdeg, ndots, fgcolor, bgcolor, gray, diam_px, sep_px, tilesize, width_px;
+    float dir, speed, diam_deg, sep, width_deg, tempfreq, spatfreq;
+    int dirdeg, ndots, fgcolor, bgcolor, gray, diam_px, sep_px, tilesize, width_px, period_px;
 
     int s = 0;
     for (int dr = 0; dr < nDirs; dr++) {
@@ -107,24 +109,29 @@ class Loader {
               diam_deg = dotDiamsDeg.get(sz);
               diam_px = round(diam_deg*pxPerDeg);
 
-              for (int se = 0; se < dotSeps.size(); se++) {
-                sep = dotSeps.get(se);
-                sep_px = round(sep*diam_px); //based on original diameter, i.e., before area correction
-                tilesize = round(sep_px*tileSizeFactor);
-                //convert temp freqs to actual speeds (px/frame)
-                speed = tempfreq*sep_px/FRAME_RATE;
-
-                for (int cc = 0; cc < dotColors.size(); cc++) {
-                  fgcolor = dotColors.get(cc);
-                  bgcolor = dotBgColors.get(cc);
-                  gray = dotInterColors.get(cc);
-
-                  if (fixRand) seed = (int) random(1000);
-                  stims[s] = new Flow(seed, tilesize, dir, dirdeg, dirStd, sep, sep_px, posStd, ndots, diam_px, diam_deg,
-                        fgcolor, bgcolor, gray, speed, tempfreq, wiggle, maxForce, sepWeight, fadeRate, equalArea);
-                  s++;
-                }
+              sep = dotSeps.get(sz);
+              sep_px = round(sep*diam_px); //based on original diameter, i.e., before area correction
+              tilesize = round(sep_px*tileSizeFactor);
+              
+              //convert temp freqs to actual speeds (px/frame)
+              if (dotSpFqs == null) period_px = sep_px;
+              else {
+                 spatfreq = dotSpFqs.get(sz);
+                 period_px = round(pxPerDeg/spatfreq);
               }
+              speed = tempfreq*period_px/FRAME_RATE;
+
+              for (int cc = 0; cc < dotColors.size(); cc++) {
+                fgcolor = dotColors.get(cc);
+                bgcolor = dotBgColors.get(cc);
+                gray = dotInterColors.get(cc);
+
+                if (fixRand) seed = (int) random(1000);
+                stims[s] = new Flow(seed, tilesize, dir, dirdeg, dirStd, sep, sep_px, posStd, ndots, diam_px, diam_deg,
+                      fgcolor, bgcolor, gray, speed, tempfreq, wiggle, maxForce, sepWeight, fadeRate, equalArea);
+                s++;
+              }
+              
             }
           }
         }
@@ -134,7 +141,8 @@ class Loader {
           for (int sz = 0; sz < gratWidthsDeg.size(); sz++) {
             width_deg = gratWidthsDeg.get(sz);
             width_px = round(width_deg*pxPerDeg);
-            speed = tempfreq*(2*width_px)/FRAME_RATE;
+            period_px = 2*width_px;
+            speed = tempfreq*period_px/FRAME_RATE;
 
             for (int cc = 0; cc < gratColors.size(); cc++) {
               fgcolor = gratColors.get(cc);

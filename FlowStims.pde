@@ -10,7 +10,7 @@
 
 String VERSION = "2";
 
-boolean saveTrialScrShots = false;
+boolean saveTrialScrShots = true;
 
 //default movie params
 int monitor = 1;
@@ -136,7 +136,10 @@ void draw () {
        endOfTrial = updateState();
        if (endOfTrial) {
          if (clientTrialEnd != null) clientTrialEnd.send("",0);
-         if (saveTrialScrShots); saveFrame("trialScrShots/"+stim.getSimpleStimInfo()+".tga");  
+         if (saveTrialScrShots) {
+           String fname = stim.getSimpleStimInfo();
+           saveFrame(String.format("trialScrShots/%s/%s_%2d.png",fname,fname,stim.getScrShotNo())); 
+         }
        }
   }
   

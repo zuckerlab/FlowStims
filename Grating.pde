@@ -183,6 +183,10 @@ class Grating implements Stim {
   
   String getSimpleStimInfo() {
     nInfo++;
-    return String.format("grats_%d_w%.2f_%d",direction, widthDeg, nInfo);
+    return String.format("grats_%d_w%.2f",direction, widthDeg);
+  }
+  
+  int getScrShotNo() {
+    return nInfo;
   }
 }

@@ -4,4 +4,5 @@ interface Stim {
   void run(boolean show);
   String getStimInfo();
   String getSimpleStimInfo();
+  int getScrShotNo();
 }

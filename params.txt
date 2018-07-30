@@ -50,6 +50,8 @@ dotFgVal 200 #Grayscale value for foreground (dots) [0-255], multiple
 
 dotDiamDeg .5 #Diameter of single dots (degs), multiple -- determines diams for other nDots (preserving const. area)
 ->dotSpacing 3.0 #avg spacing between flow element centers (in multiples of dotDiamDeg), must set a val for each dotDiamDeg used above
+*->dotSpatFreq #Optional: spat. freq. for each dot size -- if provided, will be used to compute accurate temp. freq.
+
 
 rigidTrans 0 #Set to 1 for a rigid translation of the flow elements, i.e., no "jitter" -- no motion components other than main direction of motion (constant parallel flow field and no separation force during trial)
 sepWeight 1.5 #Ratio between repulsion force between elts and the flow field force -- should be at least around 1.5 for best results, and might need some adjustment for different dot sizes
