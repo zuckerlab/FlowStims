@@ -48,7 +48,7 @@ class Loader {
           //FLOWS
           case "useFlows": useFlows = loadBool(list[1], list[0], out); break;
           case "nDots": nDots = loadMultiInt(list, list[0], out, 0); break;
-          case "equalArea": equalArea = loadFloat(list[1], list[0], out); break;
+          case "equalArea": equalArea = loadBool(list[1], list[0], out); break;
           case "dotFgLvl": dotColors = loadMultiInt(list, list[0], out, 0); break;
           case "->dotBgLvl": dotBgColors = loadMultiInt(list, list[0], out, dotColors.size()); break;
           case "->dotInterLvl": dotInterColors = loadMultiInt(list, list[0], out, dotColors.size()); break;      

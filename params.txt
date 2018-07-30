@@ -51,14 +51,14 @@ dotFgVal 200 #Grayscale value for foreground (dots) [0-255], multiple
 dotDiamDeg .5 #Diameter of single dots (degs), multiple -- determines diams for other nDots (preserving const. area)
 ->dotSpacing 3.0 #avg spacing between flow element centers (in multiples of dotDiamDeg), must set a val for each dotDiamDeg used above
 
-rigidTrans 0 #Set to 1 for a rigid translation of the flow elements, instead of "wiggly" motion
-sepWeight 1.5 #Ratio between repulsion force between elts and the flow field force -- should be at least 1.5 for best results, and might need some adjustment for different dot sizes
+rigidTrans 0 #Set to 1 for a rigid translation of the flow elements, i.e., no "jitter" -- no motion components other than main direction of motion (constant parallel flow field and no separation force during trial)
+sepWeight 1.5 #Ratio between repulsion force between elts and the flow field force -- should be at least around 1.5 for best results, and might need some adjustment for different dot sizes
 
 *maxForce 0.04
 *tileSize 2.5 #Tile size of the underlying vector field, in multiples of 
 *dirStd 0.09 #Std. dev. of the direction distribution of the underlying flow field
 *posStd 0.1 #Std. dev. of initial position of dots on screen, as a fraction of dotSpacing
-*equalArea 0 #Whether to adjust the diameter of patterns with nDots > 1 so as to preserve the same total area as that of single dots -- default: yes (1)
+*equalArea 1 #Whether to adjust the diameter of patterns with nDots > 1 so as to preserve the same total area as that of single dots -- default: yes (1)
 fixRandState 1 #Set to 1 to make identical all trials of the same flow variation (fixes the initial dot positions and flow field)
 
 ###GRATINGS STIMULI###
