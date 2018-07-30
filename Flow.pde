@@ -28,7 +28,7 @@ class Flow implements Stim {
   Flow(int myseed, int tilesize, float meantheta, int dirdeg, float dirstd, float basesep, int sepPx, float posstd, 
         int ndots, int diam, float diamdeg, int boidcolor, int bgcolor, int gray, float maxsp, float tempfreq,
         boolean wiggle_, float maxforce, float sepweight, int faderate, boolean equalArea) {
-    if (debug == true) hidden = 30;
+
     mySeed = myseed;
     tileSize = tilesize;
     dirStd = dirstd;
@@ -62,15 +62,20 @@ class Flow implements Stim {
     fadeRate = faderate;
     posStd = posstd;
     
-    if (posStd == 0) assert !wiggle;
-    else setWiggle(true);//if posStd > 0 we want scrambled boids, so turn wiggle on during pre-trial
+    if (posStd > 0) setWiggle(true);//if posStd > 0 we want scrambled boids, so turn wiggle on during pre-trial
     
-
     if (usePShape) createBoidShape();
     
     move = true;
     maxSpeed = maxsp;
     tempFreq = tempfreq;
+    
+    if (tempFreq == 0) {
+      //allow boids to conform to flowfield before trial starts
+      wiggle = false;
+      setWiggle(true);
+      maxSpeed = 3;
+    }
 
     v0 = PVector.fromAngle(meanTheta);
     v0.mult(maxSpeed);
@@ -350,11 +355,17 @@ class Flow implements Stim {
     void flock() {
       
       if (!separate && !follow) {//noWiggle
-        velocity.set(v0);
-        desired.set(v0);
-        desired.limit(maxForce);
-        acceleration.add(desired);
-        theta = meanTheta;
+        if (tempFreq == 0) {
+          velocity.set(0,0);
+          desired.set(0,0);
+        } else {
+          velocity.set(v0);
+          desired.set(v0);
+          desired.limit(maxForce);
+          acceleration.add(desired);
+          theta = meanTheta;
+        }
+        
       } else {
         if (separate && sepWeight > 0) {
           sepCounter = (sepCounter + 1) % sepFreq;
@@ -367,7 +378,7 @@ class Flow implements Stim {
         if (follow && flow != null) {
           desired = followField();
           acceleration.add(desired);  
-        } else { //allows boids to still separate without any flow field (mostly for debugging reasons)
+        } else { //allows boids to still separate without any flow field
           desired.set(v0);
           desired.sub(velocity);    
           desired.limit(maxForce); 
