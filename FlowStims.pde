@@ -40,6 +40,8 @@ String[] lines;
 boolean makeMovie = false;
 boolean saveTrialScrShots = false;
 
+String today;
+
 //debugging tools
 boolean showBorders, showField, showGrid;
 boolean usePShape = false;
@@ -51,7 +53,7 @@ void settings() {
   while (lines == null) delay(100);
   
   int d = day();  int m = month();  int y = year(); int min = minute(); int h = hour(); 
-  String today = String.valueOf(y-2000)+String.format("%02d",m)+String.format("%02d",d);
+  today = String.valueOf(y-2000)+String.format("%02d",m)+String.format("%02d",d);
   String now = String.format("%02d",h)+String.format("%02d",min);
   out_params = createWriter(today+"_"+now+"_params.log");
   out_trials = createWriter(today+"_"+now+"_trials.log");

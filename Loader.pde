@@ -265,10 +265,11 @@ class Loader {
     int msgType = loadInt(list[3], " msgType ", out_params);   
     client.setSendType(msgType);
     //load msg now
-    if (msgType <= 2) { //str
+    if (msgType <= 2 || msgType == 5) { //str
       out_params.print(" msg ");
-      out_params.println(list[4]);           
-      client.setFixedStrMsg(list[4]);
+      String strmsg = list[4];
+      out_params.println(strmsg);           
+      client.setFixedStrMsg(strmsg);
     } else { //int
       int intMsg = loadInt(list[4], " msg ", out_params);
       client.setFixedIntMsg(intMsg);

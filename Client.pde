@@ -71,6 +71,9 @@ class Client {
       if (fixedMsg) send4(intMsg);
       else send4(int_);
       break;
+    case 5:
+      send5();
+      break;
     default: 
       break;
     }
@@ -119,6 +122,13 @@ class Client {
   /*send string from int*/
   void send4(int number) {      
     send1(String.valueOf(number));
+  }
+  
+  /*append date & time to fixed msg prefix*/
+  void send5() {
+    int sec = second(); int min = minute(); int h = hour();
+    String now = String.format("%s_%s_%02d%02d%02d",strMsg,today,h,min,sec);
+    send1(now);
   }
 
   void sendPacket() {
