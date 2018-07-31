@@ -71,6 +71,8 @@ class Client {
       if (fixedMsg) send4(intMsg);
       else send4(int_);
       break;
+    default: 
+      break;
     }
   }
 

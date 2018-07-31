@@ -79,7 +79,7 @@ gratFgVal 192 #Grayscale value of one half of the bars ("foreground") [0-255], c
 # Description of the arguments (do not change their order! -- the last two are optional):
   # host: host address that will receive the packets (UDP datagrams)
   # port: port that will be listening for the packets
-  # msgType: 1=send as string, 2=send as integer
+  # msgType: 1=send as string, 2=send as integer, 5=append date,time to msg (string only)
   # addNewline: 0 or 1 -- whether to add a '\n' char at end of msg. Default is no (0)
   # encoding: only applicable if sending a string. Default: UTF-8 (single byte chars)
 
