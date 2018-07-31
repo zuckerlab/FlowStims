@@ -100,6 +100,6 @@ clientTrialStart localhost 9090 1 1
 #EVENT: end of each trial
 #Format: clientTrialEnd host port msgType msg [addNewLine encoding]
 
-#EVENT: send a timestamp every X seconds (where X is set by the <interval> arg)
-#Note: here, msgType must be 3 (send time as int) or 4 (send time as str)
+#EVENT: send a timestamp every X seconds (where X is set by the "interval" arg)
+#Note: here, msgType must be 3 (send time as integer) or 4 (send time as string)
 #Format: clientTimeStamp host port msgType interval [addNewLine encoding]

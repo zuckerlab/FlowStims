@@ -109,7 +109,6 @@ class Client {
 
   /*send integer from int*/
   void send3(int number) {
-
     byte[] data = new byte[] {
       (byte) (number >>> 24), 
       (byte) (number >>> 16), 
