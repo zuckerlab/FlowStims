@@ -18,9 +18,9 @@ int nStims;
 IntList stimIdxs;
 
 ArrayList<Client> clientStartList, clientEndList;
-Client clientTrialStart, clientTrialEnd;//, clientTimeStamp;
-//int tStampInterval;
-long timestamp;
+Client clientTrialStart, clientTrialEnd, clientTimeStamp;
+int tStampInterval, tStampCounter = 0;
+long timestamp, start_time;
 
 int myheight;
 int mywidth;
@@ -108,7 +108,8 @@ void setup() {
   periodFrameCount = 0;
   trialIndex = 0;
   totalTrials = nTrialBlocks*nStims;  
-
+  
+  start_time = System.currentTimeMillis();
   if (nStims > 0) {
     for (int cl = 0; cl < clientStartList.size(); cl++)
       clientStartList.get(cl).send("",0);
@@ -176,6 +177,15 @@ void draw () {
   if (makeMovie) saveFrame("movieframes/######.png");
   
   periodFrameCount++;
+  
+  if (clientTimeStamp != null) {
+    tStampCounter++;
+    if (tStampCounter == tStampInterval) {//send cam packet every 6*1/60 s, or .1 s
+      tStampCounter = 0;//reset counter
+      int relativeTime = int(System.currentTimeMillis() - start_time);
+      clientTimeStamp.send("",relativeTime);
+    }
+  }
   
   if (showBorders) drawBorders();
   if (showField && (stim instanceof Flow)) ((Flow) stim).drawField(); 
@@ -296,7 +306,7 @@ void loadSetupParams(String[] lines) {
         case "preStimLenSec": preStimLenSec = loader.loadFloat(list[1],list[0],out_params); break;
         case "postStimLenSec": postStimLenSec = loader.loadFloat(list[1],list[0],out_params); break;
         case "clientStart":
-          if (!makeMovie) {
+          if (!makeMovie) {//preventing accidentally leaving network info on when making movie 
             if (clientStartList == null) clientStartList = new ArrayList<Client>();
             clientStartList.add(new Client(list[1]));
             loader.loadClient(clientStartList.get(clientStartList.size()-1),list,list[0],out_params);
@@ -317,11 +327,11 @@ void loadSetupParams(String[] lines) {
             clientTrialEnd = new Client(list[1]);
             loader.loadClient(clientTrialEnd,list,list[0],out_params);
           } break;
-        //case "clientTimeStamp":
-        //  if (!makeMovie) {
-        //    clientTimeStamp = new Client(list[1]);
-        //    tStampInterval = int(FRAME_RATE * loader.loadClientInterval(clientTimeStamp,list,list[0],out_params));
-        //  } break;       
+        case "clientTimeStamp":
+          if (!makeMovie) {
+            clientTimeStamp = new Client(list[1]);
+            tStampInterval = max(1,int(FRAME_RATE * loader.loadClientInterval(clientTimeStamp,list,list[0],out_params)));
+          } break;       
          default: break;
       }
     }
