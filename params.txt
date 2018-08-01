@@ -73,17 +73,14 @@ gratFgVal 192 #Grayscale value of one half of the bars ("foreground") [0-255], c
 
 # Format:
 #EVENT: <description of event that triggers the sending of the packet>
-#Format: <paramName> <host> <port> <msgType> <addNewLine> <encoding>
+#Format: <paramName> <host> <port> <msgType> <msg> <addNewLine> <encoding>
 
 # The arguments: host, port, msgType, etc. must be configured by the user (do not change the param name!).
 # Description of the arguments (do not change their order! -- the last two are optional):
   # host: host address that will receive the packets (UDP datagrams)
   # port: port that will be listening for the packets
   # msgType: 1=send as string, 2=send as integer, 5=append date,time to msg (string only)
-  # addNewline: 0 or 1 -- whether to add a '\n' char at end of msg. Default is no (0)
-  # encoding: only applicable if sending a string. Default: UTF-8 (single byte chars)
-
-# For multiple hosts per event, repeat this in multiple lines changing the arguments host, port, etc. for each one. Note: only clientStart and clientEnd allow multiple hosts.
+  # msg: message to send
 
 #EVENT: beginning of presentation (sent only once, at the very beginning of the movie)
 #Format: clientStart host port msgType msg [addNewLine encoding]

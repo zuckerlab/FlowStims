@@ -145,8 +145,10 @@ void draw () {
       if ((trialIndex % nStims) == 0) {
         if (trialIndex == totalTrials) {
           //Send "End" trigger
-          for (int cl = 0; cl < clientEndList.size(); cl++)
-            clientEndList.get(cl).send("",0);//0 = End msg is fixed
+          if (clientEndList != null) {
+            for (int cl = 0; cl < clientEndList.size(); cl++)
+              clientEndList.get(cl).send("",0);//0 = End msg is fixed
+          }
           quit();
         }
         //else, reshuffle stims for this new block
@@ -357,8 +359,10 @@ void drawBorders() {
 
 void keyPressed() {
   if (key == ESC){
-    for (int cl = 0; cl < clientEndList.size(); cl++)
-      clientEndList.get(cl).send("",0);
+    if (clientEndList != null) {
+      for (int cl = 0; cl < clientEndList.size(); cl++)
+        clientEndList.get(cl).send("",0);
+    }
     quit();    
   }
   switch (key) {
