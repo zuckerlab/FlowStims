@@ -211,8 +211,8 @@ class Flow implements Stim {
   
   String getStimInfo() {
     String stiminfo = String.format(
-        "FLOW nDots=%d dir=%d tfreq=%.1f diam=%.2f spac=%.2f dotLvl=%d bgLvl=%d interLvl=%d rigid=%d posStd=%.2f",
-        pattern, meanThetaDeg, tempFreq, origDdeg, baseSep, boidColor, bgColor, grayColor, int(!wiggle), posStd);
+        "FLOW nDots=%d dir=%d tfreq=%.1f diam=%.2f spac=%.2f dotLvl=%d bgLvl=%d interLvl=%d",
+        pattern, meanThetaDeg, tempFreq, origDdeg, baseSep, boidColor, bgColor, grayColor);
     return stiminfo;
   }
   
