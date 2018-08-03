@@ -112,7 +112,7 @@ void setup() {
   totalTrials = nTrialBlocks*nStims;  
   
   start_time = System.currentTimeMillis();
-  if (nStims > 0) {
+  if (nStims > 0 && clientStartList != null) {
     for (int cl = 0; cl < clientStartList.size(); cl++)
       clientStartList.get(cl).send("",0);
   }
@@ -129,7 +129,7 @@ void draw () {
          if (clientTrialEnd != null) clientTrialEnd.send("",0);
          if (saveTrialScrShots) {
            String fname = stim.getSimpleStimInfo();
-           saveFrame(String.format("trialScrShots/%s/%s_%2d.png",fname,fname,stim.getScrShotNo())); 
+           saveFrame(String.format("trialScrShots/%s/%s_%02d.png",fname,fname,stim.getScrShotNo())); 
          }
        }
   }

@@ -218,7 +218,7 @@ class Flow implements Stim {
   
   String getSimpleStimInfo() {
     nInfo++;
-    return String.format("%ddots_%d_D%.2f_sp%.1f",pattern, meanThetaDeg, origDdeg, baseSep);
+    return String.format("%ddots_%d_D%.2f_sp%.1f_c%d",pattern, meanThetaDeg, origDdeg, baseSep, boidColor);
   }
   
   int getScrShotNo() {
