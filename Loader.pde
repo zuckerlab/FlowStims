@@ -45,16 +45,20 @@ class Loader {
           case "pxPerDeg": pxPerDeg = loadFloat(list[1], list[0], out); break;//overrides the calculated pxPerDeg
           case "nFadeFrames": nFadeFrames = loadInt(list[1], list[0], out); break;
           case "tempFreq": tempFreqs = loadMultiFloat(list, list[0], out, 0); break;
-          //FLOWS
+        //FLOWS
           case "useFlows": useFlows = loadBool(list[1], list[0], out); break;
           case "nDots": nDots = loadMultiInt(list, list[0], out, 0); break;
           case "equalArea": equalArea = loadBool(list[1], list[0], out); break;
           case "dotFgVal": dotColors = loadMultiInt(list, list[0], out, 0); break;
-          case "->dotBgVal": dotBgColors = loadMultiInt(list, list[0], out, dotColors.size()); break;
-          case "->dotInterVal": dotInterColors = loadMultiInt(list, list[0], out, dotColors.size()); break;      
+          case "->dotBgVal":
+          case "dotBgVal": dotBgColors = loadMultiInt(list, list[0], out, dotColors.size()); break;
+          case "->dotInterVal":
+          case "dotInterVal": dotInterColors = loadMultiInt(list, list[0], out, dotColors.size()); break;
           case "dotDiamDeg": dotDiamsDeg = loadMultiFloat(list, list[0], out, 0); break;
-          case "->dotSpacing": dotSeps = loadMultiFloat(list, list[0], out, dotDiamsDeg.size()); break;     
-          case "->dotSpatFreq": dotSpFqs = loadMultiFloat(list, list[0], out, dotDiamsDeg.size()); break;
+          case "->dotSpacing":
+          case "dotSpacing": dotSeps = loadMultiFloat(list, list[0], out, dotDiamsDeg.size()); break;
+          case "->dotSpatFreq":
+          case "dotSpatFreq": dotSpFqs = loadMultiFloat(list, list[0], out, dotDiamsDeg.size()); break;
           case "maxForce": maxForce = loadFloat(list[1], list[0], out); break;
           case "sepWeight": sepWeight = loadFloat(list[1], list[0], out); break;
           case "posStd": posStd = loadFloat(list[1], list[0], out); break;
@@ -62,12 +66,14 @@ class Loader {
           case "rigidTrans": wiggle = !loadBool(list[1], list[0], out); break;
           case "tileSize": tileSizeFactor = loadFloat(list[1], list[0], out); break;
           case "fixRandState": fixRand = loadBool(list[1], list[0], out); break;
-          //GRATS
+        //GRATS
           case "useGratings": useGratings = loadBool(list[1], list[0], out); break;
           case "gratWidthDeg": gratWidthsDeg = loadMultiFloat(list, list[0], out, 0); break;
           case "gratFgVal": gratColors = loadMultiInt(list, list[0], out, 0); break;
-          case "->gratBgVal": gratBgColors = loadMultiInt(list, list[0], out, gratColors.size()); break;
-          case "->gratInterVal": gratInterColors = loadMultiInt(list, list[0], out, gratColors.size()); break;       
+          case "->gratBgVal":
+          case "gratBgVal": gratBgColors = loadMultiInt(list, list[0], out, gratColors.size()); break;
+          case "->gratInterVal":
+          case "gratInterVal": gratInterColors = loadMultiInt(list, list[0], out, gratColors.size()); break;
           case "randGratPhase": randPhase = loadBool(list[1], list[0], out); break;
           default: break;
         }
