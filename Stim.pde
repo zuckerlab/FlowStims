@@ -1,7 +1,7 @@
 interface Stim {
   
   void init();
-  void shuffleDirs(int seed);
+  void shuffleDirs(PApplet main);
   void cleanUp();
   
   void run(boolean show);

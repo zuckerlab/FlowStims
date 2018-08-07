@@ -102,17 +102,16 @@ class Flow implements Stim {
     
   }
   
-  void shuffleDirs(int seed) {
-    randomSeed(seed);
-    dirs.shuffle();  
-    println("flow shuffle",dirs);
+  void shuffleDirs(PApplet main) {
+    dirs.shuffle(main);  
   }
   
   void init() {
     
     int dirdeg = dirs.get(dirCounter);
     dirCounter = (dirCounter + 1) % nDirs;
-    println("flow dir",dirdeg);
+
+    ///direction-related variables
     float meantheta = dirdeg*(PI/180.);
     meanThetaDeg = dirdeg;
     meanTheta = -meantheta;
@@ -151,8 +150,7 @@ class Flow implements Stim {
       sepFrstTerm = 1/a;
       sepScndTerm = 0;
       sepThrdTerm = sepFrstTerm;
-    }
-    
+    }    
     ///
     
     if (mySeed < 0) {
@@ -239,7 +237,7 @@ class Flow implements Stim {
   
   String getStimInfo() {
     String stiminfo = String.format(
-        "FLOW nDots=%d dir=%d tfreq=%.1f diam=%.2f spac=%.2f dotLvl=%d bgLvl=%d interLvl=%d",
+        "stim=FLOW nDots=%d dir=%d tfreq=%.1f diam=%.2f spac=%.2f dotLvl=%d bgLvl=%d interLvl=%d",
         pattern, meanThetaDeg, tempFreq, origDdeg, baseSep, boidColor, bgColor, grayColor);
     return stiminfo;
   }
@@ -651,80 +649,72 @@ class Flow implements Stim {
   }
 
   class DoublyLinkedList {
-      int n;        
-      Node head;     
-      Node last;  
-      Node curr;
-  
-      public DoublyLinkedList() {
-        //circular DL list
-        head = new Node();
-        head.id = -2;
-        head.next = head;
-        head.prev = head;
-        last = head;
-  
-      }
+    int n;        
+    Node head;     
+    Node last;  
+    Node curr;
 
-      // add the item to the list
-      public void add(Node x) {
-          x.next = head;
-          x.prev = last;
-          last.next = x;
-          head.prev = x;
-          last = x;
-            
-          n++;
-  
+    public DoublyLinkedList() {
+      //circular DL list
+      head = new Node();
+      head.id = -2;
+      head.next = head;
+      head.prev = head;
+      last = head;
+
+    }
+
+    // add the item to the list
+    public void add(Node x) {
+        x.next = head;
+        x.prev = last;
+        last.next = x;
+        head.prev = x;
+        last = x;          
+        n++;
+    }
+    
+    public void remove(Node x) {
+      Node nextNode = x.next;
+      Node prevNode = x.prev;
+      //println("Removing",x.id," - next:",nextNode.id,", prev:",prevNode.id);
+      if (last == x) {
+        last = prevNode;
+        //println("  new last:",prevNode.id,last.id);
       }
-      
-      public void remove(Node x) {
-  
-        Node nextNode = x.next;
-        Node prevNode = x.prev;
-        //println("Removing",x.id," - next:",nextNode.id,", prev:",prevNode.id);
-        if (last == x) {
-          last = prevNode;
-          //println("  new last:",prevNode.id,last.id);
-        }
-        prevNode.next = nextNode;
-        nextNode.prev = prevNode;
-        //println("  ",prevNode.id,"<->",nextNode.id);
-        n--;
+      prevNode.next = nextNode;
+      nextNode.prev = prevNode;
+      //println("  ",prevNode.id,"<->",nextNode.id);
+      n--;
+    }
+    
+    public void resetIterator() {
+      curr = head;
+    }
+    
+    public Node getNext() {
+      if (n == 0) return null;
+      curr = curr.next;
+      if (curr == head) return null;  
+      return curr;
+    }
+
+    public int printout() {
+      Node x = head.next;
+      while (x != head) {
+          print(x.id,"..");
+          x = x.next;
       }
-      
-      public void resetIterator() {
-        curr = head;
-      }
-      public Node getNext() {
-        if (n == 0) return null;
-        curr = curr.next;
-        if (curr == head)
-          return null;
-  
-        return curr;
-      }
-  
-  
-      public int printout() {
-          Node x = head.next;
-          while (x != head) {
-              print(x.id,"..");
-              x = x.next;
-          }
-          println("Done",n);
-          return n;
-          
-      }
-   
+      println("Done",n);
+      return n;        
+    }   
   }
   
   //linked list proxy node
   class Node {
-      Boid item = null;
-      int id = 0;
-      Node next = null;
-      Node prev = null;
+    Boid item = null;
+    int id = 0;
+    Node next = null;
+    Node prev = null;
   }
-
 }

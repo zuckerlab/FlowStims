@@ -114,7 +114,7 @@ void setup() {
   trialIndex = 0;
   totalTrials = nTrialBlocks*nStims*nDirs;  
   
-  start_time = System.currentTimeMillis();
+  start_time = -1;
   if (nStims > 0 && clientStartList != null) {
     for (int cl = 0; cl < clientStartList.size(); cl++)
       clientStartList.get(cl).send("",0);
@@ -122,28 +122,31 @@ void setup() {
 } 
 
 void draw () {
-  boolean debug = true;
   
+  boolean debug = false;
+
   boolean endOfTrial = false;
+  
   if (nStims == 0) quit();
   
+  if (clientTimeStamp != null) {
+    tStampCounter++;
+    if (tStampCounter == tStampInterval) {//send cam packet every 6*1/60 s, or .1 s
+      tStampCounter = 0;//reset counter
+      int timer = int(System.currentTimeMillis() - start_time);
+      clientTimeStamp.send("",timer);
+    }
+  }
+  
   if (periodFrameCount == currentLen) {//if current period ended
-       endOfTrial = updateState();
-       if (endOfTrial) {
-         if (clientTrialEnd != null) clientTrialEnd.send("",0);
-         if (saveTrialScrShots) {
-           String fname = stim.getSimpleStimInfo();
-           saveFrame(String.format("trialScrShots/%s/%s_%02d.png",fname,fname,stim.getScrShotNo())); 
-         }
-       }
+   endOfTrial = updateState();
   }
   
   if (periodFrameCount == 0) { //if starting a period
-    timestamp = System.currentTimeMillis();
 
-    if (preStim || (trial && preStimLen == 0)) {
+    if (preStim || (trial && preStimLen == 0)) {//if about to load a new stim
+      
       if (stim != null) stim.cleanUp();
-
 
       //check if new trial block
       if ((trialIndex % (nStims*nDirs)) == 0) {
@@ -157,40 +160,23 @@ void draw () {
         }
      
         //else, reshuffle stim dirs for this new block
-        
-        if (debug) println(stimIdxs);
-        println("trialIndex",trialIndex,nStims*nDirs,"shuffle!");
-        int seed;
+        if (debug) println("shuffling dirs");
         for (int i = 0; i < nStims; i++) {
-          seed = int(random(1000));
-          stims[i].shuffleDirs(seed);
+          stims[i].shuffleDirs(this);
         }
         
       }
-      //regardless, if has shown all variations,
-      //reshuffle stims for this new dir block
+      //reshuffle stims
       if ((trialIndex % nStims) == 0) {
         stimIdxs.shuffle(this);
-      }   
-      
+        if (debug) println(stimIdxs);
+      }         
        
       if (debug) println("trial",trialIndex+1,"/",totalTrials);
       //load new stim
       if (debug) println("Loading "+((trialIndex % nStims)+1) + "/" + nStims);
       stim = stims[stimIdxs.get(trialIndex % nStims)];
       stim.init();
-
-    }
-    if (trial) {
-      String stimInfo = stim.getStimInfo();      
-      out_trials.println(String.format("%d %d %s",frameCount,timestamp,stimInfo));      
-      if (clientTrialStart != null) clientTrialStart.send("",0);      
-    } else if (preStim) {
-      //record start of preStim interval
-      out_trials.println(String.format("%d %d PRESTIM",frameCount,timestamp));            
-    } else if (postStim) {
-      //record start of postStim interval
-      out_trials.println(String.format("%d %d POSTSTIM",frameCount,timestamp));
     }
   }
 
@@ -199,24 +185,43 @@ void draw () {
   
   if (makeMovie) saveFrame("movieframes/######.png");
   
-  periodFrameCount++;
-  
-  if (clientTimeStamp != null) {
-    tStampCounter++;
-    if (tStampCounter == tStampInterval) {//send cam packet every 6*1/60 s, or .1 s
-      tStampCounter = 0;//reset counter
-      int relativeTime = int(System.currentTimeMillis() - start_time);
-      clientTimeStamp.send("",relativeTime);
+  if (endOfTrial) {
+    if (clientTrialEnd != null) clientTrialEnd.send("",0);
+    if (saveTrialScrShots) {
+      String fname = stim.getSimpleStimInfo();
+      saveFrame(String.format("trialScrShots/%s/%s_%02d.png",fname,fname,stim.getScrShotNo())); 
+    }
+  }
+
+  if (periodFrameCount == 0) {//log trial immediately before end of draw() (i.e. when graphics are displayed)
+    
+    if (start_time < 0) start_time = System.currentTimeMillis();
+    timestamp = System.currentTimeMillis() - start_time;
+    
+    if (trial) {
+      String stimInfo = stim.getStimInfo();      
+      out_trials.println(String.format("%d %d TRIAL %d %s",frameCount,timestamp,trialIndex+1,stimInfo));
+      if (clientTrialStart != null) clientTrialStart.send("",0);
+    } else if (preStim) {
+      //record start of preStim interval 
+      out_trials.println(String.format("%d %d PRESTIM",frameCount,timestamp));            
+    } else if (postStim) {
+      //record start of postStim interval
+      out_trials.println(String.format("%d %d POSTSTIM",frameCount,timestamp));
     }
   }
   
-  if (showBorders) drawBorders();
-  if (showField && (stim instanceof Flow)) ((Flow) stim).drawField(); 
-  if (showGrid && (stim instanceof Flow)) ((Flow) stim).drawBinGrid();
+  periodFrameCount++;
+  
+  
+  //if (showBorders) drawBorders();
+  //if (showField && (stim instanceof Flow)) ((Flow) stim).drawField(); 
+  //if (showGrid && (stim instanceof Flow)) ((Flow) stim).drawBinGrid();
   
   //stroke(0);
   //textSize(16);
   //text("Frame rate: " + int(frameRate), 10, 20);
+  
   
 }
 

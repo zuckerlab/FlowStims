@@ -52,10 +52,8 @@ class Grating implements Stim {
 
   }
   
-  void shuffleDirs(int seed) {
-    randomSeed(seed);
-    dirs.shuffle();
-    println("grat shuffle",dirs);
+  void shuffleDirs(PApplet main) {
+    dirs.shuffle(main);  
   }
 
   void init() {
@@ -64,7 +62,7 @@ class Grating implements Stim {
     dirCounter = (dirCounter + 1) % nDirs;
     dirDegs = dir; 
     
-    //DIRECTION
+    ///direction-related variables
     int spdsign = 1;
     if (dir > 90 && dir < 270) {
       spdsign = -1;
@@ -85,7 +83,7 @@ class Grating implements Stim {
       deltaXspac = round(spaceWidth/cos(theta));
     }
     period = deltaX + deltaXspac;
-    
+    ///
     if (randPhase) {
       phase = (int) random(barWidth+spaceWidth);
       phaseFrac = float(phase)/(barWidth+spaceWidth);
@@ -198,7 +196,7 @@ class Grating implements Stim {
   
   String getStimInfo() {
     String stiminfo = String.format(
-        "GRAT dir=%d tfreq=%.1f width=%.2f fgLvl=%d bgLvl=%d interLvl=%d phase=%.2f",
+        "stim=GRAT dir=%d tfreq=%.1f width=%.2f fgLvl=%d bgLvl=%d interLvl=%d phase=%.2f",
         dirDegs, tempFreq, widthDeg, bgColor, fgColor, grayColor, phaseFrac);
    return stiminfo;
   }
