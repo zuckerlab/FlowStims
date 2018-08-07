@@ -4,7 +4,7 @@ class Grating implements Stim {
   float initSpd;
   int dirCounter;
 
-  int direction, phase, fadeRate;
+  int dirDegs, direction, phase, fadeRate;
   boolean randPhase;
   float start, deltaX, deltaXspac, period;
   int barWidth, spaceWidth, bgColor, fgColor, grayColor, stimAlpha;
@@ -20,11 +20,11 @@ class Grating implements Stim {
   int nInfo = -1;
 
   Grating(float tempfreq, int fg, int bg, int gray, int barwid, float widdeg, float spd, boolean randphase, int faderate) {
+    
     dirs = new IntList();
     for (int dr = 0; dr < nDirs; dr++) {
       dirs.append(round(dr*(360./nDirs)));
-    }
-    
+    }   
     
     p0 = new PVector(0, 0);
     p1 = new PVector(0, 0);
@@ -49,8 +49,6 @@ class Grating implements Stim {
       float avgColor = (.5*fgColor+.5*bgColor);
       grayColor = int(avgColor);
     }
-    
-
 
   }
   
@@ -64,7 +62,7 @@ class Grating implements Stim {
     
     int dir = dirs.get(dirCounter);
     dirCounter = (dirCounter + 1) % nDirs;
-    println("grat dir",dir);
+    dirDegs = dir; 
     
     //DIRECTION
     int spdsign = 1;
@@ -201,13 +199,13 @@ class Grating implements Stim {
   String getStimInfo() {
     String stiminfo = String.format(
         "GRAT dir=%d tfreq=%.1f width=%.2f fgLvl=%d bgLvl=%d interLvl=%d phase=%.2f",
-        direction, tempFreq, widthDeg, bgColor, fgColor, grayColor, phaseFrac);
+        dirDegs, tempFreq, widthDeg, bgColor, fgColor, grayColor, phaseFrac);
    return stiminfo;
   }
   
   String getSimpleStimInfo() {
     nInfo++;
-    return String.format("grats_%d_w%.2f",direction, widthDeg);
+    return String.format("grats_%d_w%.2f",dirDegs, widthDeg);
   }
   
   int getScrShotNo() {
