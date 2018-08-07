@@ -94,17 +94,22 @@ class Client {
     sendPacket();
   }
 
-  /*send integer from string*/
+  /*send integer from string (e.g. string read from params file)*/
   void send2(String msg) {
     int number = Integer.parseInt(msg);
-
-    byte[] data = new byte[] {
-      (byte) (number >>> 24), 
-      (byte) (number >>> 16), 
-      (byte) (number >>> 8), 
-      (byte) (number)};
+    //send single uint8 byte*
+    byte data[] = new byte[1];
+    data[0] = (byte) (number & 0xFF);
     packet = new DatagramPacket( data, data.length, host, port ) ;
-    sendPacket();
+    sendPacket();  
+    //send 4-byte int
+    //byte[] data = new byte[] {
+    //  (byte) (number >>> 24), 
+    //  (byte) (number >>> 16), 
+    //  (byte) (number >>> 8), 
+    //  (byte) (number)};
+    //packet = new DatagramPacket( data, data.length, host, port ) ;
+    //sendPacket();
   }
 
   /*send integer from int*/
