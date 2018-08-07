@@ -112,7 +112,7 @@ void setup() {
   currentLen = preStimLen;
   periodFrameCount = 0;
   trialIndex = 0;
-  totalTrials = nTrialBlocks*nStims;  
+  totalTrials = nTrialBlocks*nStims*nDirs;  
   
   start_time = System.currentTimeMillis();
   if (nStims > 0 && clientStartList != null) {
@@ -146,7 +146,7 @@ void draw () {
 
 
       //check if new trial block
-      if ((trialIndex % nStims) == 0) {
+      if ((trialIndex % (nStims*nDirs)) == 0) {
         if (trialIndex == totalTrials) {
           //Send "End" trigger
           if (clientEndList != null) {
@@ -155,18 +155,25 @@ void draw () {
           }
           quit();
         }
-        //else, reshuffle stims for this new block
-        stimIdxs.shuffle(this);
-        if ((trialIndex % (nStims*nDirs)) == 0) {
-          println("trialIndex",trialIndex,nStims*nDirs,"shuffle!");
-          int seed;
-          for (int i = 0; i < nStims; i++) {
-            seed = int(random(1000));
-            stims[i].shuffleDirs(seed);
-          }
-        }
+     
+        //else, reshuffle stim dirs for this new block
+        
         if (debug) println(stimIdxs);
-      } 
+        println("trialIndex",trialIndex,nStims*nDirs,"shuffle!");
+        int seed;
+        for (int i = 0; i < nStims; i++) {
+          seed = int(random(1000));
+          stims[i].shuffleDirs(seed);
+        }
+        
+      }
+      //regardless, if has shown all variations,
+      //reshuffle stims for this new dir block
+      if ((trialIndex % nStims) == 0) {
+        stimIdxs.shuffle(this);
+      }   
+      
+       
       if (debug) println("trial",trialIndex+1,"/",totalTrials);
       //load new stim
       if (debug) println("Loading "+((trialIndex % nStims)+1) + "/" + nStims);
