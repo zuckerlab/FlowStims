@@ -10,6 +10,8 @@ boolean fastRendering = true;
 int FRAME_RATE = 60;
 int globalSeed = -1;
 
+int nDirs;
+
 PrintWriter out_params, out_trials;
 
 Stim stim;
@@ -99,6 +101,7 @@ void setup() {
   out_params.close();
   
   nStims = stims.length;
+  println("nStims",nStims);
 
   //store stim indices
   stimIdxs = new IntList();
@@ -119,7 +122,8 @@ void setup() {
 } 
 
 void draw () {
-  boolean debug = false;
+  boolean debug = true;
+  
   boolean endOfTrial = false;
   if (nStims == 0) quit();
   
@@ -153,6 +157,14 @@ void draw () {
         }
         //else, reshuffle stims for this new block
         stimIdxs.shuffle(this);
+        if ((trialIndex % (nStims*nDirs)) == 0) {
+          println("trialIndex",trialIndex,nStims*nDirs,"shuffle!");
+          int seed;
+          for (int i = 0; i < nStims; i++) {
+            seed = int(random(1000));
+            stims[i].shuffleDirs(seed);
+          }
+        }
         if (debug) println(stimIdxs);
       } 
       if (debug) println("trial",trialIndex+1,"/",totalTrials);

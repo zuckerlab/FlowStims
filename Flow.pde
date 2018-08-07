@@ -4,6 +4,10 @@ class Flow implements Stim {
   int hidden = 0;
   int n1 = 45;
   
+  IntList dirs;
+  //float initSpd;
+  int dirCounter;
+  
   ArrayList<Boid> boids;
   DoublyLinkedList[] binGrid;
   int[] myBorders, nbrArray;
@@ -26,17 +30,23 @@ class Flow implements Stim {
   int nInfo = -1;
 
 
-  Flow(int myseed, int tilesize, float meantheta, int dirdeg, float dirstd, float basesep, int sepPx, float posstd, 
+  Flow(int myseed, int tilesize, float dirstd, float basesep, int sepPx, float posstd, 
         int ndots, int diam, float diamdeg, int boidcolor, int bgcolor, int gray, float maxsp, float tempfreq,
         boolean wiggle_, float maxforce, float sepweight, int faderate) {
+
+    dirs = new IntList();
+    for (int dr = 0; dr < nDirs; dr++) {
+      dirs.append(round(dr*(360./nDirs)));
+    }
+
+
 
     mySeed = myseed;
     tileSize = tilesize;
     dirStd = dirstd;
     
     nbrArray = new int[9];//single array shared by all boids
-    meanThetaDeg = dirdeg;
-    meanTheta = -meantheta;
+
     pattern = ndots;
     
     origDdeg = diamdeg;
@@ -76,25 +86,9 @@ class Flow implements Stim {
       setWiggle(true);
       maxSpeed = 3;
     }
-
-    v0 = PVector.fromAngle(meanTheta);
-    v0.mult(maxSpeed);
     
     sepRadius = sepPx+1;//the +1 takes care of fractional pixels
-    //coeffs for ellipse equation (separation perimeter)
-    float a = sq(sepRadius);
-    if (pattern > 1) {
-      float b = sq(sepRadius+radius*(pattern-1));
-      float sintheta = sin(meanTheta);
-      float costheta = cos(meanTheta);
-      sepFrstTerm = sq(costheta)/a + sq(sintheta)/b;
-      sepScndTerm = 2*costheta*sintheta*(1./a - 1./b);
-      sepThrdTerm = sq(sintheta)/a + sq(costheta)/b;
-    } else {
-      sepFrstTerm = 1/a;
-      sepScndTerm = 0;
-      sepThrdTerm = sepFrstTerm;
-    }
+    
 
     sepFreq = 5;
     if (debug) sepFreq = 1;
@@ -104,6 +98,25 @@ class Flow implements Stim {
     binrows = myheight/binSize + 1;
     bincols = mywidth/binSize + 1;
 
+
+    
+  }
+  
+  void shuffleDirs(int seed) {
+    randomSeed(seed);
+    dirs.shuffle();  
+    println("flow shuffle",dirs);
+  }
+  
+  void init() {
+    
+    int dirdeg = dirs.get(dirCounter);
+    dirCounter = (dirCounter + 1) % nDirs;
+    println("flow dir",dirdeg);
+    float meantheta = dirdeg*(PI/180.);
+    meanThetaDeg = dirdeg;
+    meanTheta = -meantheta;
+    
     //eliminate flickering of patterns > 1 along borders when two elts don't fit into the same bin
     if (meantheta == 0 || meantheta == PI)
       if (binrows*binSize - myheight < pattern*D) binrows++;
@@ -123,9 +136,24 @@ class Flow implements Stim {
     yLen = myBorders[3] - myBorders[2];
     yHalfLen = yLen/2.;
     
-  }
-  
-  void init() {
+    v0 = PVector.fromAngle(meanTheta);
+    v0.mult(maxSpeed);
+    //coeffs for ellipse equation (separation perimeter)
+    float a = sq(sepRadius);
+    if (pattern > 1) {
+      float b = sq(sepRadius+radius*(pattern-1));
+      float sintheta = sin(meanTheta);
+      float costheta = cos(meanTheta);
+      sepFrstTerm = sq(costheta)/a + sq(sintheta)/b;
+      sepScndTerm = 2*costheta*sintheta*(1./a - 1./b);
+      sepThrdTerm = sq(sintheta)/a + sq(costheta)/b;
+    } else {
+      sepFrstTerm = 1/a;
+      sepScndTerm = 0;
+      sepThrdTerm = sepFrstTerm;
+    }
+    
+    ///
     
     if (mySeed < 0) {
       globalSeed += 1000;
@@ -137,8 +165,8 @@ class Flow implements Stim {
         binGrid[i] = new DoublyLinkedList();
     }
     boids = new ArrayList<Boid>();
-    int borderx = frameWidth + binSize*(bincols);
-    int bordery = frameWidth + binSize*(binrows);
+    //int borderx = frameWidth + binSize*(bincols);
+    //int bordery = frameWidth + binSize*(binrows);
     int c = 0;
     for (int i = myBorders[2]; i < bordery; i += binSize) {
       for (int j = myBorders[0]; j < borderx; j += binSize) {

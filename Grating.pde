@@ -1,10 +1,15 @@
 class Grating implements Stim {
+  
+  IntList dirs;
+  float initSpd;
+  int dirCounter;
 
   int direction, phase, fadeRate;
   boolean randPhase;
   float start, deltaX, deltaXspac, period;
   int barWidth, spaceWidth, bgColor, fgColor, grayColor, stimAlpha;
   float theta, speed, phaseFrac, tempFreq, widthDeg;
+  
 
   int myheight = height;
   int mywidth = width;
@@ -14,38 +19,24 @@ class Grating implements Stim {
   
   int nInfo = -1;
 
-  Grating(int dir, float tempfreq, int fg, int bg, int gray, int barwid, float widdeg, float spd, boolean randphase, int faderate) {
-
+  Grating(float tempfreq, int fg, int bg, int gray, int barwid, float widdeg, float spd, boolean randphase, int faderate) {
+    dirs = new IntList();
+    for (int dr = 0; dr < nDirs; dr++) {
+      dirs.append(round(dr*(360./nDirs)));
+    }
+    
+    
     p0 = new PVector(0, 0);
     p1 = new PVector(0, 0);
     p2 = new PVector(0, 0);
     p3 = new PVector(0, 0);
 
-    int spdsign = 1;
-    if (dir > 90 && dir < 270) {
-      spdsign = -1;
-      if (dir < 180)  dir += 180;
-      else dir -= 180;
-    }
-
-    direction = dir;
-    theta = radians(direction);
+    initSpd = spd;
     
     tempFreq = tempfreq;
     widthDeg = widdeg;
     barWidth = barwid;
     spaceWidth = barwid;
-    if (direction == 90 || direction == 270) {
-      speed = spd;
-      if (direction == 270) speed = -spd;
-
-      deltaX = barWidth;
-      deltaXspac = spaceWidth;
-    } else {
-      speed = spdsign*spd/cos(theta);
-      deltaX = round(barWidth/cos(theta));
-      deltaXspac = round(spaceWidth/cos(theta));
-    }
 
     randPhase = randphase;
     fadeRate = faderate;
@@ -58,12 +49,45 @@ class Grating implements Stim {
       float avgColor = (.5*fgColor+.5*bgColor);
       grayColor = int(avgColor);
     }
+    
 
-    period = deltaX + deltaXspac;
 
+  }
+  
+  void shuffleDirs(int seed) {
+    randomSeed(seed);
+    dirs.shuffle();
+    println("grat shuffle",dirs);
   }
 
   void init() {
+    
+    int dir = dirs.get(dirCounter);
+    dirCounter = (dirCounter + 1) % nDirs;
+    println("grat dir",dir);
+    
+    //DIRECTION
+    int spdsign = 1;
+    if (dir > 90 && dir < 270) {
+      spdsign = -1;
+      if (dir < 180)  dir += 180;
+      else dir -= 180;
+    }
+
+    direction = dir;
+    theta = radians(direction);
+    if (direction == 90 || direction == 270) {
+      speed = initSpd;
+      if (direction == 270) speed = -initSpd;
+      deltaX = barWidth;
+      deltaXspac = spaceWidth;
+    } else {
+      speed = spdsign*initSpd/cos(theta);
+      deltaX = round(barWidth/cos(theta));
+      deltaXspac = round(spaceWidth/cos(theta));
+    }
+    period = deltaX + deltaXspac;
+    
     if (randPhase) {
       phase = (int) random(barWidth+spaceWidth);
       phaseFrac = float(phase)/(barWidth+spaceWidth);

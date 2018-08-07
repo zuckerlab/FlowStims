@@ -2,7 +2,7 @@ class Loader {
 
   Stim[] loadStims(float pxPerDeg, String[] lines, PrintWriter out) {
     //default stim params
-    int nDirs = 1;
+    nDirs = 1;
 
     int nFadeFrames = 3;
 
@@ -88,18 +88,16 @@ class Loader {
     //if flows aren't rand, then most likely you dont want rand grating phase either
     if (fixRand && randPhase == true) randPhase = false;//(catching possibly common mistake when setting params file)
 
-    int nStims = nDirs*tempFreqs.size()*(int(useFlows)*(nDots.size()*dotColors.size()*dotDiamsDeg.size())
+    int nStims = tempFreqs.size()*(int(useFlows)*(nDots.size()*dotColors.size()*dotDiamsDeg.size())
       + int(useGratings)*(gratWidthsDeg.size()*gratColors.size()));
 
     Stim[] stims = new Stim[nStims];
 
-    float dir, speed, diam_deg, sep, width_deg, tempfreq, spatfreq;
-    int dirdeg, ndots, fgcolor, bgcolor, gray, diam_px, sep_px, tilesize, width_px, period_px;
+    float speed, diam_deg, sep, width_deg, tempfreq, spatfreq;
+    int ndots, fgcolor, bgcolor, gray, diam_px, sep_px, tilesize, width_px, period_px;
 
     int s = 0;
-    for (int dr = 0; dr < nDirs; dr++) {
-      dir = dr*(TWO_PI/nDirs);
-      dirdeg = round(dr*(360./nDirs)); 
+
 
       for (int sp = 0; sp < tempFreqs.size(); sp++) {
         tempfreq = tempFreqs.get(sp);
@@ -135,7 +133,7 @@ class Loader {
                 gray = dotInterColors.get(cc);
 
                 if (fixRand) seed = (int) random(1000);
-                stims[s] = new Flow(seed, tilesize, dir, dirdeg, dirStd, sep, sep_px, posStd, ndots, diam_px, diam_deg,
+                stims[s] = new Flow(seed, tilesize, dirStd, sep, sep_px, posStd, ndots, diam_px, diam_deg,
                       fgcolor, bgcolor, gray, speed, tempfreq, wiggle, maxForce, sepWeight, fadeRate);
                 s++;
               }
@@ -157,13 +155,13 @@ class Loader {
               bgcolor = gratBgColors.get(cc);
               gray = gratInterColors.get(cc);
 
-              stims[s] = new Grating(dirdeg, tempfreq, fgcolor, bgcolor, gray, width_px, width_deg, speed, randPhase, fadeRate); 
+              stims[s] = new Grating(tempfreq, fgcolor, bgcolor, gray, width_px, width_deg, speed, randPhase, fadeRate); 
               s++;
             }
           }
         }
       }
-    }
+    
 
     return stims;
   }
