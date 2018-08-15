@@ -80,7 +80,7 @@ class Loader {
       }
     }
 
-    int fadeRate = ceil(255./nFadeFrames);
+    int fadeRate = ceil(255./(max,1nFadeFrames));
     if (posStd == 0) wiggle = false;
 
 
