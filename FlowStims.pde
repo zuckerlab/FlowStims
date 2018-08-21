@@ -140,6 +140,10 @@ void draw () {
   
   if (periodFrameCount == currentLen) {//if current period ended
    endOfTrial = updateState();
+    if (endOfTrial && saveTrialScrShots) {
+      String fname = stim.getSimpleStimInfo();
+      saveFrame(String.format("trialScrShots/%s/%s_%02d.png",fname,fname,stim.getScrShotNo())); 
+    }
   }
   
   if (periodFrameCount == 0) { //if starting a period
@@ -185,13 +189,7 @@ void draw () {
   
   if (makeMovie) saveFrame("movieframes/######.png");
   
-  if (endOfTrial) {
-    if (clientTrialEnd != null) clientTrialEnd.send("",0);
-    if (saveTrialScrShots) {
-      String fname = stim.getSimpleStimInfo();
-      saveFrame(String.format("trialScrShots/%s/%s_%02d.png",fname,fname,stim.getScrShotNo())); 
-    }
-  }
+  if (endOfTrial && clientTrialEnd != null) clientTrialEnd.send("",0);
 
   if (periodFrameCount == 0) {//log trial immediately before end of draw() (i.e. when graphics are displayed)
     
