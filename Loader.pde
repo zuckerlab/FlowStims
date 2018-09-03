@@ -42,6 +42,7 @@ class Loader {
         switch(list[0]) {
         //ALL
           case "nDirs": nDirs = loadInt(list[1], list[0], out); break;
+          case "dirDegShift": dirDegShift = loadInt(list[1], list[0], out); break;
           case "pxPerDeg": pxPerDeg = loadFloat(list[1], list[0], out); break;//overrides the calculated pxPerDeg
           case "nFadeFrames": nFadeFrames = loadInt(list[1], list[0], out); break;
           case "tempFreq": tempFreqs = loadMultiFloat(list, list[0], out, 0); break;

@@ -10,7 +10,7 @@ boolean fastRendering = true;
 int FRAME_RATE = 60;
 int globalSeed = -1;
 
-int nDirs;
+int nDirs, dirDegShift;
 
 PrintWriter out_params, out_trials;
 

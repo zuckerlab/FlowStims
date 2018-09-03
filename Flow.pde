@@ -36,7 +36,7 @@ class Flow implements Stim {
 
     dirs = new IntList();
     for (int dr = 0; dr < nDirs; dr++) {
-      dirs.append(round(dr*(360./nDirs)));
+      dirs.append(round(dr*(360./nDirs)) + dirDegShift);
     }
 
 
