@@ -1,5 +1,5 @@
 
-## Intro
+# Intro
 
 FlowStims uses a .txt file to specify which stimuli are to be used, how to display them, and, optionally, to set up communication with other machines via UDP.
 
@@ -7,11 +7,11 @@ An example of such a file is `example-params.txt`. Any text following a `#` char
 
 Typo-checking is very limited, so be careful when entering values. Unforseen characters might cause the program to crash upon startup. If that happens, please double check every entered value. A good idea is to use `example-params.txt` as a starting point.
 
-## Basic operation
+# Basic operation
 
 When run, FlowStims will prompt the user for a parameters file. Upon selection of a suitable file, the presentation begins. The program will terminate automatically once all trials are over. The user can also hit the escape key (Esc) to quit it early.
 
-## Log files
+# Log files
 
 Every time FlowStims is successfully run, it will generate two log files: DATE_TIME_params.log anf DATE_TIME_trials.log, where DATE and TIME stand for the actual date and time at the time of execution. The first one is a record of all parameters used. This is helpful in cases where the original parameters file is lost, or modified. The second one is organized in space-separated columns and contains information about each trial and interstimulus interval (call these "periods") that were shown. The first line is a header row, identifying each column:
 
@@ -28,43 +28,43 @@ Every time FlowStims is successfully run, it will generate two log files: DATE_T
 
 
 
-## Parameters
+# Parameters
 
-### Setting parameter values
+## Setting parameter values
 
 Each parameter occupies a separate line in the file. The format for setting values is "parameter value", that is, the parameter name and its associated value are separated by a space.
 
-### Multiple values
+## Multiple values
 
 Some parameters are special in that they allow for the input of multiple values. E.g., you can choose two different temporal frequencies for your stimuli. This will result in interleaved trials with either temporal frequency. To do so, simply separate the additional values with a space.
 
-### Dependencies on other parameters
+## Dependencies on other parameters
 
 An arrow `->` was used in `example-params.txt` before all parameters allowing multiple values whose total number of values must be equal to that of some other parameter. This means it is dependent on the preceding parameter that does not begin with an arrow (the "parent" parameter). E.g., for each dot intensity (grayscale level) you choose, you must also specify intensities for the background and interstimulus screen. Failing to meet this constraint will cause the program to crash.
 
 You can choose to write the parameter names without the arrows, or leave them as a reminder. 
 
-### Total number of trials
+## Total number of trials
 
 Make sure to keep track of the total number of trials given your parameter selection. E.g., if you have 4 stimulus variations and 8 directions of motion and you show each one a single time, that is a total of 8 x 4 = 32 trials, or 1 trial block. The number of trial blocks (ie, how many times each stimulus variation in every direction will be shown) is controlled by `nTrialBlocks` and will essentially determine the total presentation time (multiply if by the total trial length to get the actual time in seconds).
 
-### Randomization of trials
+## Randomization of trials
 
 The order of the trials is automatically randomized. In order to ensure that the different stimulus variations are properly mixed, every stimulus variation (except for direction of motion) is shown before one repeats. 
 This is particularly important if there is a significant difference in overall screen luminance between some of the stimuli, in which case there is no chance for several stimuli with similar luminance to be shown in sequence (therefore preventing undesired adaptation effects).
 
-### Performance issues
+## Performance issues
 
 In most cases, FlowStims can be used to generate stimuli on the fly during a recording. However, depending on your hardware and on the parameters chosen, some stimuli might take longer to run than expected (in which case you might end up with longer trial lengths), especially if you choose high quality graphics and/or very high spatial frequency stimuli. You can check the exact duration of your trials by inspecting trial log file that is generated after each run.
 
 One option around this is to enable `fastRendering` and/or disable `antiAlias`. Another is to save the presentation as a movie (see `saveMovieFrames`) and simply play it during the experiment (that is, without running FlowStims). (The latter will probably require some software to play the movie while logging the times of each frame, which is not provided.)
 
-### List of available parameters
+## List of available parameters
 
-#### Version info
+### Version info
 The first line of the file must contain the word `FlowStims` followed by the version number. This is used to prevent parameter files from being used by a different version than the original one they were written for.
 
-#### Setup
+### Setup
 
 These include parameters for setting up the display, resolution, quality of the graphics, etc.
 
@@ -90,7 +90,7 @@ These include parameters for setting up the display, resolution, quality of the 
 
 `randomSeed` Pseudorandom number generator initial state. Choose any positive integer (e.g., `34`) to make the presentation reproducible (the exact same randomization will take place every time you run the program using the same params file). To use a random initial state, use `-1` (default).
 
-#### All stimuli
+### All stimuli
 
 These include parameters that are common to all stimulus variations used.
 
@@ -110,7 +110,7 @@ These include parameters that are common to all stimulus variations used.
 
 `nFadeFrames` Sets the number of frames used for linear fade-in/out transitions at the beginning and end of trials (use 0 or 1 for no fade).
 
-#### Flow stimuli
+### Flow stimuli
 
 `useFlows` Whether to display flows or not (`1` or `0`).
 
@@ -150,7 +150,7 @@ These include parameters that are common to all stimulus variations used.
 
 `tileSize` _Advanced:_ Tile size of the underlying vector field, in multiples of the `dotSpacing`. Larger tiles will result in more flow elements following the same direction locally. Default: `2.5`
 
-#### Grating stimuli
+### Grating stimuli
 
 `useGratings` Whether to display square-wave gratings or not (`1` or `0`).
 
