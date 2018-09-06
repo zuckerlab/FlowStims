@@ -1,12 +1,18 @@
 
 
-# FlowStims v1.0 Manual
+# FlowStims v1.0 documentation
 
-- [Basic operation](#Basic-operation)
-- [Log files](#Log-files)
-- [Parameters](#Parameters)
-  * [Setting parameter values](#Setting-parameter-values)
-- [Network communication](#Network-communication)
+- [Basic operation](#basic-operation)
+- [Log files](#log-files)
+- [Parameters](#parameters)
+   * [Setting parameter values](#setting-parameter-values)
+   * [Multiple values](#multiple-values)
+   * [Dependencies](#dependencies)
+   * [Total number of trials](#total-number-of-trials)
+   * [Randomization of trials](#randomization-of-trials)
+   * [Performance issues](#performance-issues)
+   * [List of parameters](#list-of-parameters)
+- [Network communication](#network-communication)
 
 ## Basic operation
 
@@ -42,7 +48,7 @@ Each parameter occupies a separate line in the file. The format for setting valu
 
 Some parameters are special in that they allow for the input of multiple values. E.g., you can choose two different temporal frequencies for your stimuli. This will result in interleaved trials with either temporal frequency. To do so, simply separate the additional values with a space.
 
-### Dependencies on other parameters
+### Dependencies
 
 An arrow `->` was used in `example-params.txt` before all parameters allowing multiple values whose total number of values must be equal to that of some other parameter. This means it is dependent on the preceding parameter that does not begin with an arrow (the "parent" parameter). E.g., for each dot intensity (grayscale level) you choose, you must also specify intensities for the background and interstimulus screen. Failing to meet this constraint will cause the program to crash.
 
@@ -63,7 +69,7 @@ In most cases, FlowStims can be used to generate stimuli on the fly during a rec
 
 One option around this is to enable `fastRendering` and/or disable `antiAlias`. Another is to save the presentation as a movie (see `saveMovieFrames`) and simply play it during the experiment (that is, without running FlowStims). (The latter will probably require some software to play the movie while logging the times of each frame, which is not provided.)
 
-### List of available parameters
+### List of parameters
 
 #### Version info
 The first line of the file must contain the word `FlowStims` followed by the version number. This is used to prevent parameter files from being used by a different version than the original one they were written for.
