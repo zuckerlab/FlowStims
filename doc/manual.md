@@ -86,7 +86,7 @@ These include parameters for setting up the display, resolution, quality of the 
 
 `saveMovieFrames` Set it to `1` to save a screenshot (.png) of every frame, which are saved into a newly-created "movieframes" folder. These can be used for creating a movie (if you install Processing, it comes with a Movie Maker tool for doing just that). Note: the total file size of the frames can grow really fast, so be careful! For safety, `nTrialBlocks` is set to `1` when using this option (as usually this will used to generate a demo movie, or a movie to be looped over when used in an experiment).
 
-`saveTrialScrShots` Set it to `1` to save a single screenshot at the end of each trial (default is `0`). Note: there can be a slight delay when saving screenshots, so usually it is not a good a idea to have this option turned on during an actual experiment. 
+`saveTrialScrShots` Set it to `1` to save a single screenshot at the end of each trial (default is `0`). Note: there can be a slight delay when saving screenshots, so usually it is not a good a idea to have this option turned on during an actual experiment.
 
 `randomSeed` Pseudorandom number generator initial state. Choose any positive integer (e.g., `34`) to make the presentation reproducible (the exact same randomization will take place every time you run the program using the same params file). To use a random initial state, use `-1` (default).
 
@@ -166,6 +166,40 @@ These include parameters that are common to all stimulus variations used.
 
 &rightarrow;`gratInterVal` Pixel value (grayscale) of interstimulus screen, [0-255]  (use -1 for avg screen luminance of the stimulus). Must be given the same number of values as `gratFgVal`.
 
+# Network communication
 
+It is possible to set up FlowStims to send UDP datagrams whenever one of the events below is triggered (event name followed by description):
+
+* `clientStart` Beginning of presentation (sent only once, at the very beginning of the movie)
+
+* `clientEnd` End of presentation (including early exit with Esc key
+
+* `clientTrialStart` Start of each trial 
+
+* `clientTrialEnd` End of each trial
+
+* `clientTimeStamp` Send a timestamp every X seconds
+
+This can be done by including lines in the parameters file with the following format: 
+
+`<eventName> <host> <port> <msgType> <msg> <addNewLine> <encoding>`
+
+
+The arguments: `host`, `port`, `msgType`, etc. must be configured by the user (do not change their order! -- the last two are optional):
+
+* `host` Host address that will receive the packets (UDP datagrams)
+* `port` Port that will be listening for the packets
+* `msgType` Use `1` to send as string, `2` to send as integer (single byte), or `5` to send a string while appending the current date and time to the end of the msg
+* `msg` Message to be sent
+* `addNewline` Either `0` or `1` -- whether to add a '\n' char at end of msg. Default is no (`0`)
+* `encoding` Only applicable if sending a string. Default: UTF-8 (single byte chars)
+
+E.g.: `clientStart localhost 9090 1 1 #sends a 1 integer to localhost on port 9090 at the beginning of presentation`
+
+For multiple hosts, repeat this in multiple lines changing host, port, etc. for each one (while using the same event name).
+
+E.g.:<br>
+`clientTrialStart 144.20.133.11 8999 2 0 #send a 0 integer to first host at beginning of every trial`<br>
+`clientEnd 144.20.133.57 8980 1 4 #send a '4' string to second host at beginning of every trial`
 
 
