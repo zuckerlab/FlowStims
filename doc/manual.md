@@ -1,5 +1,6 @@
 
-# Basic operation
+
+# FlowStims v1.0 - Basic operation
 
 FlowStims uses a .txt file to specify which stimuli are to be used, how to display them, and, optionally, to set up communication with other machines via UDP.
 
