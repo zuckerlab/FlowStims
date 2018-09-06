@@ -250,6 +250,17 @@ class Flow implements Stim {
   int getScrShotNo() {
     return nInfo;
   }
+
+  /*
+  The Boid and FlowField classes below are an implementation of Reynold's boid with steering behavior:
+  -Reynolds, C. W. 1987. Flocks, Herds, and Schools: A Distributed Behavioral Model, 
+    in Computer Graphics, 21(4) (SIGGRAPH '87 Conference Proceedings). Pages 25-34.
+  -Reynolds, C. W. 1999. Steering Behaviors For Autonomous Characters, 
+    in the proceedings of Game Developers Conference 1999 held in San Jose, California. Pages 763-782.
+  Parts of the code in these classes were adapted from the book:
+  -Shiffman, Daniel. 2012. The Nature of Code. Edited by Shannon Fry. 2012 ed. New York: Daniel Shiffman.
+  */
+
   
   class Boid {
   

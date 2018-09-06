@@ -1,13 +1,11 @@
 
-# Intro
+# Basic operation
 
 FlowStims uses a .txt file to specify which stimuli are to be used, how to display them, and, optionally, to set up communication with other machines via UDP.
 
 An example of such a file is `example-params.txt`. Any text following a `#` character is treated as a comment, and ignored by FlowStims.
 
 Typo-checking is very limited, so be careful when entering values. Unforseen characters might cause the program to crash upon startup. If that happens, please double check every entered value. A good idea is to use `example-params.txt` as a starting point.
-
-# Basic operation
 
 When run, FlowStims will prompt the user for a parameters file. Upon selection of a suitable file, the presentation begins. The program will terminate automatically once all trials are over. The user can also hit the escape key (Esc) to quit it early.
 
