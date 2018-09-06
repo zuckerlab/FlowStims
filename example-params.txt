@@ -21,6 +21,7 @@ scrDistCm 25.0 #Distance from screen (cm)
 monitor 1 #Selects the screen to display to program on (default is 1)
 *fullScreen 1 #If set to 0, disables fullscreen mode (for running it in a smaller window)
 fastRendering 1 #Disable this (set to 0) for improved graphics (can be slow in some machines)
+antiAlias 1 #Turn this on (set to 1) for smoother graphics (can be slow if using high spat freqs)
 *frameRate 60 #Number of frames displayed every second (default is 60)
 saveMovieFrames 0 #Save a screenshot of every frame for creating a movie
 *saveTrialScrShots 0 #Save a single screenshot at the end of each trial
