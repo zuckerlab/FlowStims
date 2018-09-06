@@ -116,17 +116,23 @@ These include parameters that are common to all stimulus variations used.
 
 `nDots` Number of dots used in the flow elements, can choose multiple. E.g., `1 3` for showing interleaved 1- and 3-dot flows.
 
+---
+
 `dotFgVal` Pixel value (grayscale) for foreground (dots) [0-255], can choose multiple.
 
 &rightarrow;`dotBgVal` Pixel value (grayscale) for background [0-255]. Must be given the same number of values as `dotFgVal`.
 
 &rightarrow;`dotInterVal` Pixel value (grayscale) of interstimulus screen (use -1 for avg screen luminance of the stimulus). Must be given the same number of values as `dotFgVal`.
 
+---
+
 `dotDiamDeg` Diameter of single dots (in degrees); allows multiple values. Note: flows with `nDots` other than 1 might have  dots with different diameter in order to preserve constant area (depending on whether `equalArea` is enabled, see below).
 
 &rightarrow;`dotSpacing` Initial spacing between flow element centers (in multiples of `dotDiamDeg`); this determines how dense the flow will be. Of course, if the motion is not rigid, then this spacing ends up being an average. Must get a value for each `dotDiamDeg` used above.
 
 &rightarrow;`dotSpatFreq` _Optional:_ If known, the spatial frequencies corresponding to each dot size used in `dotDiamDeg` can be entered here. When provided, they will be used to compute more accurate velocities based on the temporal frequency. Must get a value for each `dotDiamDeg` used above.
+
+---
 
 `equalArea` Whether to adjust the diameter of patterns with `nDots` > `1` so as to preserve the same total area as that of single dots. Defaults to yes (`1`).
 
@@ -151,6 +157,8 @@ These include parameters that are common to all stimulus variations used.
 `gratWidthDeg` Width of grating bars, in degrees of visual angle, i.e. 1/(2\*spat.freq.).
 
 `randGratPhase` Set it to 1 to enable random initial phase in each trial; default is `0` (fixed initial phase)
+
+---
 
 `gratFgVal` Pixel value (grayscale) of half the bars ("foreground") [0-255], can choose multiple
 
