@@ -45,7 +45,7 @@ boolean saveTrialScrShots = false;
 String today;
 
 //debugging tools
-boolean showBorders, showField, showGrid;
+//boolean showBorders, showField, showGrid;
 boolean usePShape = false;
 int frameWidth = 0;
 boolean fullScr = false;
@@ -124,8 +124,6 @@ void setup() {
 } 
 
 void draw () {
-  
-  boolean debug = false;
 
   boolean endOfTrial = false;
   
@@ -166,7 +164,6 @@ void draw () {
         }
      
         //else, reshuffle stim dirs for this new block
-        if (debug) println("shuffling dirs");
         for (int i = 0; i < nStims; i++) {
           stims[i].shuffleDirs(this);
         }
@@ -175,12 +172,10 @@ void draw () {
       //reshuffle stims
       if ((trialIndex % nStims) == 0) {
         stimIdxs.shuffle(this);
-        if (debug) println(stimIdxs);
       }         
        
-      if (debug) println("trial",trialIndex+1,"/",totalTrials);
+
       //load new stim
-      if (debug) println("Loading "+((trialIndex % nStims)+1) + "/" + nStims);
       stim = stims[stimIdxs.get(trialIndex % nStims)];
       stim.init();
     }
@@ -214,10 +209,6 @@ void draw () {
   periodFrameCount++;
   
   
-  //if (showBorders) drawBorders();
-  //if (showField && (stim instanceof Flow)) ((Flow) stim).drawField(); 
-  //if (showGrid && (stim instanceof Flow)) ((Flow) stim).drawBinGrid();
-  
   //stroke(0);
   //textSize(16);
   //text("Frame rate: " + int(frameRate), 10, 20);
@@ -226,12 +217,11 @@ void draw () {
 }
 
 boolean updateState() {
-  boolean debug = false;
+ 
   periodFrameCount = 0;
   boolean trialEnded = false;
   
   if (preStim) {   
-    if (debug) println("preStim->trial");
     preStim = false;
     trial = true;
     currentLen = trialLen;
@@ -239,12 +229,10 @@ boolean updateState() {
   } else if (postStim) {    
     postStim = false;
     trialIndex++;
-    if (preStimLen == 0) {
-      if (debug) println("postStim->preStim->trial");
+    if (preStimLen == 0) {     
       trial = true;
       currentLen = trialLen;
-    } else {
-      if (debug) println("postStim->preStim");      
+    } else {           
       preStim = true;
       currentLen = preStimLen;
     }
@@ -255,15 +243,13 @@ boolean updateState() {
     if (postStimLen == 0) {
       trialIndex++;
       if (preStimLen > 0) {
-        if (debug) println("trial->postStim->preStim");
         trial = false;
         preStim = true;
         currentLen = preStimLen;
       }
       //else keep it as it is!
-      else if (debug) println("trial->postStim->preStim->trial");      
-    } else {
-      if (debug) println("trial->postStim");
+            
+    } else {    
       trial = false;
       postStim = true;
       currentLen = postStimLen;
@@ -376,12 +362,6 @@ void quit() {
   exit();
 }
 
-void drawBorders() {
-  stroke(120,0,0);
-  noFill();
-  rect(frameWidth,frameWidth,mywidth-1,myheight-1); 
-}
-
 void keyPressed() {
   if (key == ESC){
     if (clientEndList != null) {
@@ -390,16 +370,4 @@ void keyPressed() {
     }
     quit();    
   }
-  switch (key) {
-    case 'b':
-      showBorders = !showBorders;
-      break;
-    case 't':
-      showField = !showField;
-      break;
-    case 'g':
-      showGrid = !showGrid;
-    default:
-      break;
-  }  
 }

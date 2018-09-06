@@ -1,9 +1,5 @@
 class Flow implements Stim {
   
-  boolean debug = false;
-  int hidden = 0;
-  int n1 = 45;
-  
   IntList dirs;
   //float initSpd;
   int dirCounter;
@@ -91,7 +87,7 @@ class Flow implements Stim {
     
 
     sepFreq = 5;
-    if (debug) sepFreq = 1;
+
     binSize = sepPx;
     baseSep = basesep;
 
@@ -192,7 +188,7 @@ class Flow implements Stim {
     if (show) {
       boidAlpha = min(255,boidAlpha + fadeRate);
       setWiggle(wiggle);
-    } else boidAlpha = max(hidden,boidAlpha - fadeRate);
+    } else boidAlpha = max(0,boidAlpha - fadeRate);
 
     float alphafrac = boidAlpha/255.;
     background(bgColor*alphafrac + grayColor*(1. - alphafrac));
@@ -505,36 +501,10 @@ class Flow implements Stim {
       PVector diff = new PVector(0,0);
   
       Node other;
-      
-      //look at each neighboring bin, in turn  
-      if (debug && (node.id == n1)) {
-        fill(255,255,0,64);
-        rectMode(CORNER);
-        noStroke();
-        rect(myBorders[0]+bin_x*binSize,myBorders[2]+bin_y*binSize,binSize,binSize);
-
-        pushMatrix();
-        noFill();
-        stroke(255,128);
-        translate(position.x,position.y);
-        rotate(meanTheta);
-        ellipseMode(RADIUS);
-        ellipse(0,0,sepRadius,sepRadius+radius*(pattern-1));
-        popMatrix();
-      }
   
       for (int nbr_idx : nbrArray) {
   
         if (nbr_idx == -1) continue;
-        
-        if (debug && (node.id == n1)) {
-          fill(255,0,0,64);
-          int nbr_x = nbr_idx % bincols;
-          int nbr_y = nbr_idx / bincols;
-          rectMode(CORNER);
-          noStroke();
-          rect(myBorders[0]+nbr_x*binSize,myBorders[2]+nbr_y*binSize,binSize,binSize);
-        }
           
         binGrid[nbr_idx].resetIterator();
         
@@ -560,27 +530,12 @@ class Flow implements Stim {
 
             d2 = sepFrstTerm*dx*dx + sepScndTerm*dx*dy + sepThrdTerm*dy*dy;
             
-            if (debug && (node.id == n1)) {
-              //mark all neighbors with a red square
-              noFill();
-              stroke(255,0,0,160);
-              rectMode(RADIUS);
-              rect(other.item.position.x,other.item.position.y,radius,radius);
-            }
-            
             if (d2 > 0 && d2 < 1) {
               
               diff.set(dx,dy);
               diff.setMag(1./d2);
               steer.add(diff);
-              
-              if (debug && (node.id == n1)) {
-                //mark close neighbors with a yellow circle
-                noFill();
-                stroke(255,255,0);
-                ellipseMode(CENTER);
-                ellipse(other.item.position.x,other.item.position.y,D*1.5,D*1.5);
-              }
+
             }
           }
           other = binGrid[nbr_idx].getNext();
