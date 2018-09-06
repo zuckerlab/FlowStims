@@ -101,7 +101,6 @@ void setup() {
   out_params.close();
   
   nStims = stims.length;
-  println("nStims",nStims);
 
   //store stim indices
   stimIdxs = new IntList();
@@ -112,7 +111,10 @@ void setup() {
   currentLen = preStimLen;
   periodFrameCount = 0;
   trialIndex = 0;
-  totalTrials = nTrialBlocks*nStims*nDirs;  
+  totalTrials = nTrialBlocks*nStims*nDirs;
+  
+  //write header to trials log
+  out_trials.println("Frame Time Period TrialNo Stimulus");
   
   start_time = -1;
   if (nStims > 0 && clientStartList != null) {

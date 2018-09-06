@@ -1,4 +1,4 @@
-FlowStims 2 #version information
+FlowStims 1.0 #version information
 
 # Use this file to set the parameters for the flow movies
 
