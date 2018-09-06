@@ -2,7 +2,9 @@
 
 This software is being developed at the Yale Computational Vision Lab by Luciano Dyballa under the guidance of Professor Steven W. Zucker.
 
-For any questions or requests, feel free to contact Luciano - luciano.dyballa(at)yale.edu
+You can find more information about flow stimuli in
+
+Dyballa et al. 2018. _Flow stimuli reveal ecologically-appropriate responses in mouse visual cortex._ bioRxiv doi: 10.1101/362459
 
 ## How to run it
 
@@ -10,6 +12,6 @@ You will find pre-compiled versions inside the Windows, Mac, and Linux folders. 
 
 The program is written in Java using [Processing](https://processing.org), in case you'd like to edit the source code. Feel free to alter it to your specific needs. Contributions are highly encouraged!
 
-
+For any questions, contact Luciano - luciano.dyballa(at)yale.edu.
 
 
