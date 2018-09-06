@@ -1,4 +1,4 @@
-String VERSION = "2.0";
+String VERSION = "1.0";
 
 //default movie params
 int monitor = 1;
@@ -6,7 +6,7 @@ int scrWidthPx = 800;
 int scrHeightPx= 600;
 float scrWidthCm = 40;
 float scrDistCm = 25;
-boolean fastRendering = true;
+boolean fastRendering = true, antiAlias = true;
 int FRAME_RATE = 60;
 int globalSeed = -1;
 
@@ -71,7 +71,7 @@ void settings() {
     else fullScreen(monitor);
   }
   
-  
+  if (!antiAlias) noSmooth();
 
 }
 
@@ -307,6 +307,7 @@ void loadSettingsParams(String[] lines) {
         case "monitor": monitor = loader.loadInt(list[1],list[0],out_params); break;
         case "fullScreen": fullScr = loader.loadBool(list[1],list[0],out_params); break;
         case "fastRendering": fastRendering = loader.loadBool(list[1],list[0],out_params); break;
+        case "antiAlias": antiAlias = loader.loadBool(list[1],list[0],out_params); break;
         case "frameRate": FRAME_RATE = loader.loadInt(list[1],list[0],out_params); break;
         case "saveMovieFrames": makeMovie = loader.loadBool(list[1],list[0],out_params); break;
         case "saveTrialScrShots": saveTrialScrShots = loader.loadBool(list[1],list[0],out_params); break;
