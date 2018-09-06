@@ -3,15 +3,15 @@
 # FlowStims v1.0 documentation
 
 - [Basic operation](#basic-operation)
-- [Log files](#log-files)
 - [Parameters](#parameters)
-   * [Setting parameter values](#setting-parameter-values)
-   * [Multiple values](#multiple-values)
-   * [Dependencies](#dependencies)
-   * [Total number of trials](#total-number-of-trials)
-   * [Randomization of trials](#randomization-of-trials)
-   * [Performance issues](#performance-issues)
-   * [List of parameters](#list-of-parameters)
+  * [Setting parameter values](#setting-parameter-values)
+  * [Multiple values](#multiple-values)
+  * [Dependencies](#dependencies)
+  * [Total number of trials](#total-number-of-trials)
+  * [Randomization of trials](#randomization-of-trials)
+  * [Performance issues](#performance-issues)
+  * [List of parameters](#list-of-parameters)
+- [Log files](#log-files)
 - [Network communication](#network-communication)
 
 ## Basic operation
@@ -22,21 +22,7 @@ An example of such a file is `example-params.txt`. Any text following a `#` char
 
 Typo-checking is very limited, so be careful when entering values. Unforseen characters might cause the program to crash upon startup. If that happens, please double check every entered value. A good idea is to use `example-params.txt` as a starting point.
 
-When run, FlowStims will prompt the user for a parameters file. Upon selection of a suitable file, the presentation begins. The program will terminate automatically once all trials are over. The user can also hit the escape key (Esc) to quit it early.
-
-## Log files
-
-Every time FlowStims is successfully run, it will generate two log files: DATE_TIME_params.log anf DATE_TIME_trials.log, where DATE and TIME stand for the actual date and time at the time of execution. The first one is a record of all parameters used. This is helpful in cases where the original parameters file is lost, or modified. The second one is organized in space-separated columns and contains information about each trial and interstimulus interval (call these "periods") that were shown. The first line is a header row, identifying each column:
-
-`Frame` is the frame number where the current period started
-
-`Time` is the time since the beginning of the presentation, in milliseconds
-
-`Period` is a descriptor of the current period: prestimulus interval (`PRESTIM`), trial (`TRIAL`), or poststimulus interval (`POSTSTIM`)
-
-`TrialNo` is a counter for the total number of individual trials so far (not used for interstim periods)
-
-`Stimulus` contains info about the stimulus used in the current trial (not used for interstim periods), in the format `property=value`. The properties `stim`, `dir`, and `tfreq` are always present, and identify the stimulus class, direction of motion, and temporal frequency for that trial. Flow stimuli have the following specific properties: `nDots`, `diam`, `dotLvl`, `bgLvl`, and `interLvl` (see below for parameter descriptions); grating stimuli have the properties: `width`, `fgLvl`, `bgLvl`, `interLvl`, and `phase` (see below for parameter descriptions).
+When run, FlowStims will prompt the user for a parameters file. Upon selection of a suitable file, the presentation begins. The program will terminate automatically once all trials are over. The user can also hit the escape key (Esc) to quit it early. All trial information is saved in a .log file (see below).
 
 ## Parameters
 
@@ -175,6 +161,20 @@ These include parameters that are common to all stimulus variations used.
 &rightarrow;`gratBgVal` Pixel value (grayscale) of the other half of the bars ("background"), [0-255]. Must be given the same number of values as `gratFgVal`.
 
 &rightarrow;`gratInterVal` Pixel value (grayscale) of interstimulus screen, [0-255]  (use -1 for avg screen luminance of the stimulus). Must be given the same number of values as `gratFgVal`.
+
+## Log files
+
+Every time FlowStims is successfully run, it will generate two log files: DATE_TIME_params.log anf DATE_TIME_trials.log, where DATE and TIME stand for the actual date and time at the time of execution. The first one is a record of all parameters used. This is helpful in cases where the original parameters file is lost, or modified. The second one is organized in space-separated columns and contains information about each trial and interstimulus interval (call these "periods") that were shown. The first line is a header row, identifying each column:
+
+`Frame` is the frame number where the current period started
+
+`Time` is the time since the beginning of the presentation, in milliseconds
+
+`Period` is a descriptor of the current period: prestimulus interval (`PRESTIM`), trial (`TRIAL`), or poststimulus interval (`POSTSTIM`)
+
+`TrialNo` is a counter for the total number of individual trials so far (not used for interstim periods)
+
+`Stimulus` contains info about the stimulus used in the current trial (not used for interstim periods), in the format `property=value`. The properties `stim`, `dir`, and `tfreq` are always present, and identify the stimulus class, direction of motion, and temporal frequency for that trial. Flow stimuli have the following specific properties: `nDots`, `diam`, `dotLvl`, `bgLvl`, and `interLvl` (see above for parameter descriptions); grating stimuli have the properties: `width`, `fgLvl`, `bgLvl`, `interLvl`, and `phase` (see above for parameter descriptions).
 
 ## Network communication
 
