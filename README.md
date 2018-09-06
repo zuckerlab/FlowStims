@@ -6,7 +6,7 @@ You can find more information about flow stimuli in __Dyballa et al. 2018.__ _Fl
 
 ## How to run it
 
-You will find pre-compiled versions inside the Windows, Mac, and Linux folders. They require [Java](https://www.java.com/en/download/) to be installed on your machine. Once you run the executable, it will prompt you to select a parameters file, which can used to configure every detail about the stimuli you want to show (flows or square-wave gratings). In `example-params.txt` you will find an example with a description of the basic parameters. More information can be found in the `docs` folder.
+You will find pre-compiled versions inside the Windows, Mac, and Linux folders. They require [Java](https://www.java.com/en/download/) to be installed on your machine. Once you run the executable, it will prompt you to select a parameters file, which can used to configure every detail about the stimuli you want to show (flows or square-wave gratings). In `example-params.txt` you will find an example with a description of the basic parameters. More information can be found in the [manual](docs/manual.md).
 
 The program is written in Java using [Processing](https://processing.org), in case you'd like to edit the source code. Feel free to alter it to your specific needs. Contributions are highly encouraged!
 
