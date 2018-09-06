@@ -118,15 +118,15 @@ These include parameters that are common to all stimulus variations used.
 
 `dotFgVal` Pixel value (grayscale) for foreground (dots) [0-255], can choose multiple.
 
- * `->dotBgVal` Pixel value (grayscale) for background [0-255]. Must be given the same number of values as `dotFgVal`.
+&rightarrow;`dotBgVal` Pixel value (grayscale) for background [0-255]. Must be given the same number of values as `dotFgVal`.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`->dotInterVal` Pixel value (grayscale) of interstimulus screen (use -1 for avg screen luminance of the stimulus). Must be given the same number of values as `dotFgVal`.
+&rightarrow;`dotInterVal` Pixel value (grayscale) of interstimulus screen (use -1 for avg screen luminance of the stimulus). Must be given the same number of values as `dotFgVal`.
 
 `dotDiamDeg` Diameter of single dots (in degrees); allows multiple values. Note: flows with `nDots` other than 1 might have  dots with different diameter in order to preserve constant area (depending on whether `equalArea` is enabled, see below).
 
-&nbsp;&nbsp;&nbsp;&nbsp;`->dotSpacing` Initial spacing between flow element centers (in multiples of `dotDiamDeg`); this determines how dense the flow will be. Of course, if the motion is not rigid, then this spacing ends up being an average. Must get a value for each `dotDiamDeg` used above.
+&rightarrow;`dotSpacing` Initial spacing between flow element centers (in multiples of `dotDiamDeg`); this determines how dense the flow will be. Of course, if the motion is not rigid, then this spacing ends up being an average. Must get a value for each `dotDiamDeg` used above.
 
-&rightarrow;`->dotSpatFreq` _Optional:_ If known, the spatial frequencies corresponding to each dot size used in `dotDiamDeg` can be entered here. When provided, they will be used to compute more accurate velocities based on the temporal frequency. Must get a value for each `dotDiamDeg` used above.
+&rightarrow;`dotSpatFreq` _Optional:_ If known, the spatial frequencies corresponding to each dot size used in `dotDiamDeg` can be entered here. When provided, they will be used to compute more accurate velocities based on the temporal frequency. Must get a value for each `dotDiamDeg` used above.
 
 `equalArea` Whether to adjust the diameter of patterns with `nDots` > `1` so as to preserve the same total area as that of single dots. Defaults to yes (`1`).
 
@@ -154,9 +154,9 @@ These include parameters that are common to all stimulus variations used.
 
 `gratFgVal` Pixel value (grayscale) of half the bars ("foreground") [0-255], can choose multiple
 
-&nbsp;&nbsp;&nbsp;&nbsp;`->gratBgVal` Pixel value (grayscale) of the other half of the bars ("background"), [0-255]. Must be given the same number of values as `gratFgVal`.
+&rightarrow;`gratBgVal` Pixel value (grayscale) of the other half of the bars ("background"), [0-255]. Must be given the same number of values as `gratFgVal`.
 
-&nbsp;&nbsp;&nbsp;&nbsp;`->gratInterVal` Pixel value (grayscale) of interstimulus screen, [0-255]  (use -1 for avg screen luminance of the stimulus). Must be given the same number of values as `gratFgVal`.
+&rightarrow;`gratInterVal` Pixel value (grayscale) of interstimulus screen, [0-255]  (use -1 for avg screen luminance of the stimulus). Must be given the same number of values as `gratFgVal`.
 
 
 
