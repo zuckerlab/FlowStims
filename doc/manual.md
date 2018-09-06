@@ -46,7 +46,7 @@ You can choose to write the parameter names without the arrows, or leave them as
 
 ### Total number of trials
 
-Make sure to keep track of the total number of trials given your parameter selection. E.g., if you have 4 stimulus variations and 8 directions of motion and you show each one a single time, that is a total of 8x4 = 32 trials, or 1 trial block. The number of trial blocks (ie, how many times each stimulus variation in every direction will be shown) is controlled by `nTrialBlocks` and will essentially determine the total presentation time (multiply if by the total trial length to get the actual time in seconds).
+Make sure to keep track of the total number of trials given your parameter selection. E.g., if you have 4 stimulus variations and 8 directions of motion and you show each one a single time, that is a total of 8 x 4 = 32 trials, or 1 trial block. The number of trial blocks (ie, how many times each stimulus variation in every direction will be shown) is controlled by `nTrialBlocks` and will essentially determine the total presentation time (multiply if by the total trial length to get the actual time in seconds).
 
 ### Randomization of trials
 
@@ -70,9 +70,9 @@ These include parameters for setting up the display, resolution, quality of the 
 
 `scrWidthPx` Screen width, in pixels. E.g., `800`
 
-`scrWidthCm` Physical width of screen (cm). E.g., `28.0`
+`scrWidthCm` Physical width of screen (cm). E.g., `24.5`
 
-`scrDistCm` Distance of the animal from screen (cm). E.g., `20.5`
+`scrDistCm` Distance of the animal from screen (cm).
 
 `monitor` Selects the screen on which to display to program (default is `1` for your primary monitor).
 
@@ -84,7 +84,7 @@ These include parameters for setting up the display, resolution, quality of the 
 
 `frameRate` Number of frames displayed every second (default is `60`).
 
-`saveMovieFrames` Set it to `1` to save a screenshot (.png) of every frame, which are saved into a newly-created `movieframes` folder. These can be used for creating a movie (if you install Processing, it comes with a Movie Maker tool for doing just that). Note: the total file size of the frames can grow really fast, so be careful! For safety, `nTrialBlocks` is set to `1` when using this option (as usually this will used to generate a demo movie, or a movie to be looped over when used in an experiment).
+`saveMovieFrames` Set it to `1` to save a screenshot (.png) of every frame, which are saved into a newly-created "movieframes" folder. These can be used for creating a movie (if you install Processing, it comes with a Movie Maker tool for doing just that). Note: the total file size of the frames can grow really fast, so be careful! For safety, `nTrialBlocks` is set to `1` when using this option (as usually this will used to generate a demo movie, or a movie to be looped over when used in an experiment).
 
 `saveTrialScrShots` Set it to `1` to save a single screenshot at the end of each trial (default is `0`). Note: there can be a slight delay when saving screenshots, so usually it is not a good a idea to have this option turned on during an actual experiment. 
 
@@ -104,13 +104,13 @@ These include parameters that are common to all stimulus variations used.
 
 `nDirs` Number of principal directions of motion (evenly divided around 360 degrees). E.g., choosing `4` will result in the set [0, 90, 180, 270].
 
-`dirDegShift` Amount by which to shift the directions specified by `nDirs`. E.g., setting it to `90` when `nDirs` is set to `2` converts [0, 180] into [90, 270]  (and option that is not available when using `nDirs` alone).
+`dirDegShift` Amount by which to shift the directions that were specified by `nDirs`. E.g., setting it to `90` when `nDirs` is set to `2` will change [0, 180] into [90, 270]  (an option that is not available when using `nDirs` alone!).
 
-`tempFreq` Temporal frequency (cycles/s). Can choose multiple. E.g., `2` for a single value, or `2.5 4` for two values, etc.
+`tempFreq` Temporal frequency (cycles/s). Can choose multiple. E.g., `2` for a single value, or e.g. `2.5 4` for two values, etc.
 
 `nFadeFrames` Sets the number of frames used for linear fade-in/out transitions at the beginning and end of trials (use 0 or 1 for no fade).
 
-### Flow stimuli
+#### Flow stimuli
 
 `useFlows` Whether to display flows or not (`1` or `0`).
 
@@ -118,9 +118,9 @@ These include parameters that are common to all stimulus variations used.
 
 `dotFgVal` Pixel value (grayscale) for foreground (dots) [0-255], can choose multiple.
 
-&nbsp;&nbsp;&nbsp;&nbsp;`->dotBgVal` Pixel value (grayscale) for background [0-255]. Must be given the same number of values as `dotFgVal`.
+ * `->dotBgVal` Pixel value (grayscale) for background [0-255]. Must be given the same number of values as `dotFgVal`.
 
-&nbsp;&nbsp;&nbsp;&nbsp;`->dotInterVal` Pixel value (grayscale) of interstimulus screen (use -1 for avg screen luminance of the stimulus). Must be given the same number of values as `dotFgVal`.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`->dotInterVal` Pixel value (grayscale) of interstimulus screen (use -1 for avg screen luminance of the stimulus). Must be given the same number of values as `dotFgVal`.
 
 `dotDiamDeg` Diameter of single dots (in degrees); allows multiple values. Note: flows with `nDots` other than 1 might have  dots with different diameter in order to preserve constant area (depending on whether `equalArea` is enabled, see below).
 
@@ -144,7 +144,7 @@ These include parameters that are common to all stimulus variations used.
 
 `tileSize` _Advanced:_ Tile size of the underlying vector field, in multiples of the `dotSpacing`. Larger tiles will result in more flow elements following the same direction locally. Default: `2.5`
 
-### Grating stimuli
+#### Grating stimuli
 
 `useGratings` Whether to display square-wave gratings or not (`1` or `0`).
 
