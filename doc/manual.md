@@ -2,11 +2,11 @@
 
 # FlowStims v1.0 Manual
 
-- [Basic operation](#Basic%20operation)
-- [Log files](#Log%20files)
+- [Basic operation](#Basic-operation)
+- [Log files](#Log-files)
 - [Parameters](#Parameters)
-  * [Setting parameter values](#Setting%20parameter%20values)
-- [Network communication](#Network%20communication)
+  * [Setting parameter values](#Setting-parameter-values)
+- [Network communication](#Network-communication)
 
 ## Basic operation
 
