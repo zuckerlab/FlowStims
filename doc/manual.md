@@ -1,6 +1,14 @@
 
 
-# FlowStims v1.0 - Basic operation
+# FlowStims v1.0 Manual
+
+## Table of contents
+- [Basic operation](#Basic%20operation)
+- [Log files](#Log%20files)
+- [Parameters](#Parameters)
+- [Network communication](#Network%20communication)
+
+# Basic operation
 
 FlowStims uses a .txt file to specify which stimuli are to be used, how to display them, and, optionally, to set up communication with other machines via UDP.
 
@@ -23,9 +31,6 @@ Every time FlowStims is successfully run, it will generate two log files: DATE_T
 `TrialNo` is a counter for the total number of individual trials so far (not used for interstim periods)
 
 `Stimulus` contains info about the stimulus used in the current trial (not used for interstim periods), in the format `property=value`. The properties `stim`, `dir`, and `tfreq` are always present, and identify the stimulus class, direction of motion, and temporal frequency for that trial. Flow stimuli have the following specific properties: `nDots`, `diam`, `dotLvl`, `bgLvl`, and `interLvl` (see below for parameter descriptions); grating stimuli have the properties: `width`, `fgLvl`, `bgLvl`, `interLvl`, and `phase` (see below for parameter descriptions).
-
-
-
 
 # Parameters
 
