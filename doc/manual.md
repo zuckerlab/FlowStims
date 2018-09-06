@@ -126,7 +126,7 @@ These include parameters that are common to all stimulus variations used.
 
 &nbsp;&nbsp;&nbsp;&nbsp;`->dotSpacing` Initial spacing between flow element centers (in multiples of `dotDiamDeg`); this determines how dense the flow will be. Of course, if the motion is not rigid, then this spacing ends up being an average. Must get a value for each `dotDiamDeg` used above.
 
-&nbsp;&nbsp;&nbsp;&nbsp;`->dotSpatFreq` _Optional:_ If known, the spatial frequencies corresponding to each dot size used in `dotDiamDeg` can be entered here. When provided, they will be used to compute more accurate velocities based on the temporal frequency. Must get a value for each `dotDiamDeg` used above.
+&rightarrow;`->dotSpatFreq` _Optional:_ If known, the spatial frequencies corresponding to each dot size used in `dotDiamDeg` can be entered here. When provided, they will be used to compute more accurate velocities based on the temporal frequency. Must get a value for each `dotDiamDeg` used above.
 
 `equalArea` Whether to adjust the diameter of patterns with `nDots` > `1` so as to preserve the same total area as that of single dots. Defaults to yes (`1`).
 
