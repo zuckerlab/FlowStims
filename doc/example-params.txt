@@ -1,0 +1,89 @@
+FlowStims 1.0 #version information
+
+# Use this file to set the parameters for the flow movies
+
+# INSTRUCTIONS:
+# Any text after a '#' is ignored (comments)
+
+# The format for entering values is: "parameter"<space>"value"
+# For entering multiple values: "parameter"<space>"value1"<space>"value2" etc.
+
+# An arrow "->" before a parameter name means it is dependent on the preceding param without an arrow (the "parent" parameter). The number of values entered for it must equal that of its parent.
+
+# Specific parameter instructions are given as comments below. 
+
+
+###SETUP###
+scrWidthPx 800 #screen resolution - width, in pixels
+scrHeightPx 600 #screen resolution - height, in pixels
+scrWidthCm 40.0 #Physical width of screen (cm)
+scrDistCm 25.0 #Distance from screen (cm)
+monitor 1 #Selects the screen to display to program on (default is 1)
+fastRendering 1 #Disable this (set to 0) for improved graphics (can be slow in some machines)
+antiAlias 1 #Turn this on (set to 1) for smoother graphics (can be slow if using high spat freqs)
+saveMovieFrames 0 #Save a screenshot of every frame for creating a movie
+
+###ALL STIMULI###
+trialLenSec 1.5 #Trial length (stimulus presentation), in seconds.
+preStimLenSec 1.5 #Pre-stimulus interval (for best results should be at least 1 sec)
+postStimLenSec .5 #Post-stimulus interval. Note: Total time spent per trial is given by preStimLenSec + trialLenSec +  postStimLenSec
+
+nTrialBlocks 3 #Number of blocks of trials (i.e., repetitions of each combination of parameters)
+
+nDirs 8 #Number of principal directions (evenly divided around 360 degrees)
+tempFreq 3.5 #Temporal frequency (cycles/s), can choose multiple
+nFadeFrames 3 #Sets number of frames used for fade-in/out transitions (use 0 for no fade)
+
+
+###FLOW STIMULI###
+useFlows 1 #Whether to display flows
+nDots 1 3 #Number of dots used in the flow elements, can choose multiple
+
+dotFgVal 255 0 #Grayscale value for foreground (dots) [0-255], multiple
+->dotBgVal 127 127 #Grayscale value for background
+->dotInterVal 127 127 #Grayscale value of interstimulus screen (use -1 for avg intensity of the stimulus)
+
+dotDiamDeg 1.5 .7 #Diameter of single dots (degs), multiple -- determines diams for other nDots (preserving const. area)
+->dotSpacing 3 3 #avg spacing between flow element centers (in multiples of dotDiamDeg), must set a val for each dotDiamDeg used above
+
+rigidTrans 0 #Set to 1 for a rigid translation of the flow elements, i.e., no "jitter" -- no motion components other than main direction of motion (constant parallel flow field and no separation force during trial)
+sepWeight 1.5 #Ratio between repulsion force between elts and the flow field force -- should be at least around 1.5 for best results, and might need some adjustment for different dot sizes
+
+
+###GRATINGS STIMULI###
+useGratings 1 #Whether to display square-wave gratings
+gratWidthDeg 12.5 .7 #Width of grating bars, in degrees of visual angle, i.e. 1/(2*spat.freq.)
+gratFgVal 192 #Grayscale value of one half of the bars ("foreground") [0-255], can choose multiple
+->gratBgVal 64 #Grayscale value of the other half of the bars ("background")
+->gratInterVal 127 #Grayscale value of interstimulus screen (use -1 for avg screen luminance of the stimulus)
+
+###NETWORK COMMUNICATION###
+# Use this to configure which UDP packets are to be sent by the program whenever one of the events below is triggered (packet sending disabled if saveScrShots is on).
+
+# Format:
+#EVENT: <description of event that triggers the sending of the packet>
+#Format: <paramName> <host> <port> <msgType> <msg> <addNewLine> <encoding>
+
+# The arguments: host, port, msgType, etc. must be configured by the user (do not change the param name!).
+# Description of the arguments (do not change their order! -- the last two are optional):
+  # host: host address that will receive the packets (UDP datagrams)
+  # port: port that will be listening for the packets
+  # msgType: 1=send as string, 2=send as integer, 5=append date,time to msg (string only)
+  # msg: message to send
+
+#EVENT: beginning of presentation (sent only once, at the very beginning of the movie)
+#Format: clientStart host port msgType msg [addNewLine encoding]
+# E.g.: clientStart 127.0.0.1 9090 1 1 #sends a 1 integer to localhost on port 9090
+
+#EVENT: end of presentation (including early exit with <ESC> key)
+#Format: clientEnd host port msgType msg [addNewLine encoding] (for multiple hosts, repeat this in multiple lines changing host, port, etc. for each one)
+
+#EVENT: start of each trial 
+#Format: clientTrialStart host port msgType msg [addNewLine encoding]
+
+#EVENT: end of each trial
+#Format: clientTrialEnd host port msgType msg [addNewLine encoding]
+
+#EVENT: send a timestamp every X seconds (where X is set by the "interval" arg)
+#Note: here, msgType must be 3 (send time as integer) or 4 (send time as string)
+#Format: clientTimeStamp host port msgType interval [addNewLine encoding]
