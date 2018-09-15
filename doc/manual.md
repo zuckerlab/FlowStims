@@ -51,9 +51,9 @@ This is particularly important if there is a significant difference in overall s
 
 ### Performance issues
 
-In most cases, FlowStims can be used to generate stimuli on the fly during a recording. However, depending on your hardware and on the parameters chosen, some stimuli might take longer to run than expected (in which case you might end up with longer trial lengths), especially if you choose high quality graphics and/or very high spatial frequency stimuli. You can check the exact duration of your trials by inspecting trial log file that is generated after each run.
+In most cases, FlowStims can be used to generate stimuli on the fly during a recording. However, depending on your hardware and on the parameters chosen, some stimuli might take longer to run than expected (in which case you might end up with longer trial lengths), especially if you choose high quality graphics and/or very high spatial frequency stimuli. You can easily check the exact duration of your trials by inspecting trial log file that is generated after each run.
 
-One option around this is to enable `fastRendering` and/or disable `antiAlias`. Another is to save the presentation as a movie (see `saveMovieFrames`) and simply play it during the experiment (that is, without running FlowStims). (The latter will probably require some software to play the movie while logging the times of each frame, which is not provided.)
+One option around this is to enable `fastRendering` and/or disable `antiAlias`. Another is to decrease the `frameRate` at which the stimuli are displayed. Yet another is to save the presentation as a movie (see `saveMovieFrames`) and simply play it during the experiment (that is, without running FlowStims). (The latter will probably require some software to play the movie while logging the times of each frame, which is not currently provided.)
 
 ### List of parameters
 
@@ -78,7 +78,7 @@ These include parameters for setting up the display, resolution, quality of the 
 
 `antiAlias` Turn this on (set to `1`) for smoother graphics (can be slow if using high spat freqs). Default is `1`.
 
-`frameRate` Number of frames displayed every second (default is `60`).
+`frameRate` Number of frames displayed every second (default is `60` fps).
 
 `saveMovieFrames` Set it to `1` to save a screenshot (.png) of every frame, which are saved into a newly-created "movieframes" folder. These can be used for creating a movie (if you install Processing, it comes with a Movie Maker tool for doing just that). Note: the total file size of the frames can grow really fast, so be careful! For safety, `nTrialBlocks` is set to `1` when using this option (as usually this will used to generate a demo movie, or a movie to be looped over when used in an experiment).
 
@@ -204,12 +204,17 @@ The arguments: `host`, `port`, `msgType`, etc. must be configured by the user (d
 * `addNewline` Either `0` or `1` -- whether to add a '\n' char at end of msg. Default is no (`0`)
 * `encoding` Only applicable if sending a string. Default: UTF-8 (single byte chars)
 
-E.g.: `clientStart localhost 9090 1 1 #sends a 1 integer to localhost on port 9090 at the beginning of presentation`
+Note: all network communication is automatically disabled if `saveMovieFrames` mode is on.
 
-For multiple hosts, repeat this in multiple lines changing host, port, etc. for each one (while using the same event name).
-
-E.g.:<br>
+E.g.: <br>
+`clientStart localhost 9090 1 1 #sends a 1 integer to localhost on port 9090 at the beginning of presentation`<br>
 `clientTrialStart 144.20.133.11 8999 2 0 #send a 0 integer to first host at beginning of every trial`<br>
 `clientEnd 144.20.133.57 8980 1 4 #send a '4' string to second host at beginning of every trial`
+
+For multiple hosts, repeat this in multiple lines changing host, port, etc. for each one (while using the same event name). Note: the option of multiple hosts is only available for the `clientStart` and `clientEnd` events.
+
+E.g.:<br>
+`clientStart 144.20.133.11 8999 2 0 #send a 0 integer to first host at the beginning of presentation`<br>
+`clientStart 144.20.133.57 8980 1 4 #send a '4' string to second host at the beginning of presentation`
 
 
