@@ -1,6 +1,6 @@
 class Grating implements Stim {
   
-  IntList dirs;
+  private IntList dirs;
   float initSpd;
   int dirCounter;
 
@@ -71,7 +71,7 @@ class Grating implements Stim {
     }
 
     direction = dir;
-    theta = radians(direction);
+    theta = radians(direction);//new direction taking into account speed sign
     if (direction == 90 || direction == 270) {
       speed = initSpd;
       if (direction == 270) speed = -initSpd;
@@ -84,6 +84,7 @@ class Grating implements Stim {
     }
     period = deltaX + deltaXspac;
     ///
+    
     if (randPhase) {
       phase = (int) random(barWidth+spaceWidth);
       phaseFrac = float(phase)/(barWidth+spaceWidth);

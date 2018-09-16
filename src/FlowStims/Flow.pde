@@ -1,7 +1,6 @@
 class Flow implements Stim {
   
-  IntList dirs;
-  //float initSpd;
+  private IntList dirs;
   int dirCounter;
   
   ArrayList<Boid> boids;
@@ -34,7 +33,6 @@ class Flow implements Stim {
     for (int dr = 0; dr < nDirs; dr++) {
       dirs.append(round(dr*(360./nDirs)) + dirDegShift);
     }
-
 
 
     mySeed = myseed;
