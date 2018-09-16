@@ -18,13 +18,13 @@ class Loader {
     FloatList dotDiamsDeg = new FloatList(1.5);
     FloatList dotSeps = new FloatList(4.);
     FloatList dotSpFqs = null;
-    float dirStd = 0.08;
+    float dirStd = 0.09;
     float posStd = 0.1;  
     boolean wiggle = true;
     boolean fixRand = false;
-    float sepWeight = 2.;//use higher val if FRAME_RATE = 30
+    float sepWeight = 1.5;//use higher val if FRAME_RATE = 30
     float maxForce = .04;
-    float tileSizeFactor = 2.;
+    float tileSizeFactor = 2.5;
     boolean equalArea = true;
     //grats
     FloatList gratWidthsDeg = new FloatList(12.5, 3.125);
