@@ -132,7 +132,7 @@ These include parameters that are common to all stimulus variations used.
 
 `equalArea` Whether to adjust the diameter of patterns with `nDots` > `1` so as to preserve the same total area as that of single dots. Defaults to yes (`1`).
 
-`rigidTrans` Set it to `1` for a rigid translation of the flow elements, i.e., no "jitter" -- no motion components other than main direction of motion (a constant parallel flow field and no separation force during trials).
+`rigidTrans` Set it to `1` for a rigid translation of the flow elements, i.e., no "jitter" -- no motion components other than main direction of motion (a constant parallel flow field and no separation force during trials). Note: automatically turned on for 0 temporal frequency (i.e. flashed stimuli).
 
 `sepWeight` Ratio between repulsion force between elements and the force from the flow field -- should be at least around 1.5 for best results, and might need some adjustment for different dot sizes. Default: `1.5`
 
