@@ -66,24 +66,13 @@ class Flow implements Stim {
     fadeRate = faderate;
     posStd = posstd;
     
-    if (posStd > 0) setWiggle(true);//if posStd > 0 we want scrambled boids, so turn wiggle on during pre-trial
-    
     if (usePShape) createBoidShape();
-    
-    move = true;
+
     maxSpeed = maxsp;
     tempFreq = tempfreq;
     
-    if (tempFreq == 0) {
-      //allow boids to conform to flowfield before trial starts
-      wiggle = false;
-      setWiggle(true);
-      maxSpeed = 3;
-    }
-    
     sepRadius = sepPx+1;//the +1 takes care of fractional pixels
     
-
     sepFreq = 5;
 
     binSize = sepPx;
@@ -101,6 +90,16 @@ class Flow implements Stim {
   }
   
   void init() {
+    
+    move = true;
+    
+    if (tempFreq == 0) {
+      wiggle = false;//correct possible mistake in params file
+      //allow boids to conform to flowfield before trial starts
+      setWiggle(true);
+      maxSpeed = 3;
+    }
+    if (posStd > 0) setWiggle(true);//if posStd > 0 we want scrambled boids, so turn wiggle on during pre-trial
     
     int dirdeg = dirs.get(dirCounter);
     dirCounter = (dirCounter + 1) % nDirs;
@@ -130,7 +129,9 @@ class Flow implements Stim {
     yHalfLen = yLen/2.;
     
     v0 = PVector.fromAngle(meanTheta);
-    v0.mult(maxSpeed);
+    if (tempFreq > 0) v0.mult(maxSpeed);
+    else v0.mult(0);
+    
     //coeffs for ellipse equation (separation perimeter)
     float a = sq(sepRadius);
     if (pattern > 1) {
@@ -423,7 +424,7 @@ class Flow implements Stim {
         if (follow && flow != null) {
           desired = followField();
           acceleration.add(desired);  
-        } else { //allows boids to still separate without any flow field
+        } else if (follow) { //allows boids to still separate without any flow field
           desired.set(v0);
           desired.sub(velocity);    
           desired.limit(maxForce); 
