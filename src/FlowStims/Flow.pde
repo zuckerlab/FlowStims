@@ -97,7 +97,7 @@ class Flow implements Stim {
       wiggle = false;//correct possible mistake in params file
       //allow boids to conform to flowfield before trial starts
       setWiggle(true);
-      maxSpeed = 3;
+      maxSpeed = 3.*binSize/FRAME_RATE;
     }
     if (posStd > 0) setWiggle(true);//if posStd > 0 we want scrambled boids, so turn wiggle on during pre-trial
     
@@ -129,8 +129,7 @@ class Flow implements Stim {
     yHalfLen = yLen/2.;
     
     v0 = PVector.fromAngle(meanTheta);
-    if (tempFreq > 0) v0.mult(maxSpeed);
-    else v0.mult(0);
+    v0.mult(maxSpeed);
     
     //coeffs for ellipse equation (separation perimeter)
     float a = sq(sepRadius);
