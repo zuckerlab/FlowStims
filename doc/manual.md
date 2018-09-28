@@ -188,14 +188,14 @@ It is possible to set up FlowStims to send UDP datagrams whenever one of the eve
 
 * `clientTrialEnd` End of each trial
 
-* `clientTimeStamp` Send a timestamp every X seconds
+* `clientTimeStamp` Send a timestamp every X seconds (special instructions for this one, see below)
 
 This can be done by including lines in the parameters file with the following format: 
 
-`<eventName> <host> <port> <msgType> <msg> <addNewLine> <encoding>`
+`<eventName> <host> <port> <msgType> <msg> [<addNewLine> <encoding>]`
 
 
-The arguments: `host`, `port`, `msgType`, etc. must be configured by the user (do not change their order! -- the last two are optional):
+The arguments: `host`, `port`, `msgType`, etc. must be configured by the user (do not change their order!). The last two arguments (`addNewLine` and `encoding`) are optional. Here's a detailed descripion of each of them:
 
 * `host` Host address that will receive the packets (UDP datagrams)
 * `port` Port that will be listening for the packets
@@ -216,5 +216,19 @@ For multiple hosts, repeat this in multiple lines changing host, port, etc. for 
 E.g.:<br>
 `clientStart 144.20.133.11 8999 2 0 #send a 0 integer to first host at the beginning of presentation`<br>
 `clientStart 144.20.133.57 8980 1 4 #send a '4' string to second host at the beginning of presentation`
+`clientStart mypc-01.ws.uni.edu 8999 1 4 1 #send a '4\n' string to a third host at the beginning of presentation`
+
+### Sending timestamps
+
+The event `clientTimeStamp` has a slightly different format:
+
+`clientTimeStamp <host> <port> <msgType> <interval> [<addNewLine> <encoding>]`
+
+It allows one to send a timestamp every X seconds, where X is set by the `interval` argument (fractional values are allowed, as in `0.1` for a 0.1-second interval). The timestamp is an integer counting the number of milliseconds since the beginning of the presentation.
+
+The `msgType` must be set to either `3` (to send the timestamp as a 4-byte integer) or `4` (to send it as a string).
+
+E.g.:<br>
+`clientTimeStamp 1.0.0.127 9091 3 1.5 #send timestamp every 1.5 s as an integer`
 
 
