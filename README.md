@@ -2,6 +2,10 @@
 
 This software is being developed at the Yale Computational Vision Lab by Luciano Dyballa under the guidance of Professor Steven W. Zucker.
 
+More information can be found in:
+
+
+Dyballa L., Hoseini M.S., Dadarlat M.C., Zucker S.W., Stryker M.P., __Flow stimuli reveal ecologically appropriate responses in mouse visual cortex__, PNAS, 2018. [10.1073/pnas.1811265115](https://doi.org/10.1073/pnas.1811265115)
 
 ## How to run it
 
